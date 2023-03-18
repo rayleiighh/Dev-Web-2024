@@ -7,7 +7,7 @@ Pour récupérer le template et l'utiliser dans le cadre de votre projet, vous a
 
 1.  Créez un fork de ce repository.  Ce sera votre repo de projet, avec une URL de type `https://github.com/<username>/<repo-name>`.  
 2.  Créez un wiki dans ce nouveau repo, avec une Home page vide par exemple. 
-3.  Clonez le repo git du wiki original sur votre machine :  `git clone https://github.com/EphecLLN/Dev-Web-2022.wiki.git`
+3.  Clonez le repo git du wiki original sur votre machine :  `git clone https://github.com/EphecLLN/Dev-Web-2023.wiki.git`
 4.  Pour "pousser" le wiki présent sur votre machine vers votre repository de projet, vous allez changer le pointeur "remote" de votre copie locale : 
     `git remote add fork https://github.com/<username>/<repo-name>.wiki.git`
 6.  Forcez à présent la copie du wiki sur votre machine vers votre repository de projet.  Cela écrasera le wiki vide que vous aviez créé plus tôt avec le template :   `git push -f fork master`
