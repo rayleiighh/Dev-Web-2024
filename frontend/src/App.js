@@ -12,7 +12,7 @@ function App() {
 
     return (
         <div>
-            <h1>Frontend ConnectÃ©</h1>
+            <h1>Frontend connecté</h1>
             <p>Message du serveur: {message}</p>
         </div>
     );

@@ -23,3 +23,14 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+
+const Mesure = require('./models/Mesure');
+
+app.get('/mesures', async (req, res) => {
+    try {
+        const mesures = await Mesure.find();
+        res.json(mesures);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
