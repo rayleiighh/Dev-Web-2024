@@ -1,6 +1,7 @@
 # Dev-Web-2024-2025
 Template de repo pour le projet Dev Web 2024-2025
 
+
 ## Comment copier ce Wiki? 
 
 Pour récupérer le template et l'utiliser dans le cadre de votre projet, vous allez devoir faire un "fork" de ce repo.  Cependant, le wiki n'est pas copié automatiquement.  Suivez donc la procédure ci-dessous : 
