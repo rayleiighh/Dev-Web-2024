@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // ✅ Ajout de l'import
 
 const Header = () => {
     return (

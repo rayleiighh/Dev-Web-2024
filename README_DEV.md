@@ -82,6 +82,7 @@ Cela ajoutera des exemples de mesures électriques dans MongoDB.
 
 cd ../backend
 npm start
+s'assurer 
 ```
 
 📡 L'API est disponible sur : http://localhost:5000
