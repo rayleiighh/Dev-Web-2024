@@ -1,36 +1,32 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
 
+// Charger les variables d'environnement
+dotenv.config();
+
+// Initialiser l'application Express
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Middleware
-app.use(express.json());
-app.use(cors());
 
 // Connexion à MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(() => console.log('MongoDB connecté'))
-  .catch(err => console.error(err));
+connectDB();
 
-// Route de test
+// Middlewares
+app.use(express.json()); // Permet de lire le JSON dans les requêtes
+app.use(cors()); // Autorise les requêtes entre le frontend et le backend
+
+// Importer les routes API
+const mesuresRoutes = require('./routes/mesures');
+app.use('/mesures', mesuresRoutes);
+
+// Route par défaut
 app.get('/', (req, res) => {
-    res.send('API en ligne');
+    res.send('✅ API Backend fonctionnelle !');
 });
 
-app.listen(PORT, () => console.log(`Serveur lancé sur le port ${PORT}`));
+// Définition du port
+const PORT = process.env.PORT || 5000;
 
-const Mesure = require('./models/Mesure');
-
-app.get('/mesures', async (req, res) => {
-    try {
-        const mesures = await Mesure.find();
-        res.json(mesures);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+// Lancer le serveur
+app.listen(PORT, () => console.log(`🚀 Serveur backend démarré sur http://localhost:${PORT}`));
