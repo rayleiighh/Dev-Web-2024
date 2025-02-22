@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from './components/Header';
+import Home from './pages/Home';
+import Dashboard from './components/Dashboard';
+import Settings from './pages/Settings';
 
 function App() {
-    const [message, setMessage] = useState('');
-
-    useEffect(() => {
-        axios.get('http://localhost:5000/')
-            .then(response => setMessage(response.data))
-            .catch(error => console.error(error));
-    }, []);
-
     return (
-        <div>
-            <h1>Frontend connecté</h1>
-            <p>Message du serveur: {message}</p>
-        </div>
+        <Router>
+            <Header />
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/settings" element={<Settings />} />
+            </Routes>
+        </Router>
     );
 }
 
