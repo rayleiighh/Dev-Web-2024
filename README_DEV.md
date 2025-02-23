@@ -177,3 +177,28 @@ git push origin main
    git add README_DEV.md
    git commit -m "Ajout du guide pour les développeurs"
    git push origin main
+
+
+Changer dans le .env : ```MONGO_URI=mongodb+srv://powertrack:powertrack@powertrack.daxw9.mongodb.net/api```
+Changer la structure du fichier mesures.js dans le dossier routes  de backend : ```const express = require("express");
+const { getAllMesures, createMesure, deleteMesure } = require("../controllers/mesureController");
+
+const router = express.Router();
+
+// :pushpin: Récupérer toutes les mesures
+router.get("/", getAllMesures);
+
+// :pushpin: Ajouter une nouvelle mesure
+router.post("/", createMesure);
+
+// :pushpin: Supprimer une mesure par ID
+router.delete("/:id", deleteMesure);
+
+module.exports = router;```
+
+Changer dans server.js dans backend : ```// Importer les routes API
+const mesuresRoutes = require('./routes/mesures');
+app.use('/api/mesures', mesuresRoutes);```
+
+Changer dans le api.js du frontend dans le dossier services qui est dans le dossier sources : ```// Définition de l'URL du backend
+const API_URL = 'http://localhost:5000/api';```
