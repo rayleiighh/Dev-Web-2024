@@ -1,0 +1,17 @@
+[
+    {
+        "appareil": "Réfrigérateur",
+        "consommation": 150,
+        "date": "2025-02-25T10:00:00Z"
+    },
+    {
+        "appareil": "Télévision",
+        "consommation": 80,
+        "date": "2025-02-25T12:30:00Z"
+    },
+    {
+        "appareil": "Ordinateur",
+        "consommation": 200,
+        "date": "2025-02-25T15:45:00Z"
+    }
+]
