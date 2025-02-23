@@ -3,7 +3,7 @@ import { getMesures, deleteMesure } from '../services/api';
 import MesureList from './MesureList';
 import { io } from 'socket.io-client';
 
-// Connexion WebSocket avec le serveur backend
+// Connexion WebSocket au bon port
 const socket = io("http://localhost:5000");
 
 const Dashboard = () => {
@@ -12,13 +12,12 @@ const Dashboard = () => {
     useEffect(() => {
         fetchMesures();
 
-        // Écoute les mises à jour du backend via WebSocket
+        // WebSocket : Met à jour les mesures en temps réel
         socket.on("maj-mesures", (updatedMesures) => {
-            console.log("📡 Mise à jour reçue :", updatedMesures);
+            console.log("📡 Mise à jour WebSocket reçue :", updatedMesures);
             setMesures(updatedMesures);
         });
 
-        // Nettoyer la connexion WebSocket lorsque le composant est démonté
         return () => socket.off("maj-mesures");
     }, []);
 
@@ -27,7 +26,7 @@ const Dashboard = () => {
             const data = await getMesures();
             setMesures(data);
         } catch (error) {
-            console.error("Erreur lors du chargement des mesures", error);
+            console.error("❌ Erreur lors du chargement des mesures :", error);
         }
     };
 
@@ -36,14 +35,18 @@ const Dashboard = () => {
             await deleteMesure(id);
             fetchMesures();
         } catch (error) {
-            console.error("Erreur lors de la suppression de la mesure", error);
+            console.error("❌ Erreur lors de la suppression de la mesure :", error);
         }
     };
 
     return (
         <div style={{ padding: '20px' }}>
             <h2>Tableau de Bord</h2>
-            <MesureList mesures={mesures} onDelete={handleDelete} />
+            {mesures.length === 0 ? (
+                <p>Aucune donnée disponible.</p>
+            ) : (
+                <MesureList mesures={mesures} onDelete={handleDelete} />
+            )}
         </div>
     );
 };
