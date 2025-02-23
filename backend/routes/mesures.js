@@ -1,18 +1,15 @@
-const mongoose = require('mongoose');
+const express = require("express");
+const { getAllMesures, createMesure, deleteMesure } = require("../controllers/mesureController");
 
-const MesureSchema = new mongoose.Schema({
-    appareil: {
-        type: String,
-        required: true // Nom de l'appareil obligatoire
-    },
-    consommation: {
-        type: Number,
-        required: true // La consommation doit être spécifiée en Watts
-    },
-    date: {
-        type: Date,
-        default: Date.now // Par défaut, enregistre la date actuelle
-    }
-});
+const router = express.Router();
 
-module.exports = mongoose.model('Mesure', MesureSchema);
+// 📌 Récupérer toutes les mesures
+router.get("/", getAllMesures);
+
+// 📌 Ajouter une nouvelle mesure
+router.post("/", createMesure);
+
+// 📌 Supprimer une mesure par ID
+router.delete("/:id", deleteMesure);
+
+module.exports = router;

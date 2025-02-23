@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Définition de l'URL du backend
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://localhost:5000/api';
 
 // Fonction pour récupérer toutes les mesures
 export const getMesures = async () => {

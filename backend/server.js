@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -17,12 +17,12 @@ app.use(express.json()); // Permet de lire le JSON dans les requêtes
 app.use(cors()); // Autorise les requêtes entre le frontend et le backend
 
 // Importer les routes API
-const mesuresRoutes = require('./routes/mesures');
-app.use('/mesures', mesuresRoutes);
+const mesuresRoutes = require("./routes/mesures");
+app.use("/api/mesures", mesuresRoutes);
 
 // Route par défaut
-app.get('/', (req, res) => {
-    res.send('✅ API Backend fonctionnelle !');
+app.get("/", (req, res) => {
+    res.send("✅ API Backend fonctionnelle !");
 });
 
 // Définition du port
