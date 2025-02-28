@@ -216,3 +216,41 @@ Changer dans le api.js du frontend dans le dossier services qui est dans le doss
 // Définition de l'URL du backend
 const API_URL = 'http://localhost:5000/api';
 ```
+
+
+
+
+## **Potentielle Erreur**
+
+
+lors d'un npm install dans Dev-Web-2024, il se peut qu'un package ne s'installe pas correctement, le package ce nomme `bson.cjs`, avec un code erreur suivant : 
+```
+C:\Users\<username>\Desktop\DEV3 - GRP 14- PowerTrack\Dev-Web-2024\backend>npm start
+
+> backend@1.0.0 start
+> node server.js
+
+node:internal/modules/cjs/loader:646
+      throw e;
+      ^
+
+Error: Cannot find module 'C:\Users\momoe\Desktop\DEV3 - GRP 14- PowerTrack\Dev-Web-2024\backend\node_modules\bson\lib\bson.cjs'
+    at createEsmNotFoundErr (node:internal/modules/cjs/loader:1261:15)
+    at finalizeEsmResolution (node:internal/modules/cjs/loader:1250:15)
+    at resolveExports (node:internal/modules/cjs/loader:639:14)
+    at Function._findPath (node:internal/modules/cjs/loader:728:31)
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1211:27)
+    at Function._load (node:internal/modules/cjs/loader:1055:27)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+    at Module.require (node:internal/modules/cjs/loader:1311:12)
+    at require (node:internal/modules/helpers:136:16) {
+  code: 'MODULE_NOT_FOUND',
+  path: 'C:\\Users\\momoe\\Desktop\\DEV3 - GRP 14- PowerTrack\\Dev-Web-2024\\backend\\node_modules\\bson'
+}
+
+Node.js v22.14.0`
+```
+Pour fixer le bug, il faut :
+- [] supprimmer le dossier `node_modules` et le file `package-lock.json` /backend 
+- [] et puis refaire la commande `npm install` dans le dossier /backend 
