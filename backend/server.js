@@ -1,14 +1,21 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const mqtt = require('mqtt');
+const Reading = require('./models/Reading');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const consommationRoutes = require('./routes/consommationRoutes');
 
 // Initialiser Express
 const app = express();
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Sécurité des en-têtes HTTP
 app.use(helmet());
 
@@ -37,8 +44,10 @@ app.use(express.json());
 connectDB();
 
 // Routes
+
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
+app.use('/api', consommationRoutes);
 
 // Gestion des erreurs globales
 app.use((err, req, res, next) => {
