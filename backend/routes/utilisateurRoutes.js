@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const utilisateurController = require('../controllers/utilisateurController');  // ✅ Assurez-vous que ce fichier est bien importé
+const utilisateurController = require('../controllers/utilisateurController'); 
 const { verifAuth } = require('../middleware/auth'); 
 const { body } = require('express-validator');
 
-// Vérifier que les fonctions existent bien
+
 if (!utilisateurController.updateMonProfil) {
     console.error("❌ ERREUR: La fonction updateMonProfil n'est pas définie dans utilisateurController.js");
 }
@@ -18,7 +18,7 @@ router.post('/login', utilisateurController.login);
 
 // Routes protégées
 router.get('/me', verifAuth, utilisateurController.getMonProfil);  
-router.put('/me', verifAuth, utilisateurController.updateMonProfil);  // 🔴 L'erreur vient probablement d'ici
+router.put('/me', verifAuth, utilisateurController.updateMonProfil); 
 router.delete('/me', verifAuth, utilisateurController.supprimerMonCompte);
 router.post('/register', [
     body('prenom').notEmpty().withMessage('Le prénom est requis'),
