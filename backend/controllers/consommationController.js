@@ -3,6 +3,8 @@
 const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
+const Utilisateur = require('../models/utilisateurModel');
+const { sendEmail, sendSMS } = require('../services/notificationService');
 
 // Créer un nouvel enregistrement de consommation
 exports.creerConsommation = async (req, res) => {
@@ -11,39 +13,49 @@ exports.creerConsommation = async (req, res) => {
     if (!appareilId || !debut || !fin || quantite === undefined) {
       return res.status(400).json({ message: "appareil, debut, fin et quantite sont requis." });
     }
-    // Vérifier que l'appareil appartient à l'utilisateur connecté
-    const appareil = await Appareil.findById(appareilId);
+
+    const appareil = await Appareil.findById(appareilId).populate('utilisateur');
     if (!appareil) {
       return res.status(404).json({ message: "Appareil spécifié introuvable." });
     }
-    if (appareil.utilisateur.toString() !== req.userId) {
+
+    if (appareil.utilisateur._id.toString() !== req.userId) {
       return res.status(403).json({ message: "Vous n'êtes pas autorisé à enregistrer une consommation pour cet appareil." });
     }
-    // Créer l'objet consommation
-    const nouvelleConso = new Consommation({
-      appareil: appareilId,
-      debut: new Date(debut),
-      fin: new Date(fin),
-      quantite: quantite
-    });
+
+    // Enregistrer la consommation
+    const nouvelleConso = new Consommation({ appareil: appareilId, debut, fin, quantite });
     await nouvelleConso.save();
-    // Fonctionnalité clé: vérifier si quantite dépasse le seuil de l'appareil, et créer une notification le cas échéant
+
+    // 🔥 Vérifier si la consommation dépasse le seuil de l’appareil
     if (appareil.seuilConso && quantite > appareil.seuilConso) {
-      const contenuNotif = `Consommation élevée: ${quantite} (seuil: ${appareil.seuilConso}) pour l'appareil "${appareil.nom}"`;
+      const utilisateur = appareil.utilisateur;
+      const message = `⚠️ Alerte consommation ! Votre appareil "${appareil.nom}" a dépassé le seuil de ${appareil.seuilConso} kWh avec une consommation de ${quantite} kWh.`;
+
+      // Enregistrement de la notification dans MongoDB
       const notif = new Notification({
-        utilisateur: req.userId,
+        utilisateur: utilisateur._id,
         appareil: appareilId,
-        contenu: contenuNotif,
+        contenu: message,
         envoyee: false
       });
       await notif.save();
-      // (Optionnel) Ici, on pourrait appeler un service d'envoi d'email avec le contenu de la notif
-      // ex: EmailService.send(utilisateur.email, "Alerte de consommation", contenuNotif);
+
+      // 🔥 Envoi d'un email à l'utilisateur
+      if (utilisateur.email) {
+        sendEmail(utilisateur.email, "Alerte de consommation", message);
+      }
+
+      // 🔥 Envoi d'un SMS (si numéro de téléphone disponible)
+      if (utilisateur.telephone) {
+        sendSMS(utilisateur.telephone, message);
+      }
     }
+
     res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
-  } catch (err) {
-    console.error("Erreur création consommation:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la création de la consommation." });
+  } catch (error) {
+    console.error("Erreur ajout consommation:", error);
+    res.status(500).json({ message: "Erreur serveur" });
   }
 };
 

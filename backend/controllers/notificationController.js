@@ -6,20 +6,21 @@ const Utilisateur = require('../models/utilisateurModel');
 // Obtenir les notifications de l'utilisateur connecté
 exports.getNotifications = async (req, res) => {
   try {
-    const filtreEnvoye = req.query.envoyee;
-    let criteria = { utilisateur: req.userId };
-    if (filtreEnvoye !== undefined) {
-      // Si le paramètre envoyee est fourni dans la requête, on filtre sur son booléen
-      criteria.envoyee = filtreEnvoye === 'true'; // 'true' (string) -> true (boolean)
+    const notifications = await Notification.find({ utilisateur: req.userId })
+      .populate('appareil') // Vérifie que l'appareil est bien peuplé
+      .sort({ createdAt: -1 });
+
+    if (!notifications || notifications.length === 0) {
+      return res.status(404).json({ message: "Aucune notification trouvée." });
     }
-    // Récupérer notifications selon les critères (toutes de l'utilisateur, et éventuellement filtrées par statut)
-    const notifications = await Notification.find(criteria).populate('appareil');
+
     res.status(200).json(notifications);
   } catch (err) {
     console.error("Erreur récupération notifications:", err);
     res.status(500).json({ message: "Erreur serveur lors de la récupération des notifications." });
   }
 };
+
 
 // Marquer une notification comme envoyée (et simuler l'envoi de mail)
 exports.envoyerNotification = async (req, res) => {

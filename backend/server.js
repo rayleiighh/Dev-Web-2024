@@ -39,6 +39,8 @@ connectDB();
 // Routes
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
+
 
 // Gestion des erreurs globales
 app.use((err, req, res, next) => {
