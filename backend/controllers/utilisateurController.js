@@ -50,6 +50,9 @@ exports.login = async (req, res) => {
     }
     
     const token = jwt.sign({ id: utilisateur._id }, SECRET_KEY, { expiresIn: '2h' });
+    
+    console.log("🔑 Token généré :", token); // ✅ Afficher le token dans le terminal backend
+
     return res.status(200).json({ message: "Connexion réussie", token, utilisateur: { id: utilisateur._id, email, nom: utilisateur.nom, prenom: utilisateur.prenom } });
   } catch (err) {
     console.error("Erreur lors de la connexion:", err);

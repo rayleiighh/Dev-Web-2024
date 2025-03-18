@@ -5,7 +5,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 // Middleware d'authentification JWT
 function verifAuth(req, res, next) {
-  console.log("🔍 Middleware d'auth : Vérification du token pour :", req.originalUrl);
+  console.log("🔍 Middleware d'auth activé pour :", req.originalUrl);
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
