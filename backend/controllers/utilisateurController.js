@@ -32,7 +32,8 @@ exports.register = async (req, res) => {
 
 // Connexion
 exports.login = async (req, res) => {
-  try {
+  console.log("📡 Requête reçue pour login :", req.body); // ✅ Vérifier ce que Postman envoie
+  try {  
     const { email, motDePasse } = req.body;
     if (!email || !motDePasse) {
       return res.status(400).json({ message: "Email et mot de passe sont requis." });

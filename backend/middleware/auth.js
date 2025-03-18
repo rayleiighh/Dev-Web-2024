@@ -1,11 +1,11 @@
 // middleware/auth.js
-
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.JWT_SECRET;
 
 // Middleware d'authentification JWT
 function verifAuth(req, res, next) {
+  console.log("🔍 Middleware d'auth : Vérification du token pour :", req.originalUrl);
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
@@ -18,6 +18,7 @@ function verifAuth(req, res, next) {
   } catch (err) {
     return res.status(401).json({ message: "Token invalide ou expiré" });
   }
+  console.log("utlisateur ID extrait du token:", req.userId);
 }
 
 module.exports = { verifAuth };
