@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Dashboard.css';
 import { Line } from 'react-chartjs-2';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -27,25 +27,45 @@ ChartJS.register(
 );
 
 function Dashboard({ user }) {
+  const [readings, setReadings] = useState([]);  // ✅ Définition correcte
   const [dataPoints, setDataPoints] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/readings');
-        const data = await response.json();
-        setDataPoints(data.map(doc => ({
-          time: new Date(doc.timestamp).toLocaleTimeString(),
-          value: doc.value
+        const response = await fetch("http://localhost:5000/api/consommations", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        const text = await response.text();  // Lire la réponse brute
+        console.log("🧐 Réponse brute de l'API :", text);  // 🔍 Affiche la réponse
+
+        const data = JSON.parse(text);  // 🚀 Convertir en JSON
+        setReadings(data);
+
+        // Mise à jour des points pour le graphique
+        setDataPoints(data.map(entry => ({
+          time: new Date(entry.timestamp).toLocaleTimeString(), // Convertir en heure lisible
+          value: entry.value
         })));
+        
       } catch (error) {
-        console.error("Erreur récupération données :", error);
+        console.error("❌ Erreur récupération données :", error);
       }
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 5000); // Mise à jour toutes les 5 secondes
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchData, 10000); // Mise à jour toutes les 5 secondes
+    return () => {
+        isMounted = false;
+        clearInterval(interval);  // ✅ Nettoie l'intervalle si le composant est démonté
+    };
   }, []);
 
   const chartData = {
@@ -82,7 +102,7 @@ function Dashboard({ user }) {
             </li>
           ))
         ) : (
-          <ul>Aucun appareil connecté.</ul>
+          <li>Aucun appareil connecté.</li>
         )}
       </ul>
       <hr />
