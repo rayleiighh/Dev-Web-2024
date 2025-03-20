@@ -1,22 +1,191 @@
+/* 🌟 Style général */
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #eef2f3, #dfe9f3); /* Fond plus doux */
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🌟 Barre de navigation */
+/* 🌟 Barre de navigation améliorée */
+
+
+/* 🌟 Boutons Connexion & Inscription */
+.nav-buttons {
+  display: flex;
+  gap: 15px; /* Espacement entre les boutons */
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🌟 Style de base des boutons */
+.nav-buttons button {
+  background: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  text-transform: capitalize;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 🌟 Effet au survol */
+.nav-buttons button:hover {
+  background: #007bff;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 🌟 Effet clic */
+.nav-buttons button:active {
+  transform: scale(0.98);
+  background: #0056b3;
+}
+
+/* 🌟 Bouton actif (quand la page est sélectionnée) */
+
+/* 🌟 Style des liens de navigation (Connexion & Inscription) */
+.navbar-nav .nav-link {
+  display: inline-block;
+  background: #007bff; /* Bleu plus doux */
+  color: white !important;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* 🌟 Effet hover */
+.navbar-nav .nav-link:hover {
+  background: white;
+  color: #007bff !important;
+  border: 2px solid #007bff;
+  transform: scale(1.05);
+}
+
+/* 🌟 Effet au clic */
+.navbar-nav .nav-link:active {
+  transform: scale(0.98);
+  background: #0056b3;
+  color: white !important;
+}
+
+/* 🌟 Bouton actif (quand la page est sélectionnée) */
+.navbar-nav .nav-link.active {
+  background: white;
+  color: #007bff !important;
+  border: 2px solid #007bff;
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.2);
+}
+
+
+/* 🌟 Conteneur principal */
 .auth-container {
-    width: 300px;
-    margin: auto;
-    text-align: center;
-  }
-  .auth-container input {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 8px;
-  }
-  .auth-container button {
-    width: 100%;
-    padding: 10px;
-    background-color: blue;
-    color: white;
-    border: none;
-  }
-  .error {
-    color: red;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  margin: auto;
+  margin-top: 70px;
+}
+
+/* 🌟 Titre */
+h2 {
+  font-size: 26px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+/* 🌟 Champs de saisie */
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 18px 0;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  background: #f0f0f0;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Effet focus */
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* 🌟 Boutons */
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  background-color: #4696ec;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Effet hover */
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+/* 🌟 Messages d'erreur */
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* 🌟 Liens */
+a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 🌟 Flèche de retour */
+.back-arrow {
+  font-size: 28px;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #007bff;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.back-arrow:hover {
+  transform: scale(1.2);
+  color: #0056b3;
+}

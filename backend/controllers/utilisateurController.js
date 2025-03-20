@@ -1,9 +1,11 @@
-// controllers/utilisateurController.js
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Utilisateur = require('../models/utilisateurModel');
+const Appareil = require('../models/appareilModel');
+const Consommation = require('../models/consommationModel');
+const Notification = require('../models/notificationModel');
 require('dotenv').config();
+
 const SECRET_KEY = process.env.JWT_SECRET;
 
 // Inscription d'un nouvel utilisateur
@@ -13,15 +15,15 @@ exports.register = async (req, res) => {
     if (!prenom || !nom || !email || !motDePasse) {
       return res.status(400).json({ message: "Tous les champs sont requis." });
     }
-    
+
     const utilisateurExiste = await Utilisateur.findOne({ email });
     if (utilisateurExiste) {
       return res.status(400).json({ message: "Un compte avec cet email existe déjà." });
     }
-    
+
     const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
     await nouvelUtilisateur.save();
-    
+
     const token = jwt.sign({ id: nouvelUtilisateur._id }, SECRET_KEY, { expiresIn: '2h' });
     return res.status(201).json({ message: "Inscription réussie", token, utilisateur: { id: nouvelUtilisateur._id, email, nom, prenom } });
   } catch (err) {
@@ -37,17 +39,17 @@ exports.login = async (req, res) => {
     if (!email || !motDePasse) {
       return res.status(400).json({ message: "Email et mot de passe sont requis." });
     }
-    
+
     const utilisateur = await Utilisateur.findOne({ email });
     if (!utilisateur) {
       return res.status(401).json({ message: "Email ou mot de passe incorrect." });
     }
-    
+
     const match = await bcrypt.compare(motDePasse, utilisateur.motDePasse);
     if (!match) {
       return res.status(401).json({ message: "Email ou mot de passe incorrect." });
     }
-    
+
     const token = jwt.sign({ id: utilisateur._id }, SECRET_KEY, { expiresIn: '2h' });
     return res.status(200).json({ message: "Connexion réussie", token, utilisateur: { id: utilisateur._id, email, nom: utilisateur.nom, prenom: utilisateur.prenom } });
   } catch (err) {
@@ -56,6 +58,7 @@ exports.login = async (req, res) => {
   }
 };
 
+// Récupérer le profil utilisateur
 exports.getMonProfil = async (req, res) => {
   try {
     const utilisateur = await Utilisateur.findById(req.userId).select('-motDePasse').populate('appareils');
@@ -69,6 +72,7 @@ exports.getMonProfil = async (req, res) => {
   }
 };
 
+// Mettre à jour le profil utilisateur
 exports.updateMonProfil = async (req, res) => {
   try {
     const updates = req.body;
@@ -83,10 +87,24 @@ exports.updateMonProfil = async (req, res) => {
   }
 };
 
+// Supprimer le compte utilisateur et toutes ses données associées
 exports.supprimerMonCompte = async (req, res) => {
   try {
+    // Récupérer les appareils liés à cet utilisateur
+    const appareils = await Appareil.find({ utilisateur: req.userId });
+    const appareilIds = appareils.map(a => a._id);
+
+    // Supprimer toutes les consommations et notifications liées aux appareils
+    await Consommation.deleteMany({ appareil: { $in: appareilIds } });
+    await Notification.deleteMany({ appareil: { $in: appareilIds } });
+
+    // Supprimer les appareils de l'utilisateur
+    await Appareil.deleteMany({ utilisateur: req.userId });
+
+    // Supprimer l'utilisateur lui-même
     await Utilisateur.findByIdAndDelete(req.userId);
-    res.status(200).json({ message: "Compte utilisateur supprimé avec succès" });
+
+    res.status(200).json({ message: "Compte utilisateur supprimé avec succès." });
   } catch (err) {
     console.error("Erreur suppression compte:", err);
     res.status(500).json({ message: "Erreur serveur lors de la suppression du compte." });
