@@ -41,5 +41,6 @@ const sendSMS = async (to, message) => {
     console.error("❌ Erreur d'envoi de SMS:", error);
   }
 };
+console.log("📨 Tentative d'envoi email avec :", process.env.EMAIL_USER);
 
 module.exports = { sendEmail, sendSMS };

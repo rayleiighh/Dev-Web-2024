@@ -4,60 +4,82 @@ const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
 const Utilisateur = require('../models/utilisateurModel');
-const { sendEmail, sendSMS } = require('../services/notificationService');
+const { sendEmail } = require('../services/notificationsService');
+const mongoose = require('mongoose');
+
+
 
 // Créer un nouvel enregistrement de consommation
 exports.creerConsommation = async (req, res) => {
   try {
-    const { appareil: appareilId, debut, fin, quantite } = req.body;
-    if (!appareilId || !debut || !fin || quantite === undefined) {
-      return res.status(400).json({ message: "appareil, debut, fin et quantite sont requis." });
-    }
+    const { appareilId, valeur } = req.body;
+    console.log("👉 appareilId reçu:", appareilId);
+    console.log("🔐 user connecté:", req.userId);
 
-    const appareil = await Appareil.findById(appareilId).populate('utilisateur');
+    // Vérifie si l’appareil appartient à l’utilisateur
+    const appareil = await Appareil.findOne({
+      _id: new mongoose.Types.ObjectId(appareilId),
+      utilisateur: new mongoose.Types.ObjectId(req.userId)
+    });
+
     if (!appareil) {
-      return res.status(404).json({ message: "Appareil spécifié introuvable." });
+      return res.status(404).json({ message: "Appareil introuvable ou accès refusé." });
     }
 
-    if (appareil.utilisateur._id.toString() !== req.userId) {
-      return res.status(403).json({ message: "Vous n'êtes pas autorisé à enregistrer une consommation pour cet appareil." });
-    }
+    const now = new Date();
 
-    // Enregistrer la consommation
-    const nouvelleConso = new Consommation({ appareil: appareilId, debut, fin, quantite });
-    await nouvelleConso.save();
+    const consommation = new Consommation({
+      appareil: appareilId,
+      quantite: valeur / 1000,
+      valeur,
+      debut: now,
+      fin: new Date(now.getTime() + 3600000) // +1h
+    });
 
-    // 🔥 Vérifier si la consommation dépasse le seuil de l’appareil
-    if (appareil.seuilConso && quantite > appareil.seuilConso) {
-      const utilisateur = appareil.utilisateur;
-      const message = `⚠️ Alerte consommation ! Votre appareil "${appareil.nom}" a dépassé le seuil de ${appareil.seuilConso} kWh avec une consommation de ${quantite} kWh.`;
+    console.log("💡 Seuil de l'appareil :", appareil.seuil);
+    console.log("⚡ Valeur enregistrée :", valeur);
 
-      // Enregistrement de la notification dans MongoDB
-      const notif = new Notification({
-        utilisateur: utilisateur._id,
-        appareil: appareilId,
-        contenu: message,
+    await consommation.save();
+
+    // Vérification du dépassement de seuil
+    if (valeur > appareil.seuil) {
+      const contenu = `⚠️ Alerte : ${appareil.nom} consomme ${valeur} kWh (seuil = ${appareil.seuil} kWh).`;
+
+      const notification = new Notification({
+        utilisateur: appareil.utilisateur,
+        appareil: appareil._id,
+        contenu,
         envoyee: false
       });
-      await notif.save();
 
-      // 🔥 Envoi d'un email à l'utilisateur
-      if (utilisateur.email) {
-        sendEmail(utilisateur.email, "Alerte de consommation", message);
-      }
+      await notification.save();
 
-      // 🔥 Envoi d'un SMS (si numéro de téléphone disponible)
-      if (utilisateur.telephone) {
-        sendSMS(utilisateur.telephone, message);
+      try {
+        const utilisateur = await Utilisateur.findById(appareil.utilisateur);
+
+        if (!utilisateur || !utilisateur.email) {
+          console.error("❌ Aucun email défini pour cet utilisateur.");
+        } else {
+          console.log("📧 Envoi de l'email à :", utilisateur.email);
+          await sendEmail(utilisateur.email, "Alerte consommation", contenu);
+          notification.envoyee = true;
+          await notification.save();
+          console.log("✅ Notification envoyée automatiquement par email");
+        }
+
+      } catch (err) {
+        console.error("❌ Erreur lors de l'envoi de l'e-mail :", err.message);
       }
     }
 
-    res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
-  } catch (error) {
-    console.error("Erreur ajout consommation:", error);
-    res.status(500).json({ message: "Erreur serveur" });
+    res.status(201).json({ message: "Consommation enregistrée avec succès", consommation });
+
+  } catch (err) {
+    console.error("❌ Erreur serveur :", err);
+    res.status(500).json({ message: "Erreur lors de l'enregistrement de la consommation" });
   }
 };
+
 
 // Obtenir les consommations (tous appareils de l'utilisateur, ou filtrées par appareil)
 exports.getConsommations = async (req, res) => {

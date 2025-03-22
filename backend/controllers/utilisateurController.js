@@ -56,18 +56,21 @@ exports.login = async (req, res) => {
   }
 };
 
+// ✅ controllers/utilisateurController.js
 exports.getMonProfil = async (req, res) => {
   try {
-    const utilisateur = await Utilisateur.findById(req.userId).select('-motDePasse').populate('appareils');
-    if (!utilisateur) {
+    const user = await Utilisateur.findById(req.userId).populate("appareils");
+    if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
     }
-    res.status(200).json(utilisateur);
+    res.status(200).json(user);
   } catch (err) {
-    console.error("Erreur récupération profil:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la récupération du profil." });
+    console.error("Erreur getMonProfil:", err);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
+
+
 
 exports.updateMonProfil = async (req, res) => {
   try {

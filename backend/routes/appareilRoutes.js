@@ -57,6 +57,9 @@ router.put('/:id/seuil', verifAuth, async (req, res) => {
       res.status(500).json({ message: "Erreur serveur" });
     }
   });
-  
+
+// 🔧 Mise à jour du seuil de consommation d’un appareil
+router.patch('/:id/seuil', verifAuth, appareilController.mettreAJourSeuil);
+
 
 module.exports = router;

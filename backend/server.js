@@ -1,10 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
-require('dotenv').config();
+
 const connectDB = require('./config/db');
+const consommationRoutes = require('./routes/consommationRoutes');
+
 
 // Initialiser Express
 const app = express();
@@ -40,6 +43,8 @@ connectDB();
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/consommations', consommationRoutes);
+
 
 
 // Gestion des erreurs globales

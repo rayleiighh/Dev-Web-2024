@@ -200,3 +200,29 @@ exports.desactiverModeNuit = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors de la désactivation du mode nuit." });
   }
 };
+
+exports.mettreAJourSeuil = async (req, res) => {
+  try {
+    const { seuil } = req.body;
+    const appareilId = req.params.id;
+    const userId = req.userId;
+
+    if (!seuil || isNaN(seuil)) {
+      return res.status(400).json({ message: "Seuil invalide." });
+    }
+
+    const appareil = await Appareil.findOne({ _id: appareilId, utilisateur: userId });
+    if (!appareil) {
+      return res.status(404).json({ message: "Appareil non trouvé ou accès refusé." });
+    }
+
+    appareil.seuil = seuil;
+    await appareil.save();
+
+    res.status(200).json({ message: "Seuil mis à jour avec succès.", appareil });
+  } catch (err) {
+    console.error("Erreur mise à jour seuil:", err);
+    res.status(500).json({ message: "Erreur serveur lors de la mise à jour du seuil." });
+  }
+};
+
