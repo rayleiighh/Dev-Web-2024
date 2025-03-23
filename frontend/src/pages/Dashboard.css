@@ -1,5 +1,4 @@
 .dashboard-container {
-    padding: 20px;
-    text-align: center;
-  }
-  
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
