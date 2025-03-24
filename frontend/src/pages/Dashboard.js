@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
+import { io } from 'socket.io-client';
 
 const Dashboard = () => {
   const [utilisateur, setUtilisateur] = useState(null);
@@ -9,6 +10,25 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('token');
+
+  // 🔌 Connexion WebSocket
+  useEffect(() => {
+    const socket = io('http://localhost:5000');
+
+    socket.on('connect', () => {
+      console.log('✅ Connecté au WebSocket', socket.id);
+    });
+
+    socket.on('nouvelle-notification', (notif) => {
+      console.log('📥 Nouvelle notification temps réel :', notif);
+      setNotifications((prev) => [notif, ...prev]);
+    });
+
+    return () => {
+      socket.disconnect();
+      console.log('❌ Déconnecté du WebSocket');
+    };
+  }, []);
 
   // 🔁 Récupérer l'utilisateur (et ses appareils)
   useEffect(() => {
@@ -27,7 +47,7 @@ const Dashboard = () => {
     fetchUser();
   }, [token]);
 
-  // 🔁 Récupérer les notifications
+  // 🔁 Récupérer les notifications au démarrage
   useEffect(() => {
     const fetchNotifications = async () => {
       if (!token) return;

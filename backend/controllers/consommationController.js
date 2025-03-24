@@ -16,7 +16,6 @@ exports.creerConsommation = async (req, res) => {
     console.log("👉 appareilId reçu:", appareilId);
     console.log("🔐 user connecté:", req.userId);
 
-    // Vérifie si l’appareil appartient à l’utilisateur
     const appareil = await Appareil.findOne({
       _id: new mongoose.Types.ObjectId(appareilId),
       utilisateur: new mongoose.Types.ObjectId(req.userId)
@@ -33,7 +32,7 @@ exports.creerConsommation = async (req, res) => {
       quantite: valeur / 1000,
       valeur,
       debut: now,
-      fin: new Date(now.getTime() + 3600000) // +1h
+      fin: new Date(now.getTime() + 3600000)
     });
 
     console.log("💡 Seuil de l'appareil :", appareil.seuil);
@@ -41,7 +40,7 @@ exports.creerConsommation = async (req, res) => {
 
     await consommation.save();
 
-    // Vérification du dépassement de seuil
+    // 🚨 Dépassement de seuil
     if (valeur > appareil.seuil) {
       const contenu = `⚠️ Alerte : ${appareil.nom} consomme ${valeur} kWh (seuil = ${appareil.seuil} kWh).`;
 
@@ -54,19 +53,16 @@ exports.creerConsommation = async (req, res) => {
 
       await notification.save();
 
+      // 🔌 ENVOI TEMPS RÉEL via WebSocket
+      const io = req.app.get('io'); // récupère l'instance Socket.IO
+      io.emit("nouvelle-notification", notification); // 🚀 émet à tous les clients
+
       try {
-        const utilisateur = await Utilisateur.findById(appareil.utilisateur);
-
-        if (!utilisateur || !utilisateur.email) {
-          console.error("❌ Aucun email défini pour cet utilisateur.");
-        } else {
-          console.log("📧 Envoi de l'email à :", utilisateur.email);
-          await sendEmail(utilisateur.email, "Alerte consommation", contenu);
-          notification.envoyee = true;
-          await notification.save();
-          console.log("✅ Notification envoyée automatiquement par email");
-        }
-
+        const user = await Utilisateur.findById(appareil.utilisateur);
+        await sendEmail(user.email, "Nouvelle alerte de consommation", contenu);
+        notification.envoyee = true;
+        await notification.save();
+        console.log("✅ Notification envoyée automatiquement par email");
       } catch (err) {
         console.error("❌ Erreur lors de l'envoi de l'e-mail :", err.message);
       }
