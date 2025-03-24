@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Preferences = ({user, setUser}) => {
+const Preferences = ({ user, setUser }) => {
   const [preferences, setPreferences] = useState({
     unite: 'kWh',
     theme: 'light',
@@ -54,23 +54,18 @@ const Preferences = ({user, setUser}) => {
       setMessage("❌ Erreur lors de la mise à jour.");
     }
   };
-  
 
   useEffect(() => {
     const theme = preferences.theme;
-  
     if (theme === 'dark') {
       document.body.classList.add('bg-dark', 'text-white');
     } else {
       document.body.classList.remove('bg-dark', 'text-white');
     }
-  
-    // Nettoyage quand on quitte la page ou change
     return () => {
       document.body.classList.remove('bg-dark', 'text-white');
     };
   }, [preferences.theme]);
-  
 
   return (
     <div className="container mt-4">
@@ -105,7 +100,7 @@ const Preferences = ({user, setUser}) => {
             id="notifCheck"
           />
           <label className="form-check-label" htmlFor="notifCheck">
-            Recevoir des alertes par email
+            Recevoir des alertes par email 📩
           </label>
         </div>
 

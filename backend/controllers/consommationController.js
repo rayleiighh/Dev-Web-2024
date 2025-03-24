@@ -40,10 +40,10 @@ exports.creerConsommation = async (req, res) => {
 
     await consommation.save();
 
-    // 🔥 Récupérer l'unité de l'utilisateur AVANT de créer la notification
+    // 🔥 Récupérer les préférences utilisateur AVANT de créer la notification
     const user = await Utilisateur.findById(appareil.utilisateur);
-    const unite = user?.preferences?.unite || 'kWh'; // Défaut à kWh si non défini
-    const valeurAffichee = unite === 'Wh' ? valeur * 1000 : valeur; // Convertir en Wh si nécessaire
+    const unite = user?.preferences?.unite || 'kWh';
+    const valeurAffichee = unite === 'Wh' ? valeur * 1000 : valeur;
     const seuilAffichee = unite === 'Wh' ? appareil.seuil * 1000 : appareil.seuil;
 
     // 🚨 Dépassement de seuil
@@ -60,14 +60,19 @@ exports.creerConsommation = async (req, res) => {
       await notification.save();
 
       // 🔌 ENVOI TEMPS RÉEL via WebSocket
-      const io = req.app.get('io'); // récupère l'instance Socket.IO
-      io.emit("nouvelle-notification", notification); // 🚀 émet à tous les clients
+      const io = req.app.get('io');
+      io.emit("nouvelle-notification", notification);
 
       try {
-        await sendEmail(user.email, "Nouvelle alerte de consommation", contenu);
-        notification.envoyee = true;
-        await notification.save();
-        console.log("✅ Notification envoyée automatiquement par email");
+        // **Vérifier si l'utilisateur a activé les emails**
+        if (user.preferences?.emailNotifications) {
+          await sendEmail(user.email, "Nouvelle alerte de consommation", contenu);
+          notification.envoyee = true;
+          await notification.save();
+          console.log("✅ Email envoyé (préférence activée)");
+        } else {
+          console.log("❌ Email non envoyé (préférence désactivée)");
+        }
       } catch (err) {
         console.error("❌ Erreur lors de l'envoi de l'e-mail :", err.message);
       }
@@ -80,7 +85,6 @@ exports.creerConsommation = async (req, res) => {
     res.status(500).json({ message: "Erreur lors de l'enregistrement de la consommation" });
   }
 };
-
 
 // Obtenir les consommations (tous appareils de l'utilisateur, ou filtrées par appareil)
 exports.getConsommations = async (req, res) => {
