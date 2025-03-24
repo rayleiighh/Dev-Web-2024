@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Historique.css';
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend);
-//test
+
 function Historique() {
   const [historique, setHistorique] = useState([]);
   const [dateDebut, setDateDebut] = useState('');
@@ -44,12 +44,12 @@ function Historique() {
       }
 
       const data = await response.json();
-      console.log("Données de l'API :", data);
+      console.log("📡 Données de l'API :", data);
 
       if (Array.isArray(data)) {
         setHistorique(data);
       } else if (data.data && Array.isArray(data.data)) {
-        setHistorique(data.data); // Si la réponse est un objet avec une propriété `data`
+        setHistorique(data.data);
       } else {
         throw new Error("La réponse de l'API n'est pas un tableau");
       }
@@ -63,12 +63,10 @@ function Historique() {
   };
 
   useEffect(() => {
-    fetchConsommations(); // Chargement initial
-    const interval = setInterval(fetchConsommations, 5000); // Polling toutes les 5 secondes
-    return () => clearInterval(interval);
-  }, [dateDebut, dateFin]);
+    fetchConsommations();
+  }, [dateDebut, dateFin]); // 🔁 se déclenche à chaque changement de date
 
-  // Préparation des données du graphique
+  // Préparation des données pour le graphique
   const chartData = {
     labels: historique.map(entry => new Date(entry.timestamp).toLocaleTimeString()),
     datasets: [{
@@ -84,17 +82,8 @@ function Historique() {
     alert("📥 Export CSV en cours de développement !");
   };
 
-  if (loading) {
-    return <p>Chargement en cours...</p>;
-  }
-
-  if (error) {
-    return <p>Erreur : {error}</p>;
-  }
-
-  if (!Array.isArray(historique)) {
-    return <p>Erreur : les données ne sont pas disponibles.</p>;
-  }
+  if (loading) return <p>⏳ Chargement en cours...</p>;
+  if (error) return <p>❌ Erreur : {error}</p>;
 
   return (
     <div className="container py-4">
@@ -135,7 +124,7 @@ function Historique() {
         <Line data={chartData} />
       </div>
 
-      {/* Tableau des données */}
+      {/* Tableau */}
       <div className="table-responsive">
         <table className="table table-striped table-bordered text-center">
           <thead className="table-primary">

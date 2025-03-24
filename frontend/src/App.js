@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Historique from './pages/Historique';
-import Navbar from './components/Navbar';
+// import Navbar from './components/Navbar';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -23,7 +23,7 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar user={user} setUser={setUser} />
+      
       <Routes>
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />

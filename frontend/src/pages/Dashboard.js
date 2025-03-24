@@ -2,23 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import './Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import UserAvatar from '../components/UserAvatar';
+// import UserAvatar from '../components/UserAvatar';
 import IconButton from '../components/IconButton'; // ✅ Ajoute cette ligne
 
 function Dashboard({ user }) {
   const [derniereConso, setDerniereConso] = useState(null);
-  const [onglet, setOnglet] = useState("today");
+  // const [onglet, setOnglet] = useState("today");
   const socketRef = useRef(null);
 
   const favoris = [
     { nom: 'iPhone de Saad', couleur: 'primary' },
     { nom: 'PC Asus', couleur: 'danger' }
   ];
-
-  const dataEnergy = {
-    today: { runtime: "0 h", energy: "<0.001 kWh", power: "<1 W" },
-    month: { runtime: "23 h", energy: "1.82 kWh", power: "2.1 W" }
-  };
 
   useEffect(() => {
     const fetchDerniereConso = async () => {
@@ -69,42 +64,46 @@ function Dashboard({ user }) {
     <div className="container py-4 text-dark" style={{ fontFamily: 'Poppins, sans-serif' }}>
       
       {/* SECTION UTILISATEUR */}
-      {/* SECTION UTILISATEUR */}
-<div className="user-header d-flex justify-content-between align-items-start mb-4">
+      <div className="user-header d-flex justify-content-between align-items-start mb-4">
+        {/* Partie gauche : photo de profil + titre + message de bienvenue */}
+        <div className="d-flex align-items-start gap-3">
+          {/* Emplacement pour la photo de profil */}
+          <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}>
+            {/* La photo de profil sera ajoutée ici plus tard */}
+          </div>
 
-{/* Partie gauche : avatar + titre + prénom */}
-<div className="d-flex align-items-start gap-4">
-  <UserAvatar avatarUrl={user?.avatar} editable={false} />
-  <div>
-    <h1 className="app-title mb-1">PowerTrack</h1>
-    <h2 className="welcome-message">
-      Salut, <strong>{user?.prenom || 'Utilisateur'}</strong> !
-    </h2>
-  </div>
-</div>
+          {/* Titre et message de bienvenue */}
+          <div>
+            <h1 className="app-title mb-1">PowerTrack ⚡</h1>
+            <h2 className="welcome-message">
+              Salut, <strong>{user?.prenom || 'Utilisateur'}</strong> !
+            </h2>
+          </div>
+        </div>
 
-{/* Partie droite : boutons */}
-<div className="d-flex align-items-center gap-3">
-  <IconButton
-    icon="icons8-notification.png"
-    label=""
-    onClick={() => {}}
-    className="position-relative rounded-circle"
-  />
-  <IconButton
-    icon="icons8-option-100.png"
-    label=""
-    onClick={() => {}}
-    className="rounded-circle"
-  />
-</div>
-</div>
-
+        {/* Partie droite : boutons ⚙️ (Settings) et 🔔 (Notification) alignés verticalement */}
+        <div className="d-flex flex-column align-items-end gap-2">
+          {/* Bouton Settings (⚙️) */}
+          <IconButton
+            icon="icons8-option-100.png" // Remplacez par l'icône ⚙️
+            label=""
+            onClick={() => {}}
+            className="rounded-circle"
+          />
+          {/* Bouton Notification (🔔) */}
+          <IconButton
+            icon="icons8-notification.png" // Remplacez par l'icône 🔔
+            label=""
+            onClick={() => {}}
+            className="rounded-circle"
+          />
+        </div>
+      </div>
 
       {/* SECTION CONSOMMATION */}
       <div className="bg-white rounded p-3 shadow-sm mb-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="fw-bold">Energy Usage</h5>
+          <h5 className="fw-bold">Utilisation de l'énergie</h5>
           <IconButton
             icon="icons8-historical-data.png"
             label="Historique"
@@ -112,30 +111,6 @@ function Dashboard({ user }) {
             onClick={() => window.location.href = "/historique"}
           />
         </div>
-
-        <div className="mb-3">
-          <div className="btn-group">
-            <button className={`btn btn-outline-primary ${onglet === 'today' ? 'active' : ''}`} onClick={() => setOnglet("today")}>Today</button>
-            <button className={`btn btn-outline-primary ${onglet === 'month' ? 'active' : ''}`} onClick={() => setOnglet("month")}>This Month</button>
-          </div>
-        </div>
-
-        <div className="row text-center">
-          <div className="col-4">
-            <p className="fw-bold">Runtime</p>
-            <p>{dataEnergy[onglet].runtime}</p>
-          </div>
-          <div className="col-4">
-            <p className="fw-bold">Energy Usage</p>
-            <p>{dataEnergy[onglet].energy}</p>
-          </div>
-          <div className="col-4">
-            <p className="fw-bold">Current Power</p>
-            <p>{dataEnergy[onglet].power}</p>
-          </div>
-        </div>
-
-        <hr />
 
         <h6 className="text-primary mt-3">📡 Donnée en temps réel</h6>
         <table className="table table-sm text-center mb-0">

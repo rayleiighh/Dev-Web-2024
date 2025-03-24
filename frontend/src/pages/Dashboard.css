@@ -1,3 +1,6 @@
+/* ========================
+   🌐 Base & Typographie
+========================= */
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f5f8fc;
@@ -7,36 +10,27 @@ body {
   padding: 2rem;
 }
 
-.section-title {
-  font-size: 1.618rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.card-box {
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.energy-tabs button.active {
-  background-color: #0d6efd;
-  color: white;
-}
-
-.energy-tabs button {
-  margin-right: 0.5rem;
-}
-
+/* ========================
+   🧑‍💻 Utilisateur / Header
+========================= */
 .user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   font-family: 'Poppins', sans-serif;
 }
 
+.user-header img {
+  border: 1px solid #dee2e6;
+}
+
+/* ========================
+   📝 Titres
+========================= */
 .app-title {
-  font-size: 23.5px; /* 16 * 1.212^2 */
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: bold;
   color: #212529;
 }
 
@@ -46,36 +40,49 @@ body {
   color: #495057;
 }
 
+.section-title {
+  font-size: 1.618rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ========================
+   📦 Cartes & Encarts
+========================= */
+.card-box {
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ========================
+   🔘 Boutons & Badges
+========================= */
+.energy-tabs button {
+  margin-right: 0.5rem;
+}
+
+.energy-tabs button.active {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.rounded-circle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+}
+
+.badge {
+  font-size: 0.65rem;
+}
+
 button img {
   vertical-align: middle;
-}
-
-
-.app-title {
-  font-size: 23.5px;
-  font-weight: 700;
-  color: #212529;
-}
-
-.welcome-message {
-  font-size: 19.4px;
-  font-weight: 500;
-  color: #495057;
-}
-
-
-.user-header img {
-  border: 1px solid #dee2e6;
-}
-
-.app-title {
-  font-size: 23.5px;
-  font-weight: 700;
-  color: #212529;
-}
-
-.welcome-message {
-  font-size: 19.4px;
-  font-weight: 500;
-  color: #495057;
 }
