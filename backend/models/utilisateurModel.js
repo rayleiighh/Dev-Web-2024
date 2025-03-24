@@ -9,7 +9,12 @@ const utilisateurSchema = new mongoose.Schema({
   nom: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   motDePasse: { type: String, required: true },
-  appareils: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appareil' }]
+  appareils: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appareil' }],
+  preferences: {
+    unite: { type: String, enum: ['kWh', 'Wh'], default: 'kWh' },
+    theme: { type: String, enum: ['clair', 'sombre'], default: 'clair' },
+    emailNotifications: { type: Boolean, default: true }
+  }
 }, { timestamps: true });
 
 // Avant de sauvegarder, hacher le mot de passe si modifié

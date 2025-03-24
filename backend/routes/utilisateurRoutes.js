@@ -3,6 +3,8 @@ const router = express.Router();
 const utilisateurController = require('../controllers/utilisateurController'); 
 const { verifAuth } = require('../middleware/auth'); 
 const { body } = require('express-validator');
+const { updatePreferences } = require('../controllers/utilisateurController');
+
 
 
 if (!utilisateurController.updateMonProfil) {
@@ -26,4 +28,7 @@ router.post('/register', [
     body('email').isEmail().withMessage('Email invalide'),
     body('motDePasse').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères')
 ], utilisateurController.register);
+
+router.patch('/preferences', verifAuth, updatePreferences);
+
 module.exports = router;

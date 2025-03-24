@@ -95,3 +95,24 @@ exports.supprimerMonCompte = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors de la suppression du compte." });
   }
 };
+
+exports.updatePreferences = async (req, res) => {
+  try {
+    const { unite, theme, emailNotifications } = req.body;
+    const user = await Utilisateur.findByIdAndUpdate(
+      req.userId,
+      {
+        $set: {
+          'preferences.unite': unite,
+          'preferences.theme': theme,
+          'preferences.emailNotifications': emailNotifications,
+        }
+      },
+      { new: true }
+    );
+    res.status(200).json({ message: "Préférences mises à jour", user });
+  } catch (err) {
+    console.error("Erreur update préférences:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};

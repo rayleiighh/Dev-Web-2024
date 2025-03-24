@@ -48,6 +48,10 @@ const Navbar = ({ user, setUser }) => {
                   </Link>
                 </li>
                 <li className="nav-item">
+                  <Link className="nav-link" to="/preferences">Préférences
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <button className="btn btn-danger" onClick={handleLogout}>Déconnexion</button>
                 </li>
               </>

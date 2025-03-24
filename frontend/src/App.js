@@ -6,6 +6,9 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NotificationsPage from './pages/Notifications';
 import Navbar from './components/Navbar';
+import Preferences from './pages/Preferences';
+
+
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -45,6 +48,7 @@ const App = () => {
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
         <Route path="/dashboard" element={user ? <Dashboard user={user} notifications={notifications} /> : <Navigate to="/" />} />
         <Route path="/notifications" element={user ? <NotificationsPage notifications={notifications} setNotifications={setNotifications} /> : <Navigate to="/" />} />
+        <Route path="/preferences" element={<Preferences />} />
       </Routes>
     </Router>
   );
