@@ -4,6 +4,8 @@ const Utilisateur = require('../models/utilisateurModel');
 const Appareil = require('../models/appareilModel');
 const Consommation = require('../models/consommationModel');
 const Notification = require('../models/notificationModel');
+const nodemailer = require('nodemailer');
+
 require('dotenv').config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -24,8 +26,63 @@ exports.register = async (req, res) => {
     const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
     await nouvelUtilisateur.save();
 
+    // ✅ Transporteur Mailtrap
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: false, // important : false pour STARTTLS sur port 587
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+    
+
+    const mailOptions = {
+      from: 'PowerTrack - Suivi Énergie <powertrack5000@gmail.com>',
+      to: nouvelUtilisateur.email,
+      replyTo: 'powertrack5000@gmail.com',
+      subject: "Bienvenue sur PowerTrack !",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f7f7f7; border-radius: 8px; border: 1px solid #ddd;">
+          <h2 style="color: #2c3e50;">Bonjour ${nouvelUtilisateur.prenom},</h2>
+          <p>Bienvenue sur <strong>PowerTrack</strong> !</p>
+          <p>Votre compte a été créé avec succès ✅</p>
+          <p style="margin-top: 30px;">Nous sommes ravis de vous compter parmi nous. 🔌</p>
+    
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #ccc;" />
+    
+          <p style="font-size: 14px; color: #999;">Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer ce message.</p>
+        </div>
+        <p style="font-size: 13px; color: #999; margin-top: 30px;">
+        — L’équipe PowerTrack<br>
+        <a href="mailto:powertrack5000@gmail.com">powertrack5000@gmail.com</a>
+        </p>
+      `
+    };
+    
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Erreur lors de l'envoi de l'email :", error);
+      } else {
+        console.log("Email de confirmation envoyé :", info.response);
+      }
+    });
+
     const token = jwt.sign({ id: nouvelUtilisateur._id }, SECRET_KEY, { expiresIn: '2h' });
-    return res.status(201).json({ message: "Inscription réussie", token, utilisateur: { id: nouvelUtilisateur._id, email, nom, prenom } });
+
+    return res.status(201).json({
+      message: "Inscription réussie",
+      token,
+      utilisateur: {
+        id: nouvelUtilisateur._id,
+        email,
+        nom,
+        prenom
+      }
+    });
+
   } catch (err) {
     console.error("Erreur lors de l'inscription:", err);
     res.status(500).json({ message: "Erreur serveur lors de l'inscription." });
