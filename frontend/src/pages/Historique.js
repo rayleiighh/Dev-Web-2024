@@ -64,11 +64,11 @@ function Historique() {
 
   useEffect(() => {
     fetchConsommations();
-  }, [dateDebut, dateFin]); // 🔁 se déclenche à chaque changement de date
+  }, [dateDebut, dateFin]);
 
-  // Préparation des données pour le graphique
+  // Préparation des données pour le graphique en utilisant directement la date formatée
   const chartData = {
-    labels: historique.map(entry => new Date(entry.timestamp).toLocaleTimeString()),
+    labels: historique.map(entry => entry.timestamp),
     datasets: [{
       label: 'Courant (A)',
       data: historique.map(entry => entry.value),
@@ -138,7 +138,7 @@ function Historique() {
           <tbody>
             {historique.length > 0 ? historique.map((entry, index) => (
               <tr key={index}>
-                <td>{new Date(entry.timestamp).toLocaleString()}</td>
+                <td>{entry.timestamp}</td>
                 <td>{entry.appareil?.nom || "Appareil inconnu"}</td>
                 <td>{(entry.value * 0.001).toFixed(4)}</td>
                 <td>{entry.value.toFixed(3)}</td>

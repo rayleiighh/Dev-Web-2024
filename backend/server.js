@@ -60,7 +60,7 @@ connectDB();
 // 📁 Routes API
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
-app.use('/api', consommationRoutes);
+app.use('/api/consommations', consommationRoutes);
 
 // ❌ Gestion des erreurs globales
 app.use((err, req, res, next) => {

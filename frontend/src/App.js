@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Historique from './pages/Historique';
+import GestionAppareils from './pages/GestionAppareils';
 // import Navbar from './components/Navbar';
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
         <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Navigate to="/" />} />
+        <Route path="/gestion-appareils" element={<GestionAppareils />} />
         <Route path="/historique" element={<Historique />} />
       </Routes>
     </Router>

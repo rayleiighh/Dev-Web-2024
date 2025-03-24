@@ -1,0 +1,55 @@
+.gestion-appareils-container {
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.appareils-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.appareil-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.modifier-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modifier-btn:hover {
+  background-color: #0056b3;
+}
+
+.retour-btn {
+  margin-top: 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.retour-btn:hover {
+  background-color: #5a6268;
+}

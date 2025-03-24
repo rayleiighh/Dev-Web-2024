@@ -15,20 +15,42 @@ function Dashboard({ user }) {
     { nom: 'PC Asus', couleur: 'danger' }
   ];
 
-  useEffect(() => {
-    const fetchDerniereConso = async () => {
-      try {
-        const response = await fetch('/api/consommations/latest');
-        const data = await response.json();
-        setDerniereConso(data);
-      } catch (error) {
-        console.error('Erreur récupération dernière consommation:', error);
+  const fetchDerniereConso = async () => {
+    try {
+      console.log("📡 Envoi de la requête pour récupérer la dernière consommation...");
+      const token = localStorage.getItem('token'); // Assurez-vous que le token est bien stocké
+      const response = await fetch('/api/consommations/latest', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      console.log("Réponse de l'API :", response);
+  
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP : ${response.status}`);
       }
-    };
+  
+      const data = await response.json();
+      console.log("Données de l'API :", data);
+  
+      if (data && data.value) {
+        setDerniereConso(data);
+      } else {
+        console.warn("⚠️ Données de l'API invalides :", data);
+      }
+    } catch (error) {
+      console.error("❌ Erreur récupération dernière consommation :", error);
+    }
+  };
+  
+  
+  useEffect(() => {
+    
 
     fetchDerniereConso();
 
     if (!socketRef.current) {
+      console.log("🔌 Tentative de connexion au WebSocket...");
       socketRef.current = io("http://localhost:5000", {
         transports: ['websocket']
       });
@@ -124,7 +146,7 @@ function Dashboard({ user }) {
           <tbody>
             {derniereConso ? (
               <tr>
-                <td>{new Date(derniereConso.timestamp).toLocaleTimeString()}</td>
+                <td>{new Date(derniereConso.timestamp).toLocaleTimeString('fr-FR', { timeZone: 'UTC' })}</td>
                 <td>{(derniereConso.value * 0.001).toFixed(4)}</td>
                 <td>{derniereConso.value.toFixed(3)}</td>
               </tr>
@@ -149,7 +171,7 @@ function Dashboard({ user }) {
           <IconButton
             icon="icons8-devices.png"
             label="Appareils"
-            onClick={() => window.location.href = "/appareils"}
+            onClick={() => window.location.href = "gestion-appareils"}
           />
         </div>
         {favoris.map((item, index) => (
