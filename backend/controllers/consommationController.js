@@ -40,9 +40,15 @@ exports.creerConsommation = async (req, res) => {
 
     await consommation.save();
 
+    // 🔥 Récupérer l'unité de l'utilisateur AVANT de créer la notification
+    const user = await Utilisateur.findById(appareil.utilisateur);
+    const unite = user?.preferences?.unite || 'kWh'; // Défaut à kWh si non défini
+    const valeurAffichee = unite === 'Wh' ? valeur * 1000 : valeur; // Convertir en Wh si nécessaire
+    const seuilAffichee = unite === 'Wh' ? appareil.seuil * 1000 : appareil.seuil;
+
     // 🚨 Dépassement de seuil
     if (valeur > appareil.seuil) {
-      const contenu = `⚠️ Alerte : ${appareil.nom} consomme ${valeur} kWh (seuil = ${appareil.seuil} kWh).`;
+      const contenu = `⚠️ Alerte : ${appareil.nom} consomme ${valeurAffichee} ${unite} (seuil = ${seuilAffichee} ${unite}).`;
 
       const notification = new Notification({
         utilisateur: appareil.utilisateur,
@@ -58,7 +64,6 @@ exports.creerConsommation = async (req, res) => {
       io.emit("nouvelle-notification", notification); // 🚀 émet à tous les clients
 
       try {
-        const user = await Utilisateur.findById(appareil.utilisateur);
         await sendEmail(user.email, "Nouvelle alerte de consommation", contenu);
         notification.envoyee = true;
         await notification.save();

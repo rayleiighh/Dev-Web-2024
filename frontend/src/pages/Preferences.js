@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Preferences = () => {
+const Preferences = ({user, setUser}) => {
   const [preferences, setPreferences] = useState({
     unite: 'kWh',
     theme: 'light',
@@ -42,11 +42,35 @@ const Preferences = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("✅ Préférences mises à jour !");
+  
+      // 🔁 Re-fetch du user à jour
+      const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data); // 🔥 met à jour le user global dans App.js
+  
     } catch (err) {
       console.error("Erreur mise à jour:", err);
       setMessage("❌ Erreur lors de la mise à jour.");
     }
   };
+  
+
+  useEffect(() => {
+    const theme = preferences.theme;
+  
+    if (theme === 'dark') {
+      document.body.classList.add('bg-dark', 'text-white');
+    } else {
+      document.body.classList.remove('bg-dark', 'text-white');
+    }
+  
+    // Nettoyage quand on quitte la page ou change
+    return () => {
+      document.body.classList.remove('bg-dark', 'text-white');
+    };
+  }, [preferences.theme]);
+  
 
   return (
     <div className="container mt-4">

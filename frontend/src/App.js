@@ -53,14 +53,14 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar user={user} setUser={setUser} notifications={notifications} />
+      <Navbar user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} />
       <Routes>
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
         <Route path="/dashboard" element={user ? <Dashboard user={user} notifications={notifications} /> : <Navigate to="/" />} />
-        <Route path="/notifications" element={user ? <NotificationsPage notifications={notifications} setNotifications={setNotifications} /> : <Navigate to="/" />} />
-        <Route path="/preferences" element={<Preferences />} />
-      </Routes>
+        <Route path="/notifications" element={user ? <NotificationsPage user={user} notifications={notifications} setNotifications={setNotifications} /> : <Navigate to="/" />} />
+        <Route path="/preferences" element={<Preferences user={user} setUser={setUser} />} />
+        </Routes>
     </Router>
   );
 };

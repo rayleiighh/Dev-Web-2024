@@ -1,8 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './Notifications.css';
 
-const NotificationsPage = ({ notifications, setNotifications }) => {
+
+const NotificationsPage = ({ user, notifications, setNotifications }) => {
   const [error, setError] = useState(null);
+  const theme = user?.preferences?.theme; 
+
+
+  // 🎨 Appliquer le thème dès que la page est montée ou modifié
+  useEffect(() => {
+    const theme = user?.preferences?.theme;
+    if (theme === 'dark') {
+      document.body.classList.add('bg-dark', 'text-white');
+    } else {
+      document.body.classList.remove('bg-dark', 'text-white');
+    }
+
+    return () => {
+      document.body.classList.remove('bg-dark', 'text-white');
+    };
+  }, [user?.preferences?.theme]);
 
   // 🔥 Fonction pour supprimer une notification
   const supprimerNotification = async (id) => {
@@ -13,7 +31,6 @@ const NotificationsPage = ({ notifications, setNotifications }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      // Rafraîchir l'affichage localement
       setNotifications((prev) => prev.filter((n) => n._id !== id));
     } catch (err) {
       console.error("❌ Erreur lors de la suppression :", err);
@@ -22,8 +39,8 @@ const NotificationsPage = ({ notifications, setNotifications }) => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>🔔 Notifications</h2>
+<div className={`container mt-4 ${theme === 'dark' ? 'notifications-dark' : ''}`}>
+    <h2>🔔 Notifications</h2>
       {error && <p className="text-danger">{error}</p>}
       {notifications.length === 0 ? (
         <p>Aucune notification.</p>

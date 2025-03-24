@@ -4,9 +4,8 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import './Navbar.css';
 
-const Navbar = ({ user, setUser }) => {
+const Navbar = ({ user, setUser, notifications, setNotifications }) => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
