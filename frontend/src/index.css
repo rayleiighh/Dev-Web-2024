@@ -2,4 +2,27 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f8f9fa;
   }
-  
+
+/* index.css ou App.css */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.dark-mode .navbar,
+.dark-mode .card,
+.dark-mode .list-group-item,
+.dark-mode .form-control {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+.dark-mode .btn-primary {
+  background-color: #3f51b5;
+  border-color: #3f51b5;
+}
+
+.dark-mode .btn-primary:hover {
+  background-color: #303f9f;
+}

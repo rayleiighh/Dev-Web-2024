@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { io } from 'socket.io-client';
+
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -20,6 +22,21 @@ const NotificationsPage = () => {
       console.error("Erreur lors de la récupération des notifications:", err);
       setError("Impossible de récupérer les notifications.");
     });
+     // 🔌 WebSocket
+  const socket = io('http://localhost:5000');
+
+  socket.on('connect', () => {
+    console.log('✅ WebSocket Notifications connecté');
+  });
+
+  socket.on('nouvelle-notification', (notif) => {
+    console.log('📥 Nouvelle notification reçue via WS:', notif);
+    setNotifications(prev => [notif, ...prev]);
+  });
+
+  return () => {
+    socket.disconnect();
+    console.log('❌ WebSocket Notifications déconnecté');};
   }, []);
   
 // 🔥 Fonction pour supprimer une notification

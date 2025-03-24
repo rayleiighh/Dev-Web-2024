@@ -35,7 +35,7 @@ const limiter = rateLimit({
   max: 100, // limite à 100 requêtes par IP
   message: "Trop de requêtes, réessaye plus tard"
 });
-app.use(limiter);
+// app.use(limiter);
 
 // 🧠 Injecter l'instance Socket.IO dans l'app
 app.set('io', io);

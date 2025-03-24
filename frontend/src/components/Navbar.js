@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import axios from 'axios';
 import './Navbar.css';
 
@@ -8,10 +9,11 @@ const Navbar = ({ user, setUser }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+  
+    // Récupération initiale des notifications
     const fetchNotifications = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
       try {
         const response = await axios.get('http://localhost:5000/api/notifications', {
           headers: { Authorization: `Bearer ${token}` }
@@ -21,9 +23,27 @@ const Navbar = ({ user, setUser }) => {
         console.error("Erreur lors de la récupération des notifications:", err);
       }
     };
-
+  
     fetchNotifications();
+  
+    // Connexion WebSocket
+    const socket = io('http://localhost:5000');
+  
+    socket.on('connect', () => {
+      console.log("✅ Navbar connectée au WebSocket");
+    });
+  
+    socket.on('nouvelle-notification', (notif) => {
+      console.log("📥 Nouvelle notif reçue via WS (Navbar) :", notif);
+      setNotifications(prev => [notif, ...prev]);
+    });
+  
+    return () => {
+      socket.disconnect();
+      console.log("❌ WebSocket Navbar déconnecté");
+    };
   }, []);
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');

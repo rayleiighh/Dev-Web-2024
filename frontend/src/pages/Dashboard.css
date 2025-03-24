@@ -8,4 +8,8 @@
     padding: 1em;
     margin-bottom: 1em;
 }
-  
+.dashboard-container input.form-control {
+  background-color: var(--bs-body-bg);
+  color: inherit;
+  border-color: #ccc;
+}
