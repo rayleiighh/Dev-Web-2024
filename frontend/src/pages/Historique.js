@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -21,7 +21,7 @@ function Historique() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchConsommations = async () => {
+  const fetchConsommations = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -60,13 +60,12 @@ function Historique() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateDebut, dateFin]);
 
   useEffect(() => {
     fetchConsommations();
-  }, [dateDebut, dateFin]);
+  }, [fetchConsommations]);
 
-  // Préparation des données pour le graphique en utilisant directement la date formatée
   const chartData = {
     labels: historique.map(entry => entry.timestamp),
     datasets: [{
@@ -94,7 +93,6 @@ function Historique() {
         </button>
       </div>
 
-      {/* Filtres de date */}
       <div className="row g-3 mb-3">
         <div className="col-md-3">
           <input
@@ -119,12 +117,10 @@ function Historique() {
         </div>
       </div>
 
-      {/* Graphique */}
       <div className="bg-white p-3 rounded shadow-sm mb-4">
         <Line data={chartData} />
       </div>
 
-      {/* Tableau */}
       <div className="table-responsive">
         <table className="table table-striped table-bordered text-center">
           <thead className="table-primary">

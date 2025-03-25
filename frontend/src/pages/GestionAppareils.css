@@ -1,55 +1,98 @@
-.gestion-appareils-container {
-  padding: 20px;
+/* 🌙 Fond clair */
+.container-gestion {
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  padding: 1rem;
   font-family: 'Poppins', sans-serif;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
-h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
+/* 🎛️ Section multiprise */
+.multiprise-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.multiprise {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* 🟢 Visuel de la prise (cercle) */
+.prise-visuelle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin: 0 auto 0.5rem auto;
+  cursor: pointer;
+  border: 4px solid #d0d7df;
+  transition: all 0.3s ease-in-out;
+}
+
+.prise-visuelle.active {
+  background-color: #0d6efd; /* bleu ON */
+  border-color: #0b5ed7;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+}
+
+.prise-visuelle.inactive {
+  background-color: #dee2e6;
+  border-color: #adb5bd;
+}
+
+/* 📛 Nom de la prise */
+.prise-nom {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #343a40;
+}
+
+/* ⚙️ Actions sous le nom */
+.prise-actions {
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+/* 🖊️ Icône modifier */
+.prise-actions button i {
+  margin-right: 4px;
+}
+
+.prise-item {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+}
+
+/* 🎨 Mode nuit bouton */
+button[title="Mode nuit"],
+button[title="Désactiver"] {
+  transition: all 0.3s ease-in-out;
+}
+
+button[title="Désactiver"]:hover {
+  transform: rotate(20deg);
+}
+
+/* 🖋️ Champ modif nom */
+.prise-nom input {
+  width: 80%;
+  margin: 0 auto;
+  font-size: 0.85rem;
+  padding: 0.3rem;
   text-align: center;
 }
 
-.appareils-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.appareil-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.modifier-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.modifier-btn:hover {
-  background-color: #0056b3;
-}
-
-.retour-btn {
-  margin-top: 20px;
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.retour-btn:hover {
-  background-color: #5a6268;
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .multiprise {
+    grid-template-columns: 1fr 1fr;
+  }
 }
