@@ -1,14 +1,15 @@
-// 📌 Navbar.js - Barre de navigation dynamique
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
-const Navbar = ({ user, setUser }) => {
+const Navbar = ({ user, setUser, notifications, setNotifications }) => {
   const navigate = useNavigate();
+
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    setNotifications([]); // 🔥 Réinitialisation des notifications après déconnexion
     navigate('/');
   };
 
@@ -22,6 +23,14 @@ const Navbar = ({ user, setUser }) => {
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard">Tableau de Bord</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/notifications">
+                    Notifications {notifications.length > 0 && <span className="badge bg-danger">{notifications.length}</span>}
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/preferences">Préférences</Link>
                 </li>
                 <li className="nav-item">
                   <button className="btn btn-danger" onClick={handleLogout}>Déconnexion</button>

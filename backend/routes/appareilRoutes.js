@@ -35,4 +35,30 @@ router.put('/:id/mode-nuit/activer', appareilController.activerModeNuit);
 // Désactiver le mode nuit sur un appareil
 router.put('/:id/mode-nuit/desactiver', appareilController.desactiverModeNuit);
 
+// 🔧 Mise à jour du seuil de consommation d’un appareil
+router.put('/:id/seuil', verifAuth, async (req, res) => {
+    try {
+      const { seuilConso } = req.body;
+      const appareil = await Appareil.findById(req.params.id);
+  
+      if (!appareil) {
+        return res.status(404).json({ message: "Appareil non trouvé" });
+      }
+  
+      if (appareil.utilisateur.toString() !== req.userId) {
+        return res.status(403).json({ message: "Non autorisé à modifier cet appareil" });
+      }
+  
+      appareil.seuilConso = seuilConso;
+      await appareil.save();
+  
+      res.status(200).json({ message: "Seuil mis à jour", appareil });
+    } catch (err) {
+      res.status(500).json({ message: "Erreur serveur" });
+    }
+});
+
+// Route alternative pour modifier le seuil
+router.patch('/:id/seuil', verifAuth, appareilController.mettreAJourSeuil);
+
 module.exports = router;

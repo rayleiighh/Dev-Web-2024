@@ -1,22 +1,109 @@
+/* 🌟 Style général */
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🌟 Conteneur principal */
 .auth-container {
-    width: 300px;
-    margin: auto;
-    text-align: center;
-  }
-  .auth-container input {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 8px;
-  }
-  .auth-container button {
-    width: 100%;
-    padding: 10px;
-    background-color: blue;
-    color: white;
-    border: none;
-  }
-  .error {
-    color: red;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  margin: auto;
+  margin-top: 70px;
+}
+
+/* 🌟 Titre */
+h2 {
+  font-size: 26px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+/* 🌟 Champs de saisie */
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 18px 0;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  background: #f0f0f0;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Effet focus */
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* 🌟 Boutons */
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  background-color: #4696ec;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Effet hover */
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+/* 🌟 Messages d'erreur */
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* 🌟 Liens */
+a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 🌟 Flèche de retour */
+.back-arrow {
+  font-size: 28px;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #007bff;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.back-arrow:hover {
+  transform: scale(1.2);
+  color: #0056b3;
+}
