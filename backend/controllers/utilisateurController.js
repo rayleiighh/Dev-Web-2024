@@ -92,3 +92,24 @@ exports.supprimerMonCompte = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors de la suppression du compte." });
   }
 };
+
+
+// Suppression d'un utilisateur (admin seulement)
+exports.supprimerUnUtilisateur = async (req, res) => {
+  try {
+      const utilisateurId = req.params.id;
+
+      // Vérifier si l'utilisateur existe
+      const utilisateur = await Utilisateur.findById(utilisateurId);
+      if (!utilisateur) {
+          return res.status(404).json({ message: "Utilisateur non trouvé" });
+      }
+
+      // Suppression de l'utilisateur
+      await Utilisateur.findByIdAndDelete(utilisateurId);
+      return res.status(200).json({ message: "Utilisateur supprimé avec succès" });
+  } catch (error) {
+      console.error("❌ Erreur lors de la suppression de l'utilisateur :", error);
+      return res.status(500).json({ message: "Erreur interne du serveur" });
+  }
+};
