@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
-const mongoose = require('mongoose'); 
 const { sendEmail } = require('../services/notificationsService');
 
 

@@ -7,10 +7,15 @@ import io from 'socket.io-client';
 import './Dashboard.css';
 import IconButton from '../components/IconButton'; // ✅ Ajoute cette ligne
 
-function Dashboard({ user }) {
+function Dashboard({ user, setUser  }) {
+  const [utilisateur, setUtilisateur] = useState(null);
   const [derniereConso, setDerniereConso] = useState(null);
   // const [onglet, setOnglet] = useState("today");
+  const [seuils, setSeuils] = useState({});
+  const [error, setError] = useState(null);
   const socketRef = useRef(null);
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
 
   const favoris = [
     { nom: 'iPhone de Saad', couleur: 'primary' },
@@ -48,6 +53,9 @@ function Dashboard({ user }) {
 
   
 
+  const handleSeuilChange = (e, appareilId) => {
+    setSeuils({ ...seuils, [appareilId]: e.target.value });
+  };
 
   const handleUpdateSeuil = async (appareilId) => {
     const seuil = seuils[appareilId];
@@ -153,9 +161,7 @@ function Dashboard({ user }) {
     };
   }, [utilisateur?.preferences?.theme]);
 
-  const handleSeuilChange = (e, appareilId) => {
-    setSeuils({ ...seuils, [appareilId]: e.target.value });
-  };
+
 
 
 

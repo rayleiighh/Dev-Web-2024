@@ -8,7 +8,7 @@ import NotificationsPage from './pages/Notifications';
 import Preferences from './pages/Preferences';
 import Historique from './pages/Historique';
 import GestionAppareils from './pages/GestionAppareils';
-// import Navbar from './components/Navbar';
+import Navbar from './components/Navbar';
 import { io } from 'socket.io-client';
 
 const App = () => {
