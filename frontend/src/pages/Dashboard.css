@@ -1,109 +1,88 @@
-/* 🌟 Conteneur principal */
-.dashboard-container {
-  width: 90%;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  text-align: center;
+/* ========================
+   🌐 Base & Typographie
+========================= */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f8fc;
 }
 
-/* 🌟 En-tête du Dashboard */
-.dashboard-header {
+.dashboard-container {
+  padding: 2rem;
+}
+
+/* ========================
+   🧑‍💻 Utilisateur / Header
+========================= */
+.user-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  background: #ffffff;
-  color: #333;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* 🌟 Titre */
-.dashboard-header h2 {
-  margin: 0;
-  font-size: 22px;
+.user-header img {
+  border: 1px solid #dee2e6;
+}
+
+/* ========================
+   📝 Titres
+========================= */
+.app-title {
+  font-size: 24px;
   font-weight: bold;
+  color: #212529;
 }
 
-/* 🌟 Bouton de déconnexion */
-.logout-button {
-  background: white;
-  color: #007bff;
-  border: 2px solid #007bff;
-  padding: 10px 16px;
-  border-radius: 15px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  transition: 0.3s;
+.welcome-message {
+  font-size: 19.4px; /* 16 * 1.212 */
+  font-weight: 500;
+  color: #495057;
 }
 
-.logout-button svg {
-  margin-right: 5px;
+.section-title {
+  font-size: 1.618rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-.logout-button:hover {
-  background: #007bff;
+/* ========================
+   📦 Cartes & Encarts
+========================= */
+.card-box {
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ========================
+   🔘 Boutons & Badges
+========================= */
+.energy-tabs button {
+  margin-right: 0.5rem;
+}
+
+.energy-tabs button.active {
+  background-color: #0d6efd;
   color: white;
 }
 
-/* 🌟 Contenu du Dashboard */
-.dashboard-content {
-  margin-top: 20px;
+.rounded-circle {
+  width: 40px;
+  height: 40px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
 }
 
-/* 🌟 Cartes d'information */
-.info-card {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 450px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+.badge {
+  font-size: 0.65rem;
 }
 
-/* 🌟 Liste des appareils connectés */
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  background: #e9ecef;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 10px;
-  font-size: 16px;
-}
-
-/* 🌟 Bouton Supprimer le compte */
-.delete-account-button {
-  background: red;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 20px;
-  transition: all 0.3s ease-in-out;
-}
-
-.delete-account-button:hover {
-  background: darkred;
-  transform: scale(1.05);
-}
-
-/* 🌟 Style des formulaires */
-.dashboard-container input.form-control {
-  background-color: var(--bs-body-bg);
-  color: inherit;
-  border-color: #ccc;
+button img {
+  vertical-align: middle;
 }

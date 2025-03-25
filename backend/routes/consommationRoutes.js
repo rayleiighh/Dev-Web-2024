@@ -1,28 +1,24 @@
-// routes/consommationRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const consommationController = require('../controllers/consommationController');
 const { verifAuth } = require('../middleware/auth');
 
-router.use(verifAuth);
+// 🔒 Enregistrer une consommation individuelle
++ router.post('/', verifAuth, consommationController.creerConsommation);
 
-// Créer un enregistrement de consommation pour un appareil (de l'utilisateur)
-router.post('/', consommationController.creerConsommation);
+// 🔒 Enregistrer un batch de consommations
++ router.post('/batch', verifAuth, consommationController.creerBatchConsommation);
 
-// Récupérer toutes les consommations de l'utilisateur (tous appareils, ou filtrer par appareil via req.query.appareil)
-router.get('/', consommationController.getConsommations);
+// 🔒 Récupérer toutes les consommations formatées
++ router.get('/', verifAuth, consommationController.getConsommations);
 
-// Récupérer une consommation spécifique par son ID
-router.get('/:id', consommationController.getConsommationParId);
+// 🔒 Récupérer la dernière consommation
+router.get('/latest', verifAuth, consommationController.getDerniereConsommation);
 
-// Mettre à jour une consommation (ex: corriger quantite ou période)
-router.put('/:id', consommationController.updateConsommation);
+// 🔒 Récupérer une consommation par ID
++ router.get('/:id', verifAuth, consommationController.getConsommationParId);
 
-// Supprimer une consommation
-router.delete('/:id', consommationController.supprimerConsommation);
-
-// Calculer la consommation moyenne sur une période donnée pour un appareil
-router.get('/moyenne/:appareilId', consommationController.calculerMoyenneConsommation);
+// 🔒 Calculer la consommation moyenne pour un appareil
++ router.get('/moyenne/:appareilId', verifAuth, consommationController.calculerMoyenneConsommation);
 
 module.exports = router;

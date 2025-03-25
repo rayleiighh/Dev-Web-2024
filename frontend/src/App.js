@@ -6,7 +6,9 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NotificationsPage from './pages/Notifications';
 import Preferences from './pages/Preferences';
-import Navbar from './components/Navbar';
+import Historique from './pages/Historique';
+import GestionAppareils from './pages/GestionAppareils';
+// import Navbar from './components/Navbar';
 import { io } from 'socket.io-client';
 
 const App = () => {
@@ -103,6 +105,8 @@ const App = () => {
         <Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} notifications={notifications} /> : <Navigate to="/" />} />
         <Route path="/notifications" element={user ? <NotificationsPage user={user} notifications={notifications} setNotifications={setNotifications} /> : <Navigate to="/" />} />
         <Route path="/preferences" element={user ? <Preferences user={user} setUser={setUser} /> : <Navigate to="/" />} />
+        <Route path="/gestion-appareils" element={<GestionAppareils />} />
+        <Route path="/historique" element={<Historique />} />
       </Routes>
     </Router>
   );

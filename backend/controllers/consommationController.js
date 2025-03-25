@@ -1,5 +1,4 @@
-// controllers/consommationController.js
-const Utilisateur = require('../models/utilisateurModel');
+const mongoose = require('mongoose');
 const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
@@ -7,203 +6,193 @@ const mongoose = require('mongoose');
 const { sendEmail } = require('../services/notificationsService');
 
 
-// Créer un nouvel enregistrement de consommation
 exports.creerConsommation = async (req, res) => {
   try {
-    const { appareilId, valeur } = req.body;
-
-    // Validation de l'appareil
-    const appareil = await Appareil.findById(appareilId);
-    if (!appareil || appareil.utilisateur.toString() !== req.userId) {
-      return res.status(403).json({ message: "Appareil invalide ou accès refusé." });
+    const { appareil: appareilId, value } = req.body;
+    if (typeof value !== 'number') {
+      return res.status(400).json({ message: "La valeur `value` est requise et doit être un nombre." });
     }
 
-    // Création de la consommation
-    const now = new Date();
-    const consommation = await Consommation.create({
-      appareil: appareilId,
-      quantite: valeur / 1000,
-      valeur,
-      debut: now,
-      fin: new Date(now.getTime() + 3600000)
+    let appareil = null;
+    if (appareilId) {
+      if (!mongoose.Types.ObjectId.isValid(appareilId)) {
+        return res.status(400).json({ message: "ID d'appareil invalide." });
+      }
+      appareil = await Appareil.findById(appareilId);
+      if (!appareil) {
+        return res.status(404).json({ message: "Appareil spécifié introuvable." });
+      }
+      if (appareil.utilisateur.toString() !== req.userId) {
+        return res.status(403).json({ message: "Vous n'êtes pas autorisé à enregistrer une consommation pour cet appareil." });
+      }
+    }
+
+    const nouvelleConso = new Consommation({
+      appareil: appareilId || null,
+      value,
+      timestamp: new Date(),
     });
+    await nouvelleConso.save();
 
-    // Vérification du seuil et création de notification si nécessaire
-    if (valeur > appareil.seuilConso) {
-      const user = await Utilisateur.findById(appareil.utilisateur);
-      const unite = user?.preferences?.unite || 'kWh';
-      const valeurAffichee = unite === 'Wh' ? valeur * 1000 : valeur;
-      const seuilAffichee = unite === 'Wh' ? appareil.seuilConso * 1000 : appareil.seuilConso;
-      
-      const contenu = `⚠️ Alerte : ${appareil.nom} consomme ${valeurAffichee} ${unite} (seuil = ${seuilAffichee} ${unite}).`;
-
-      const notification = new Notification({
-        utilisateur: appareil.utilisateur,
-        appareil: appareil._id,
-        contenu,
-        envoyee: false
+    // Utilisation de la consommation insérée pour émettre l'événement via WebSocket
+    if (global.io) {
+      console.log("💡 Émission de l'événement 'nouvelleConsommation'");
+      global.io.emit('nouvelleConsommation', {
+        _id: nouvelleConso._id,
+        value: nouvelleConso.value,
+        timestamp: nouvelleConso.timestamp,
+        appareil: appareil ? { _id: appareil._id, nom: appareil.nom } : null,
       });
-
-      await notification.save();
-
-      // Envoi d'email si activé
-      if (user?.preferences?.emailNotifications && user.email) {
-        try {
-          await sendEmail(
-            user.email,
-            `Alerte de consommation - ${appareil.nom}`,
-            contenu
-          );
-          notification.envoyee = true;
-          await notification.save();
-          console.log(`📧 Email envoyé à ${user.email}`);
-        } catch (emailError) {
-          console.error("Erreur envoi email:", emailError);
-        }
-      }
-
-      // Notification WebSocket
-      const io = req.app.get('io');
-      if (io) io.emit("nouvelle-notification", notification);
     }
 
-    res.status(201).json({ message: "Consommation enregistrée", consommation });
+    // Notification si dépassement du seuil
+    if (appareil && appareil.seuilConso && value > appareil.seuilConso) {
+      const contenuNotif = `Consommation élevée: ${value} A (seuil: ${appareil.seuilConso}) pour "${appareil.nom}"`;
+      const notif = new Notification({
+        utilisateur: req.userId,
+        appareil: appareilId,
+        contenu: contenuNotif,
+        envoyee: false,
+      });
+      await notif.save();
+    }
+
+    res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
   } catch (err) {
-    console.error("Erreur:", err);
-    res.status(500).json({ message: "Erreur serveur" });
+    console.error("❌ Erreur création consommation:", err);
+    res.status(500).json({ message: "Erreur serveur lors de la création de la consommation." });
   }
 };
 
-// Obtenir les consommations (tous appareils de l'utilisateur, ou filtrées par appareil)
-exports.getConsommations = async (req, res) => {
+exports.creerBatchConsommation = async (req, res) => {
   try {
-    const appareilFiltre = req.query.appareil;
-    let consommations;
-    if (appareilFiltre) {
-      // Vérifier que l'appareil en question appartient bien au user
-      const app = await Appareil.findById(appareilFiltre);
-      if (!app || app.utilisateur.toString() !== req.userId) {
-        return res.status(403).json({ message: "Accès refusé ou appareil invalide." });
-      }
-      // Filtrer par cet appareil
-      consommations = await Consommation.find({ appareil: appareilFiltre });
-    } else {
-      // Récupérer tous les appareils de l'utilisateur, puis leurs consommations
-      const appareilsUser = await Appareil.find({ utilisateur: req.userId }).select('_id');
-      const appareilIds = appareilsUser.map(a => a._id);
-      consommations = await Consommation.find({ appareil: { $in: appareilIds } });
+    const { measurements } = req.body;
+    if (!Array.isArray(measurements) || measurements.length === 0) {
+      return res.status(400).json({ message: "La liste des mesures est requise et ne doit pas être vide." });
     }
-    res.status(200).json(consommations);
+
+    const createdMeasurements = [];
+    for (const measurement of measurements) {
+      if (typeof measurement.value !== 'number') {
+        return res.status(400).json({ message: "Chaque mesure doit contenir une propriété 'value' numérique." });
+      }
+
+      const nouvelleConso = new Consommation({
+        value: measurement.value,
+        timestamp: measurement.timestamp ? new Date(measurement.timestamp * 1000) : new Date()
+      });
+      await nouvelleConso.save();
+      createdMeasurements.push(nouvelleConso);
+
+      // Émission immédiate via WebSocket pour chaque mesure insérée
+      if (global.io) {
+        global.io.emit('nouvelleConsommation', {
+          _id: nouvelleConso._id,
+          value: nouvelleConso.value,
+          timestamp: nouvelleConso.timestamp
+        });
+      }
+    }
+
+    res.status(201).json({ message: "Mesures enregistrées", measurements: createdMeasurements });
   } catch (err) {
-    console.error("Erreur récupération consommations:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la récupération des consommations." });
+    console.error("❌ Erreur lors de la création du batch de consommations:", err);
+    res.status(500).json({ message: "Erreur serveur lors de la création des mesures." });
   }
 };
 
-// Obtenir une consommation par son ID
 exports.getConsommationParId = async (req, res) => {
   try {
-    const consoId = req.params.id;
-    const conso = await Consommation.findById(consoId).populate('appareil');
-    if (!conso) {
-      return res.status(404).json({ message: "Enregistrement de consommation non trouvé." });
+    const consommation = await Consommation.findById(req.params.id).populate('appareil');
+    if (!consommation) {
+      return res.status(404).json({ message: "Consommation introuvable." });
     }
-    // Vérifier que la consommation appartient à un appareil de l'utilisateur
-    if (conso.appareil.utilisateur.toString() !== req.userId) {
-      return res.status(403).json({ message: "Accès non autorisé à cette ressource." });
-    }
-    res.status(200).json(conso);
+    res.status(200).json(consommation);
   } catch (err) {
-    console.error("Erreur récupération consommation:", err);
+    console.error("❌ Erreur récupération consommation par ID:", err);
     res.status(500).json({ message: "Erreur serveur lors de la récupération de la consommation." });
   }
 };
 
-// Mettre à jour un enregistrement de consommation
-exports.updateConsommation = async (req, res) => {
+exports.getConsommations = async (req, res) => {
   try {
-    const consoId = req.params.id;
-    const conso = await Consommation.findById(consoId).populate('appareil');
-    if (!conso) {
-      return res.status(404).json({ message: "Consommation non trouvée." });
-    }
-    // Vérifier propriétaire via l'appareil lié
-    if (conso.appareil.utilisateur.toString() !== req.userId) {
-      return res.status(403).json({ message: "Vous n'avez pas accès à cette consommation." });
-    }
-    // Mettre à jour les champs
-    const { debut, fin, quantite } = req.body;
-    if (debut !== undefined) conso.debut = new Date(debut);
-    if (fin !== undefined) conso.fin = new Date(fin);
-    if (quantite !== undefined) conso.quantite = quantite;
-    const consoMAJ = await conso.save();
-    res.status(200).json({ message: "Consommation mise à jour", consommation: consoMAJ });
+    const consommations = await Consommation.find().sort({ timestamp: -1 }).limit(50);
+    // Formatage côté serveur : conversion de la date en chaîne lisible
+    const dataFormatee = consommations.map(c => {
+      const dateObj = new Date(c.timestamp);
+      const dateLisible = dateObj.toLocaleString('fr-FR', {
+        timeZone: 'UTC',
+        dateStyle: 'short',
+        timeStyle: 'medium'
+      });
+      return { ...c._doc, timestamp: dateLisible };
+    });
+    res.status(200).json(dataFormatee);
   } catch (err) {
-    console.error("Erreur mise à jour consommation:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la mise à jour de la consommation." });
+    console.error("❌ Erreur récupération consommations:", err);
+    res.status(500).json({ message: "Erreur serveur lors de la récupération." });
   }
 };
 
-// Supprimer un enregistrement de consommation
-exports.supprimerConsommation = async (req, res) => {
+exports.getDerniereConsommation = async (req, res) => {
   try {
-    const consoId = req.params.id;
-    // On vérifie d'abord si la consommation existe et appartient bien au user
-    const conso = await Consommation.findById(consoId).populate('appareil');
-    if (!conso) {
-      return res.status(404).json({ message: "Consommation non trouvée." });
+    const derniereConso = await Consommation.findOne().sort({ timestamp: -1 });
+    if (!derniereConso) {
+      return res.status(404).json({ message: "Aucune consommation trouvée." });
     }
-    if (conso.appareil.utilisateur.toString() !== req.userId) {
-      return res.status(403).json({ message: "Vous ne pouvez pas supprimer cette consommation." });
-    }
-    await Consommation.findByIdAndDelete(consoId);
-    res.status(200).json({ message: "Consommation supprimée." });
+    res.status(200).json(derniereConso);
   } catch (err) {
-    console.error("Erreur suppression consommation:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la suppression de la consommation." });
+    console.error("❌ Erreur récupération dernière consommation:", err);
+    res.status(500).json({ message: "Erreur serveur lors de la récupération de la dernière consommation." });
   }
 };
 
-// Calculer la consommation moyenne sur une période pour un appareil donné
 exports.calculerMoyenneConsommation = async (req, res) => {
   try {
     const appareilId = req.params.appareilId;
-    const { debut, fin } = req.query; // on attend des dates en paramètre de requête
-    if (!debut || !fin) {
-      return res.status(400).json({ message: "Veuillez fournir une date de debut et de fin (paramètres ?debut=...&fin=...)."});
-    }
-    // Vérifier que l'appareil appartient bien à l'utilisateur
-    const appareil = await Appareil.findById(appareilId);
-    console.log("🛠️ Appareil récupéré :", appareil);
+    const { debut, fin } = req.query;
 
-    if (!appareil) {
-      return res.status(404).json({ message: "Appareil non trouvé." });
+    if (!appareilId || !debut || !fin) {
+      return res.status(400).json({ message: "Veuillez fournir un ID d'appareil et une plage de dates (debut, fin)" });
     }
-    if (appareil.utilisateur.toString() !== req.userId) {
-      return res.status(403).json({ message: "Cet appareil n'appartient pas à l'utilisateur connecté." });
+    if (!mongoose.Types.ObjectId.isValid(appareilId)) {
+      return res.status(400).json({ message: "ID d'appareil invalide." });
     }
+
     const dateDebut = new Date(debut);
     const dateFin = new Date(fin);
-    // Récupérer toutes les consommations de cet appareil dans l'intervalle [debut, fin]
-    const consommations = await Consommation.find({ 
-      appareil: appareilId,
-      debut: { $gte: dateDebut },
-      fin:   { $lte: dateFin }
-    });
-    if (consommations.length === 0) {
-      return res.status(200).json({ message: "Aucune consommation enregistrée dans cette période.", moyenne: 0 });
+    if (isNaN(dateDebut.getTime())) {
+      return res.status(400).json({ message: "Date de début invalide." });
     }
-    // Calcul de la moyenne
-    const total = consommations.reduce((sum, c) => sum + c.quantite, 0);
+    if (isNaN(dateFin.getTime())) {
+      return res.status(400).json({ message: "Date de fin invalide." });
+    }
+
+    const consommations = await Consommation.find({
+      appareil: appareilId,
+      timestamp: { $gte: dateDebut, $lte: dateFin }
+    });
+
+    if (consommations.length === 0) {
+      return res.status(200).json({
+        message: "Aucune consommation trouvée sur cette période.",
+        moyenne: 0,
+        unite: "A",
+        nombreEnregistrements: 0
+      });
+    }
+
+    const total = consommations.reduce((sum, c) => sum + c.value, 0);
     const moyenne = total / consommations.length;
-    res.status(200).json({ 
-      message: `Consommation moyenne de l'appareil ${appareil.nom} du ${debut} au ${fin}`, 
-      moyenne: moyenne,
-      unite: "kWh",
+
+    res.status(200).json({
+      message: `Consommation moyenne entre ${debut} et ${fin}`,
+      moyenne,
+      unite: "A",
       nombreEnregistrements: consommations.length
     });
   } catch (err) {
-    console.error("Erreur calcul moyenne consommation:", err);
+    console.error("❌ Erreur calcul moyenne consommation :", err);
     res.status(500).json({ message: "Erreur serveur lors du calcul de la moyenne." });
   }
 };
