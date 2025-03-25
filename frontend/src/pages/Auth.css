@@ -1,93 +1,11 @@
 /* 🌟 Style général */
 body {
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #eef2f3, #dfe9f3); /* Fond plus doux */
+  background: linear-gradient(135deg, #eef2f3, #dfe9f3);
   text-align: center;
   margin: 0;
   padding: 0;
 }
-
-/* 🌟 Barre de navigation */
-/* 🌟 Barre de navigation améliorée */
-
-
-/* 🌟 Boutons Connexion & Inscription */
-.nav-buttons {
-  display: flex;
-  gap: 15px; /* Espacement entre les boutons */
-  justify-content: center;
-  align-items: center;
-}
-
-/* 🌟 Style de base des boutons */
-.nav-buttons button {
-  background: transparent;
-  color: #007bff;
-  border: 2px solid #007bff;
-  padding: 12px 24px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  transition: all 0.3s ease-in-out;
-  text-transform: capitalize;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* 🌟 Effet au survol */
-.nav-buttons button:hover {
-  background: #007bff;
-  color: white;
-  transform: scale(1.05);
-}
-
-/* 🌟 Effet clic */
-.nav-buttons button:active {
-  transform: scale(0.98);
-  background: #0056b3;
-}
-
-/* 🌟 Bouton actif (quand la page est sélectionnée) */
-
-/* 🌟 Style des liens de navigation (Connexion & Inscription) */
-.navbar-nav .nav-link {
-  display: inline-block;
-  background: #007bff; /* Bleu plus doux */
-  color: white !important;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: bold;
-  text-decoration: none;
-  border: 2px solid transparent;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* 🌟 Effet hover */
-.navbar-nav .nav-link:hover {
-  background: white;
-  color: #007bff !important;
-  border: 2px solid #007bff;
-  transform: scale(1.05);
-}
-
-/* 🌟 Effet au clic */
-.navbar-nav .nav-link:active {
-  transform: scale(0.98);
-  background: #0056b3;
-  color: white !important;
-}
-
-/* 🌟 Bouton actif (quand la page est sélectionnée) */
-.navbar-nav .nav-link.active {
-  background: white;
-  color: #007bff !important;
-  border: 2px solid #007bff;
-  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.2);
-}
-
 
 /* 🌟 Conteneur principal */
 .auth-container {

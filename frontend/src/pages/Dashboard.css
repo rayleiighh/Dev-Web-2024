@@ -7,7 +7,7 @@
   text-align: center;
 }
 
-/* 🌟 En-tête */
+/* 🌟 En-tête du Dashboard */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -81,6 +81,8 @@ li {
   border-radius: 10px;
   font-size: 16px;
 }
+
+/* 🌟 Bouton Supprimer le compte */
 .delete-account-button {
   background: red;
   color: white;
@@ -97,4 +99,11 @@ li {
 .delete-account-button:hover {
   background: darkred;
   transform: scale(1.05);
+}
+
+/* 🌟 Style des formulaires */
+.dashboard-container input.form-control {
+  background-color: var(--bs-body-bg);
+  color: inherit;
+  border-color: #ccc;
 }
