@@ -57,6 +57,15 @@ async function register(req, res) {
     const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
     await nouvelUtilisateur.save();
 
+    const prisesParDefaut = [
+      { nom: "Prise 1", gpioIndex: 0, utilisateur: nouvelUtilisateur._id },
+      { nom: "Prise 2", gpioIndex: 1, utilisateur: nouvelUtilisateur._id },
+      { nom: "Prise 3", gpioIndex: 2, utilisateur: nouvelUtilisateur._id },
+      { nom: "Prise 4", gpioIndex: 3, utilisateur: nouvelUtilisateur._id },
+    ];
+    await require('../models/appareilModel').insertMany(prisesParDefaut);
+    console.log("✅ Prises créées automatiquement pour :", nouvelUtilisateur.email);
+
     // Envoi d'un email de confirmation
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,

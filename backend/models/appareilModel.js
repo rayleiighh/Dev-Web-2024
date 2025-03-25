@@ -23,8 +23,7 @@ const appareilSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0,
-    max: 3,
-    unique: true // 🔒 Empêche les doublons (1 gpio = 1 appareil)
+    max: 3
   },
   modeNuit: {
     actif: {
