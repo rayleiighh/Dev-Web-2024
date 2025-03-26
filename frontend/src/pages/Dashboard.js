@@ -76,21 +76,6 @@ function Dashboard({ user, setUser  }) {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmation = window.confirm("Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible !");
-    if (!confirmation) return;
-    try {
-      await axios.delete('http://localhost:5000/api/utilisateurs/supprimer-compte', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      localStorage.removeItem('token');
-      setUser(null);
-      navigate('/');
-    } catch (error) {
-      console.error("Erreur lors de la suppression du compte :", error);
-      alert("Une erreur est survenue lors de la suppression du compte.");
-    }
-  };
 
 
   const unite = utilisateur?.preferences?.unite || 'kWh';
@@ -192,14 +177,14 @@ function Dashboard({ user, setUser  }) {
           <IconButton
             icon="icons8-option-100.png" // Remplacez par l'icône ⚙️
             label=""
-            onClick={() => {}}
+            onClick={() => navigate('/parametre')}
             className="rounded-circle"
           />
           {/* Bouton Notification (🔔) */}
           <IconButton
             icon="icons8-notification.png" // Remplacez par l'icône 🔔
             label=""
-            onClick={() => {}}
+            onClick={() => navigate('/notifications')}
             className="rounded-circle"
           />
         </div>

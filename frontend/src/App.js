@@ -10,6 +10,7 @@ import Historique from './pages/Historique';
 import GestionAppareils from './pages/GestionAppareils';
 import Navbar from './components/Navbar';
 import { io } from 'socket.io-client';
+import Parametre from './pages/Parametre';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -98,7 +99,7 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} />
+   {/* <Navbar user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} /> */}
       <Routes>
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
@@ -107,6 +108,7 @@ const App = () => {
         <Route path="/preferences" element={user ? <Preferences user={user} setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/gestion-appareils" element={<GestionAppareils />} />
         <Route path="/historique" element={<Historique />} />
+        <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );

@@ -2,12 +2,18 @@ import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './GestionAppareils.css';
 import { io } from "socket.io-client";
+import { useNavigate } from 'react-router-dom'; 
+
 const socket = io("http://localhost:5000");
+
+
+
 
 function GestionAppareils() {
   const [prises, setPrises] = useState([]);
   const [modeNuit, setModeNuit] = useState(false);
 
+  const navigate = useNavigate(); 
   const fetchAppareils = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -114,9 +120,10 @@ function GestionAppareils() {
   return (
     <div className="container-gestion">
       <div className="d-flex align-items-center justify-content-between px-3 py-2">
-        <button className="btn btn-outline-dark rounded-circle">
-          <i className="bi bi-arrow-left"></i>
-        </button>
+      <button className="btn btn-outline-dark rounded-circle" onClick={() => navigate(-1)}>
+                  <i className="bi bi-arrow-left"></i>
+      </button>
+
         <h5 className="mb-0">Gestion des appareils</h5>
         <div className="d-flex flex-column align-items-center gap-2">
           <button className="btn btn-light rounded-circle text-primary border border-primary">
