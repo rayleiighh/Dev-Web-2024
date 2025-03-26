@@ -47,21 +47,21 @@ function Parametre({ user, setUser }) {
           className="btn btn-primary w-50"
           onClick={() => navigate('/preferences')}
         >
-          🎨 Gérer mes préférences
+         Gérer mes préférences
         </button>
 
         <button
           className="btn btn-outline-danger w-50"
           onClick={handleLogout}
         >
-          🔒 Se déconnecter
+         Se déconnecter
         </button>
 
         <button
           className="btn btn-danger w-50"
           onClick={handleDeleteAccount}
         >
-          🗑️ Supprimer mon compte
+          Supprimer mon compte
         </button>
       </div>
     </div>
