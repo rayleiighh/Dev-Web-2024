@@ -88,3 +88,31 @@ exports.createAppareil = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur." });
   }
 };
+
+exports.updateModeNuit = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { actif, heureDebut, heureFin } = req.body;
+
+    const appareil = await Appareil.findOneAndUpdate(
+      { _id: id, utilisateur: req.userId },
+      {
+        modeNuit: {
+          actif,
+          heureDebut,
+          heureFin
+        }
+      },
+      { new: true }
+    );
+
+    if (!appareil) {
+      return res.status(404).json({ message: "Appareil introuvable." });
+    }
+
+    res.status(200).json({ message: "Mode nuit mis à jour", appareil });
+  } catch (error) {
+    console.error("❌ Erreur updateModeNuit :", error);
+    res.status(500).json({ message: "Erreur serveur lors de la mise à jour du mode nuit." });
+  }
+};

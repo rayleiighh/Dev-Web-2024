@@ -96,3 +96,46 @@ button[title="Désactiver"]:hover {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+
+/* Overlay sombre */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Fenêtre modale */
+.modal-night {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+}
+
+
+.prise-nom span {
+  font-size: 1.1rem;
+}
+
+.icone-nuit {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 16px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
