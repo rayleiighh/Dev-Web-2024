@@ -7,6 +7,9 @@ const Appareil = require('../models/appareilModel');
 const Consommation = require('../models/consommationModel');
 const Notification = require('../models/notificationModel');
 const nodemailer = require('nodemailer');
+
+
+
 require('dotenv').config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -172,6 +175,38 @@ async function getMonProfil(req, res) {
   }
 }
 
+async function mettreAJourProfil(req, res) {
+  try {
+    const utilisateurId = req.userId;
+    const { nom, email, ancienMotDePasse, nouveauMotDePasse } = req.body;
+
+    const utilisateur = await Utilisateur.findById(utilisateurId);
+    if (!utilisateur) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+
+    if (nom) utilisateur.nom = nom;
+    if (email) utilisateur.email = email;
+
+    if (ancienMotDePasse && nouveauMotDePasse) {
+      const motDePasseValide = await bcrypt.compare(ancienMotDePasse, utilisateur.motDePasse);
+      if (!motDePasseValide) {
+        return res.status(400).json({ message: "Ancien mot de passe incorrect." });
+      }
+      const sel = await bcrypt.genSalt(10);
+      utilisateur.motDePasse = await bcrypt.hash(nouveauMotDePasse, sel);
+    }
+
+    await utilisateur.save();
+    res.status(200).json({ message: "Profil mis à jour avec succès." });
+
+  } catch (error) {
+    console.error("Erreur mise à jour profil:", error);
+    res.status(500).json({ message: "Erreur serveur lors de la mise à jour du profil." });
+  }
+}
+
+
 // Mettre à jour le profil utilisateur
 async function updateMonProfil(req, res) {
   try {
@@ -187,4 +222,4 @@ async function updateMonProfil(req, res) {
   }
 }
 
-module.exports = { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences };
+module.exports = { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil };

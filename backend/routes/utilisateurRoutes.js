@@ -4,6 +4,12 @@ const { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, upda
 const { verifAuth } = require('../middleware/auth');
 const { body } = require('express-validator');
 
+
+const { mettreAJourProfil } = require('../controllers/utilisateurController');
+
+
+
+
 if (!register) {
     console.error("❌ ERREUR: La fonction register n'est pas définie dans utilisateurController.js");
 }
@@ -33,6 +39,9 @@ router.post('/login', login);
 router.get('/me', verifAuth, getMonProfil);  
 router.put('/me', verifAuth, updateMonProfil); 
 router.delete('/supprimer-compte', verifAuth, supprimerMonCompte);
+router.patch('/profil', verifAuth, mettreAJourProfil);
+
+
 
 // Mise à jour des préférences utilisateur
 router.patch('/preferences', verifAuth, updatePreferences);

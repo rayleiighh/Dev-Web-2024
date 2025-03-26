@@ -11,6 +11,8 @@ import GestionAppareils from './pages/GestionAppareils';
 import Navbar from './components/Navbar';
 import { io } from 'socket.io-client';
 import Parametre from './pages/Parametre';
+import Profil from './pages/Profil';
+
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -109,6 +111,8 @@ const App = () => {
         <Route path="/gestion-appareils" element={<GestionAppareils />} />
         <Route path="/historique" element={<Historique />} />
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
+        <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
+
       </Routes>
     </Router>
   );

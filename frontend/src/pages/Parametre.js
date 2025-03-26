@@ -43,6 +43,13 @@ function Parametre({ user, setUser }) {
       </div>
 
       <div className="d-flex flex-column align-items-center gap-3 mt-4">
+      <button 
+          className="btn btn-secondary w-50" 
+          onClick={() => navigate('/profil')}
+        >
+         Modifier mon profil
+        </button>
+
         <button
           className="btn btn-primary w-50"
           onClick={() => navigate('/preferences')}
