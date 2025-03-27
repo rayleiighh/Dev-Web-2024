@@ -14,7 +14,8 @@ const utilisateurSchema = new mongoose.Schema({
     unite: { type: String, enum: ['kWh', 'Wh'], default: 'kWh' },
     theme: { type: String, enum: ['clair', 'sombre'], default: 'clair' },
     emailNotifications: { type: Boolean, default: true }
-  }
+  },
+  photoProfil: { type: String, default: '' } // ← 🆕 chemin de l'image
 }, { timestamps: true });
 
 // Avant de sauvegarder, hacher le mot de passe si modifié

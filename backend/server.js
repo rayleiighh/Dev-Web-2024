@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const path = require('path');
+
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -73,6 +75,8 @@ app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use('/api/consommations', consommationRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ❌ Gestion des erreurs globales
 app.use((err, req, res, next) => {

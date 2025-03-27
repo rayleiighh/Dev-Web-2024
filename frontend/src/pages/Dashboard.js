@@ -158,9 +158,30 @@ function Dashboard({ user, setUser  }) {
         {/* Partie gauche : photo de profil + titre + message de bienvenue */}
         <div className="d-flex align-items-start gap-3">
           {/* Emplacement pour la photo de profil */}
-          <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}>
-            {/* La photo de profil sera ajoutée ici plus tard */}
-          </div>
+          <div
+  className="profile-picture-placeholder rounded-circle bg-light"
+  style={{
+    width: 60,
+    height: 60,
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }}
+>
+{utilisateur?.photoProfil ? (
+  <img
+    src={`http://localhost:5000/${utilisateur.photoProfil}`}
+    alt="Profil"
+    className="rounded-circle"
+    style={{ width: 60, height: 60, objectFit: 'cover' }}
+  />
+) : (
+  <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}></div>
+)}
+
+</div>
+
 
           {/* Titre et message de bienvenue */}
           <div>

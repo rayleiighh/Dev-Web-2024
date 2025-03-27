@@ -3,8 +3,8 @@ const router = express.Router();
 const { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences } = require('../controllers/utilisateurController');
 const { verifAuth } = require('../middleware/auth');
 const { body } = require('express-validator');
-
-
+const upload = require('../middleware/upload');  // Importer le middleware
+const { updateProfilePicture } = require('../controllers/utilisateurController');
 const { mettreAJourProfil } = require('../controllers/utilisateurController');
 
 
@@ -40,7 +40,7 @@ router.get('/me', verifAuth, getMonProfil);
 router.put('/me', verifAuth, updateMonProfil); 
 router.delete('/supprimer-compte', verifAuth, supprimerMonCompte);
 router.patch('/profil', verifAuth, mettreAJourProfil);
-
+router.patch('/profil/photo', verifAuth, upload.single('photo'), updateProfilePicture);
 
 
 // Mise à jour des préférences utilisateur

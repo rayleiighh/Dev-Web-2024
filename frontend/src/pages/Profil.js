@@ -11,6 +11,7 @@ const Profil = ({ user, setUser }) => {
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState('');
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
+  const [photo, setPhoto] = useState(null); // 🆕 Ajout pour la photo
 
   useEffect(() => {
     if (user) {
@@ -19,27 +20,49 @@ const Profil = ({ user, setUser }) => {
     }
   }, [user]);
 
+  const handleFileChange = (e) => {
+    setPhoto(e.target.files[0]); // 🆕 stocke la photo sélectionnée
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
 
     try {
-      const res = await axios.put('http://localhost:5000/api/utilisateurs/me', {
-        nom,
-        email,
-        ancienMotDePasse,
-        nouveauMotDePasse
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
+      // 1. Mise à jour des infos (nom, email, mdp)
+      await axios.put(
+        'http://localhost:5000/api/utilisateurs/me',
+        { nom, email, ancienMotDePasse, nouveauMotDePasse },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // 2. Envoi de la photo si elle existe
+      if (photo) {
+        const formData = new FormData();
+        formData.append('photo', photo);
+
+        await axios.patch('http://localhost:5000/api/utilisateurs/profil/photo', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
+      // 3. Recharge les infos utilisateur à jour
+      const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      setUser(res.data);
 
       setMessage("✅ Profil mis à jour avec succès");
       setErreur('');
-      setUser(res.data.utilisateur);
       setAncienMotDePasse('');
       setNouveauMotDePasse('');
+      setPhoto(null);
       navigate('/dashboard');
     } catch (error) {
+      console.error(error);
       setErreur(error.response?.data?.message || "Erreur lors de la mise à jour du profil");
       setMessage('');
     }
@@ -47,7 +70,6 @@ const Profil = ({ user, setUser }) => {
 
   return (
     <div className="container mt-4">
-      {/* Flèche de retour */}
       <div className="d-flex align-items-center mb-3">
         <button onClick={() => navigate(-1)} className="btn btn-outline-dark rounded-circle me-2">
           <i className="bi bi-arrow-left"></i>
@@ -75,6 +97,10 @@ const Profil = ({ user, setUser }) => {
         <div className="form-group">
           <label>Nouveau mot de passe</label>
           <input type="password" className="form-control" value={nouveauMotDePasse} onChange={(e) => setNouveauMotDePasse(e.target.value)} />
+        </div>
+        <div className="form-group mt-3">
+          <label>Photo de profil</label>
+          <input type="file" className="form-control" onChange={handleFileChange} />
         </div>
         <button type="submit" className="btn btn-primary mt-3">Enregistrer</button>
       </form>
