@@ -44,6 +44,8 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+const multiprisesRoutes = require("./routes/multiprisesRoutes");
+
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan('dev'));
@@ -69,6 +71,7 @@ io.on('connection', (socket) => {
 connectDB();
 
 // 📦 Routes API
+app.use("/api/multiprises", multiprisesRoutes);
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use('/api/consommations', consommationRoutes);
