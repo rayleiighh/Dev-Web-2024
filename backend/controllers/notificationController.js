@@ -9,17 +9,17 @@ const { sendEmail, sendSMS } = require('../services/notificationsService');
 // nouvelle méthode dans notificationController.js
 exports.creerNotification = async (req, res) => {
   try {
-    const { contenu, appareil } = req.body;
+    const { contenu, multiprise } = req.body;
     
     // Validation
-    if (!contenu || !appareil) {
-      return res.status(400).json({ message: "Contenu et appareil requis" });
+    if (!contenu || !multiprise) {
+      return res.status(400).json({ message: "Contenu et multiprise requis" });
     }
 
     const notification = await Notification.create({
       contenu,
       utilisateur: req.userId,
-      appareil
+      multiprise
     });
 
     // Envoi email
@@ -53,7 +53,7 @@ exports.getNotifications = async (req, res) => {
       criteria.envoyee = filtreEnvoye === 'true';
     }
     
-    const notifications = await Notification.find(criteria).populate('appareil').sort({ createdAt: -1 });
+    const notifications = await Notification.find(criteria).populate('multiprise').sort({ createdAt: -1 });
 
     if (!notifications || notifications.length === 0) {
       return res.status(404).json({ message: "Aucune notification trouvée." });
@@ -70,7 +70,7 @@ exports.getNotifications = async (req, res) => {
 exports.envoyerNotification = async (req, res) => {
   try {
     const notificationId = req.params.id;
-    const notification = await Notification.findById(notificationId).populate('utilisateur').populate('appareil');
+    const notification = await Notification.findById(notificationId).populate('utilisateur').populate('multiprise');
     if (!notification) {
       return res.status(404).json({ message: "Notification non trouvée." });
     }

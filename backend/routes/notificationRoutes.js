@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
     
     try {
       const notifications = await Notification.find({ utilisateur: req.userId })
-        .populate('appareil')
+        .populate('multiprise')
         .sort({ createdAt: -1 });
 
       console.log("🔍 Notifications trouvées:", notifications);
@@ -43,13 +43,13 @@ router.delete('/:id', notificationController.supprimerNotification);
 
 router.post('/', async (req, res) => {
   try {
-    const { contenu, appareil } = req.body;
+    const { contenu, multiprise } = req.body;
     
     // Création + envoi email immédiat
     const notification = await Notification.create({
       contenu,
       utilisateur: req.userId,
-      appareil
+      multiprise
     });
 
     // Récupérer l'utilisateur avec ses préférences

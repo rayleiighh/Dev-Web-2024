@@ -42,19 +42,32 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
       {notifications.length === 0 ? (
         <p>Aucune notification.</p>
       ) : (
-        <ul className="list-group">
-          {notifications.map((notif, index) => (
-            <li
-              key={`${notif._id}-${index}`}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              {notif.contenu}
-              <button
-                className="btn btn-sm btn-danger"
-                onClick={() => supprimerNotification(notif._id)}
-              >
-                Supprimer
-              </button>
+        <ul className="notif-list">
+          {notifications.map((notif) => (
+            <li key={notif._id} className="notif-card-modern">
+              <div className="notif-header">
+                <div className="notif-icon-modern">
+                  <i className={`bi ${
+                    notif.contenu.toLowerCase().includes("mode nuit") ? "bi-moon-fill" : "bi-exclamation-triangle-fill"
+                  }`}></i>
+                </div>
+               <div className="notif-main">
+                  <div className="notif-title-modern">
+                   {notif.contenu.toLowerCase().includes("mode nuit") ? "Mode nuit activé" : "Alerte de consommation"}
+                 </div>
+                 <div className="notif-detail-modern">{notif.contenu}</div>
+               </div>
+              </div>
+
+             <div className="notif-footer">
+               <span className="notif-date-modern">{new Date(notif.createdAt).toLocaleString()}</span>
+               <button
+                 className="btn btn-sm btn-primary"
+                 onClick={() => supprimerNotification(notif._id)}
+               >
+                  Supprimer
+               </button>
+              </div>
             </li>
           ))}
         </ul>

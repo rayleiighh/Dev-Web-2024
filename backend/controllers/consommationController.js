@@ -2,76 +2,77 @@ const mongoose = require('mongoose');
 const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
+const Multiprise = require("../models/multipriseModel");
 const { sendEmail } = require('../services/notificationsService');
 
 
 exports.creerConsommation = async (req, res) => {
   try {
-    const { appareil: appareilId, value } = req.body;
-    if (typeof value !== 'number') {
-      return res.status(400).json({ message: "La valeur `value` est requise et doit être un nombre." });
+    const { identifiantUnique, value } = req.body;
+
+    if (!identifiantUnique || typeof value !== "number") {
+      return res.status(400).json({ message: "identifiantUnique et value sont requis." });
     }
 
-    let appareil = null;
-    if (appareilId) {
-      if (!mongoose.Types.ObjectId.isValid(appareilId)) {
-        return res.status(400).json({ message: "ID d'appareil invalide." });
-      }
-      appareil = await Appareil.findById(appareilId);
-      if (!appareil) {
-        return res.status(404).json({ message: "Appareil spécifié introuvable." });
-      }
-      if (appareil.utilisateur.toString() !== req.userId) {
-        return res.status(403).json({ message: "Vous n'êtes pas autorisé à enregistrer une consommation pour cet appareil." });
-      }
+    // 🔍 Chercher la multiprise via son identifiant unique
+    const multiprise = await Multiprise.findOne({ identifiantUnique });
+
+    if (!multiprise) {
+      return res.status(404).json({ message: "Multiprise introuvable." });
     }
 
+    if (multiprise.utilisateur.toString() !== req.userId) {
+      return res.status(403).json({ message: "Non autorisé à enregistrer pour cette multiprise." });
+    }
+
+    // ⚡ Enregistrer la consommation
     const nouvelleConso = new Consommation({
-      appareil: appareilId,
+      multiprise: new mongoose.Types.ObjectId(multiprise._id),
       value,
       timestamp: new Date(),
     });
+
     await nouvelleConso.save();
 
-    // Utilisation de la consommation insérée pour émettre l'événement via WebSocket
+    // 📡 Envoyer en WebSocket (si actif)
     if (global.io) {
-      console.log("💡 Émission de l'événement 'nouvelleConsommation'");
-      console.log("✅ Appareil ID validé :", appareilId);
-      console.log("✅ Appareil trouvé :", appareil ? appareil.nom : null);
-      global.io.emit('nouvelleConsommation', {
+      global.io.to(req.userId).emit("nouvelleConsommation", {
         _id: nouvelleConso._id,
         value: nouvelleConso.value,
         timestamp: nouvelleConso.timestamp,
-        appareil: appareil ? { _id: appareil._id, nom: appareil.nom } : null,
+        multiprise: {
+          _id: multiprise._id,
+          nom: multiprise.nom,
+          identifiantUnique: multiprise.identifiantUnique,
+        },
       });
     }
 
-    // Notification si dépassement du seuil
-    if (appareil && appareil.seuilConso && value > appareil.seuilConso) {
-      const contenuNotif = `Consommation élevée: ${value} A (seuil: ${appareil.seuilConso}) pour "${appareil.nom}"`;
+    // 🚨 Notification + e-mail si seuil dépassé
+    const SEUIL_ALERTE = 10; // 🔧 à adapter si tu veux un seuil dynamique par multiprise plus tard
+    if (value > SEUIL_ALERTE) {
+      const contenuNotif = `Consommation élevée: ${value} A détectée sur "${multiprise.nom}"`;
+
       const notif = new Notification({
         utilisateur: new mongoose.Types.ObjectId(req.userId),
-        appareil: new mongoose.Types.ObjectId(appareilId),
+        multiprise: new mongoose.Types.ObjectId(multiprise._id),
         contenu: contenuNotif,
         envoyee: false,
       });
+
       await notif.save();
-    
-      // 📩 Envoi d'un email si l'utilisateur a activé les notifications email
+
+      // 📬 Envoi email si activé
       const Utilisateur = require("../models/utilisateurModel");
       const utilisateur = await Utilisateur.findById(req.userId);
-    
+
       if (utilisateur?.preferences?.emailNotifications && utilisateur.email) {
         try {
-          await sendEmail(
-            utilisateur.email,
-            "🔔 Alerte de consommation",
-            contenuNotif
-          );
+          await sendEmail(utilisateur.email, "🔔 Alerte de consommation", contenuNotif);
           notif.envoyee = true;
-          await notif.save(); // mise à jour après envoi
-        } catch (emailErr) {
-          console.error("Erreur lors de l'envoi de l'email :", emailErr);
+          await notif.save();
+        } catch (err) {
+          console.error("Erreur lors de l'envoi de l'email :", err);
         }
       }
     }

@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const consommationSchema = new mongoose.Schema({
-  appareil: {
+  multiprise: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Appareil',
-    default: null,
+    ref: 'Multiprise',
+    required: true,
   },
   value: {
     type: Number,
