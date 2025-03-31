@@ -27,7 +27,7 @@ exports.creerConsommation = async (req, res) => {
     }
 
     const nouvelleConso = new Consommation({
-      appareil: appareilId || null,
+      appareil: appareilId,
       value,
       timestamp: new Date(),
     });
@@ -36,6 +36,8 @@ exports.creerConsommation = async (req, res) => {
     // Utilisation de la consommation insérée pour émettre l'événement via WebSocket
     if (global.io) {
       console.log("💡 Émission de l'événement 'nouvelleConsommation'");
+      console.log("✅ Appareil ID validé :", appareilId);
+      console.log("✅ Appareil trouvé :", appareil ? appareil.nom : null);
       global.io.emit('nouvelleConsommation', {
         _id: nouvelleConso._id,
         value: nouvelleConso.value,
@@ -48,12 +50,30 @@ exports.creerConsommation = async (req, res) => {
     if (appareil && appareil.seuilConso && value > appareil.seuilConso) {
       const contenuNotif = `Consommation élevée: ${value} A (seuil: ${appareil.seuilConso}) pour "${appareil.nom}"`;
       const notif = new Notification({
-        utilisateur: req.userId,
-        appareil: appareilId,
+        utilisateur: new mongoose.Types.ObjectId(req.userId),
+        appareil: new mongoose.Types.ObjectId(appareilId),
         contenu: contenuNotif,
         envoyee: false,
       });
       await notif.save();
+    
+      // 📩 Envoi d'un email si l'utilisateur a activé les notifications email
+      const Utilisateur = require("../models/utilisateurModel");
+      const utilisateur = await Utilisateur.findById(req.userId);
+    
+      if (utilisateur?.preferences?.emailNotifications && utilisateur.email) {
+        try {
+          await sendEmail(
+            utilisateur.email,
+            "🔔 Alerte de consommation",
+            contenuNotif
+          );
+          notif.envoyee = true;
+          await notif.save(); // mise à jour après envoi
+        } catch (emailErr) {
+          console.error("Erreur lors de l'envoi de l'email :", emailErr);
+        }
+      }
     }
 
     res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
