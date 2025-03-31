@@ -17,33 +17,115 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 async function login(req, res) {
   try {
-      const { email, motDePasse } = req.body;
+    const { email, motDePasse } = req.body;
 
-      // Vérifier si l'utilisateur existe
-      const utilisateur = await Utilisateur.findOne({ email });
-      if (!utilisateur) {
-          return res.status(401).json({ message: "Email ou mot de passe incorrect." });
+    // Vérifier si l'utilisateur existe
+    const utilisateur = await Utilisateur.findOne({ email });
+    if (!utilisateur) {
+      return res.status(401).json({ message: "Email ou mot de passe incorrect." });
+    }
+
+    // Vérifier si l'utilisateur a confirmé son email
+    if (!utilisateur.verifie) {
+      return res.status(403).json({ message: "Veuillez confirmer votre email avant de vous connecter." });
+    }
+
+    // Vérifier le mot de passe
+    const isMatch = await bcrypt.compare(motDePasse, utilisateur.motDePasse);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Email ou mot de passe incorrect." });
+    }
+
+    // Générer un token JWT
+    const token = jwt.sign({ id: utilisateur._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+
+    res.status(200).json({
+      message: "Connexion réussie",
+      token,
+      utilisateur: {
+        id: utilisateur._id,
+        email: utilisateur.email,
+        nom: utilisateur.nom,
+        prenom: utilisateur.prenom
       }
-
-      // Vérifier le mot de passe
-      const isMatch = await bcrypt.compare(motDePasse, utilisateur.motDePasse);
-      if (!isMatch) {
-          return res.status(401).json({ message: "Email ou mot de passe incorrect." });
-      }
-
-      // Générer un token JWT
-      const token = jwt.sign({ id: utilisateur._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
-
-      res.status(200).json({
-          message: "Connexion réussie",
-          token,
-          utilisateur: { id: utilisateur._id, email: utilisateur.email, nom: utilisateur.nom, prenom: utilisateur.prenom }
-      });
+    });
   } catch (err) {
-      console.error("Erreur lors de la connexion:", err);
-      res.status(500).json({ message: "Erreur serveur." });
+    console.error("Erreur lors de la connexion:", err);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 }
+async function verifierEmail(req, res) {
+  try {
+    const token = req.query.token;
+    if (!token) {
+      return res.status(400).json({ message: "Token manquant" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const utilisateur = await Utilisateur.findById(decoded.id);
+    if (!utilisateur) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    if (utilisateur.verifie) {
+      return res.status(200).json({ message: "Ce compte a été vérifié." });
+    }
+
+    utilisateur.verifie = true;
+    await utilisateur.save();
+
+    // 💌 (optionnel) Envoi d'un email de bienvenue après activation
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: 'PowerTrack <powertrack5000@gmail.com>',
+      to: utilisateur.email,
+      subject: "Bienvenue sur PowerTrack ",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+  <h2 style="color: #2c3e50;">Bienvenue <span style="color: #3498db;">${utilisateur.prenom}</span> !</h2>
+  
+  <p style="font-size: 16px; color: #333;">
+    Votre compte est maintenant <strong>activé</strong>.
+  </p>
+
+  <p style="font-size: 16px; color: #333;">
+    Vous pouvez maintenant vous connecter et profiter de toutes les fonctionnalités de <strong>PowerTrack</strong>.
+  </p>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <a href="http://localhost:3000" style="background-color: #3498db; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+      Se connecter à PowerTrack
+    </a>
+  </div>
+
+  <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;" />
+
+  <p style="font-size: 13px; color: #888; text-align: center;">
+    Si vous avez des questions, contactez-nous à <a href="mailto:powertrack5000@gmail.com" style="color: #3498db;">powertrack5000@gmail.com</a>
+  </p>
+</div>
+
+      `
+    });
+
+    res.status(200).json({ message: "Compte vérifié avec succès !" });
+
+  } catch (err) {
+    console.error("Erreur de vérification d'email :", err);
+    res.status(500).json({ message: "Erreur lors de la vérification du compte ou lien expiré" });
+  }
+}
+
+
 
 // Inscription d'un nouvel utilisateur avec envoi d'email
 async function register(req, res) {
@@ -58,7 +140,7 @@ async function register(req, res) {
       return res.status(400).json({ message: "Un compte avec cet email existe déjà." });
     }
 
-    const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
+    const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse, verifie: false });
     await nouvelUtilisateur.save();
 
     const prisesParDefaut = [
@@ -68,9 +150,10 @@ async function register(req, res) {
       { nom: "Prise 4", gpioIndex: 3, utilisateur: nouvelUtilisateur._id },
     ];
     await require('../models/appareilModel').insertMany(prisesParDefaut);
-    console.log("✅ Prises créées automatiquement pour :", nouvelUtilisateur.email);
 
-    // Envoi d'un email de confirmation
+    const verificationToken = jwt.sign({ id: nouvelUtilisateur._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const urlDeVerification = `http://localhost:3000/verifier-email?token=${verificationToken}`;
+
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -85,17 +168,16 @@ async function register(req, res) {
       from: 'PowerTrack - Suivi Énergie <powertrack5000@gmail.com>',
       to: nouvelUtilisateur.email,
       replyTo: 'powertrack5000@gmail.com',
-      subject: "Bienvenue sur PowerTrack !",
+      subject: "Confirmez votre inscription sur PowerTrack",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f7f7f7; border-radius: 8px; border: 1px solid #ddd;">
           <h2 style="color: #2c3e50;">Bonjour ${nouvelUtilisateur.prenom},</h2>
-          <p>Bienvenue sur <strong>PowerTrack</strong> !</p>
-          <p>Votre compte a été créé avec succès ✅</p>
-          <p style="margin-top: 30px;">Nous sommes ravis de vous compter parmi nous. 🔌</p>
-    
+          <p>Merci pour votre inscription à <strong>PowerTrack</strong> !</p>
+          <p>Pour activer votre compte, cliquez sur le lien ci-dessous :</p>
+          <p style="margin: 20px 0;"><a href="${urlDeVerification}" style="color: #ffffff; background-color: #3498db; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Activer mon compte</a></p>
+          <p>Ce lien est valable pendant 24h.</p>
           <hr style="margin: 30px 0; border: none; border-top: 1px solid #ccc;" />
-    
-          <p style="font-size: 14px; color: #999;">Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer ce message.</p>
+          <p style="font-size: 14px; color: #999;">Si vous n'avez pas fait cette demande, ignorez simplement cet email.</p>
         </div>
         <p style="font-size: 13px; color: #999; margin-top: 30px;">
         — L’équipe PowerTrack<br>
@@ -106,21 +188,20 @@ async function register(req, res) {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) console.error("Erreur lors de l'envoi de l'email :", error);
-      else console.log("Email de confirmation envoyé :", info.response);
+      else console.log("Email de vérification envoyé :", info.response);
     });
 
-    const token = jwt.sign({ id: nouvelUtilisateur._id }, SECRET_KEY, { expiresIn: '2h' });
-
-    return res.status(201).json({
-      message: "Inscription réussie",
-      token,
-      utilisateur: { id: nouvelUtilisateur._id, email, nom, prenom }
+    return res.status(200).json({
+      message: "Un email de vérification a été envoyé. Veuillez confirmer pour activer votre compte."
     });
+
   } catch (err) {
     console.error("Erreur lors de l'inscription:", err);
     res.status(500).json({ message: "Erreur serveur lors de l'inscription." });
   }
 }
+
+
 
 // Supprimer le compte utilisateur et toutes ses données associées
 async function supprimerMonCompte(req, res) {
@@ -178,34 +259,34 @@ async function getMonProfil(req, res) {
 
 async function mettreAJourProfil(req, res) {
   try {
-    const utilisateurId = req.userId;
-    const { nom, email, ancienMotDePasse, nouveauMotDePasse } = req.body;
-
-    const utilisateur = await Utilisateur.findById(utilisateurId);
+    const utilisateur = await Utilisateur.findById(req.userId);
     if (!utilisateur) {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
+
+    const { nom, email, ancienMotDePasse, nouveauMotDePasse } = req.body;
 
     if (nom) utilisateur.nom = nom;
     if (email) utilisateur.email = email;
 
     if (ancienMotDePasse && nouveauMotDePasse) {
-      const motDePasseValide = await bcrypt.compare(ancienMotDePasse, utilisateur.motDePasse);
-      if (!motDePasseValide) {
+      const match = await bcrypt.compare(ancienMotDePasse, utilisateur.motDePasse);
+      if (!match) {
         return res.status(400).json({ message: "Ancien mot de passe incorrect." });
       }
-      const sel = await bcrypt.genSalt(10);
-      utilisateur.motDePasse = await bcrypt.hash(nouveauMotDePasse, sel);
+      const salt = await bcrypt.genSalt(10);
+      utilisateur.motDePasse = await bcrypt.hash(nouveauMotDePasse, salt);
     }
 
     await utilisateur.save();
     res.status(200).json({ message: "Profil mis à jour avec succès." });
 
-  } catch (error) {
-    console.error("Erreur mise à jour profil:", error);
+  } catch (err) {
+    console.error("Erreur mise à jour profil :", err);
     res.status(500).json({ message: "Erreur serveur lors de la mise à jour du profil." });
   }
 }
+
 
 
 // Mettre à jour le profil utilisateur
@@ -247,4 +328,4 @@ const updateProfilePicture = async (req, res) => {
 };
 
 
-module.exports = { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil, updateProfilePicture };
+module.exports = { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil, updateProfilePicture, verifierEmail };

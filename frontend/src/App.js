@@ -12,6 +12,7 @@ import Navbar from './components/Navbar';
 import { io } from 'socket.io-client';
 import Parametre from './pages/Parametre';
 import Profil from './pages/Profil';
+import VerifierEmail from './pages/VerifierEmail';
 
 
 const App = () => {
@@ -112,6 +113,9 @@ const App = () => {
         <Route path="/historique" element={<Historique />} />
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
+        <Route path="/verifier-email" element={<VerifierEmail />} />
+
+
 
       </Routes>
     </Router>

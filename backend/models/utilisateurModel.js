@@ -15,8 +15,10 @@ const utilisateurSchema = new mongoose.Schema({
     theme: { type: String, enum: ['clair', 'sombre'], default: 'clair' },
     emailNotifications: { type: Boolean, default: true }
   },
-  photoProfil: { type: String, default: '' } // ← 🆕 chemin de l'image
+  photoProfil: { type: String, default: '' },
+  verifie: { type: Boolean, default: false } // ✅ champ pour gérer la vérification
 }, { timestamps: true });
+
 
 // Avant de sauvegarder, hacher le mot de passe si modifié
 utilisateurSchema.pre('save', async function(next) {

@@ -1,0 +1,46 @@
+.verification-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  
+  .card {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .card h2 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  
+  .card p {
+    color: #555;
+  }
+  
+  .card .btn {
+    margin-top: 20px;
+    padding: 10px 25px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .card .btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .loading {
+    font-size: 18px;
+    color: #777;
+  }
+  

@@ -13,12 +13,20 @@ const Login = ({ setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/utilisateurs/login', { email, motDePasse: password });
+      const res = await axios.post('http://localhost:5000/api/utilisateurs/login', {
+        email,
+        motDePasse: password
+      });
+
       localStorage.setItem('token', res.data.token);
       setUser(res.data.utilisateur);
       navigate('/dashboard');
     } catch (err) {
-      setError('Échec de connexion. Vérifiez vos identifiants.');
+      if (err.response?.status === 403) {
+        setError("Veuillez vérifier votre adresse email avant de vous connecter.");
+      } else {
+        setError("Échec de connexion. Vérifiez vos identifiants.");
+      }
     }
   };
 
@@ -27,11 +35,25 @@ const Login = ({ setUser }) => {
       <h2>Connexion</h2>
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Mot de passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         <button type="submit">Se connecter</button>
       </form>
-      <p>Pas encore de compte ? <a href="/register">Inscrivez-vous</a></p>
+      <p>
+        Pas encore de compte ? <a href="/register">Inscrivez-vous</a>
+      </p>
     </div>
   );
 };

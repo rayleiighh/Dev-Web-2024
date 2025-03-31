@@ -6,7 +6,7 @@ const { body } = require('express-validator');
 const upload = require('../middleware/upload');  // Importer le middleware
 const { updateProfilePicture } = require('../controllers/utilisateurController');
 const { mettreAJourProfil } = require('../controllers/utilisateurController');
-
+const { verifierEmail } = require('../controllers/utilisateurController');
 
 
 
@@ -38,6 +38,7 @@ router.post('/login', login);
 // Routes protégées
 router.get('/me', verifAuth, getMonProfil);  
 router.put('/me', verifAuth, updateMonProfil); 
+router.get('/verifier-email', verifierEmail);
 router.delete('/supprimer-compte', verifAuth, supprimerMonCompte);
 router.patch('/profil', verifAuth, mettreAJourProfil);
 router.patch('/profil/photo', verifAuth, upload.single('photo'), updateProfilePicture);
