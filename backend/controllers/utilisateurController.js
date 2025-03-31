@@ -186,10 +186,18 @@ async function register(req, res) {
       `
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) console.error("Erreur lors de l'envoi de l'email :", error);
-      else console.log("Email de vérification envoyé :", info.response);
-    });
+    try {
+      await transporter.sendMail({
+        from: 'PowerTrack <powertrack5000@gmail.com>',
+        to: utilisateur.email,
+        subject: "Votre mot de passe a été modifié",
+        html: `<p>Bonjour ${utilisateur.prenom}, votre mot de passe a bien été changé.</p>`
+      });
+      console.log("✅ Mail de changement de mot de passe envoyé !");
+    } catch (error) {
+      console.error("❌ Erreur lors de l'envoi du mail mot de passe :", error);
+    }
+    
 
     return res.status(200).json({
       message: "Un email de vérification a été envoyé. Veuillez confirmer pour activer votre compte."
@@ -265,9 +273,19 @@ async function mettreAJourProfil(req, res) {
     }
 
     const { nom, email, ancienMotDePasse, nouveauMotDePasse } = req.body;
+    let motDePasseChange = false;
+    let nomChange = false;
+    let emailChange = false;
 
-    if (nom) utilisateur.nom = nom;
-    if (email) utilisateur.email = email;
+    if (nom && nom !== utilisateur.nom) {
+      utilisateur.nom = nom;
+      nomChange = true;
+    }
+
+    if (email && email !== utilisateur.email) {
+      utilisateur.email = email;
+      emailChange = true;
+    }
 
     if (ancienMotDePasse && nouveauMotDePasse) {
       const match = await bcrypt.compare(ancienMotDePasse, utilisateur.motDePasse);
@@ -276,9 +294,74 @@ async function mettreAJourProfil(req, res) {
       }
       const salt = await bcrypt.genSalt(10);
       utilisateur.motDePasse = await bcrypt.hash(nouveauMotDePasse, salt);
+      motDePasseChange = true;
     }
 
     await utilisateur.save();
+
+    // Préparation du transporteur
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // Envoi des mails selon les cas :
+    if (motDePasseChange) {
+      await transporter.sendMail({
+        from: 'PowerTrack <powertrack5000@gmail.com>',
+        to: utilisateur.email,
+        subject: "Votre mot de passe a été modifié",
+        html: `
+          <div style="font-family: Arial, sans-serif;">
+            <h2>Bonjour ${utilisateur.prenom},</h2>
+            <p>Votre mot de passe a bien été changé.</p>
+            <p style="color: red;"><strong>Si vous n'êtes pas à l'origine de ce changement, veuillez nous contacter immédiatement.</strong></p>
+            <hr />
+            <p style="font-size: 13px; color: #888;">– L’équipe PowerTrack</p>
+          </div>
+        `
+      });
+    }
+
+    if (nomChange) {
+      await transporter.sendMail({
+        from: 'PowerTrack <powertrack5000@gmail.com>',
+        to: utilisateur.email,
+        subject: "Votre nom a été modifié",
+        html: `
+          <div style="font-family: Arial, sans-serif;">
+            <h2>Bonjour ${utilisateur.prenom},</h2>
+            <p>Votre nom a été mis à jour avec succès.</p>
+            <p>Si vous n'avez pas fait cette modification, contactez-nous immédiatement.</p>
+            <hr />
+            <p style="font-size: 13px; color: #888;">– L’équipe PowerTrack</p>
+          </div>
+        `
+      });
+    }
+
+    if (emailChange) {
+      await transporter.sendMail({
+        from: 'PowerTrack <powertrack5000@gmail.com>',
+        to: email, // on utilise le nouvel email ici
+        subject: "Votre adresse email a été modifiée",
+        html: `
+          <div style="font-family: Arial, sans-serif;">
+            <h2>Bonjour ${utilisateur.prenom},</h2>
+            <p>Votre adresse email a été modifiée.</p>
+            <p>Si vous n’êtes pas à l’origine de ce changement, veuillez nous alerter rapidement.</p>
+            <hr />
+            <p style="font-size: 13px; color: #888;">– L’équipe PowerTrack</p>
+          </div>
+        `
+      });
+    }
+
     res.status(200).json({ message: "Profil mis à jour avec succès." });
 
   } catch (err) {
@@ -286,6 +369,7 @@ async function mettreAJourProfil(req, res) {
     res.status(500).json({ message: "Erreur serveur lors de la mise à jour du profil." });
   }
 }
+
 
 
 
@@ -307,15 +391,15 @@ async function updateMonProfil(req, res) {
 const updateProfilePicture = async (req, res) => {
   try {
     const utilisateur = await Utilisateur.findById(req.userId);
-    console.log("📸 Fichier reçu :", req.file);
-    console.log("🧑‍💻 ID utilisateur:", req.userId);
+    console.log("Fichier reçu :", req.file);
+    console.log("ID utilisateur:", req.userId);
     if (!utilisateur) {
       return res.status(404).json({ message: 'Utilisateur non trouvé.' });
     }
 
     if (req.file) {
       const relativePath = req.file.path.replace(/\\/g, '/'); // Windows fix
-      utilisateur.photoProfil = relativePath; // ✅ Assure-toi que ce champ correspond à ton modèle
+      utilisateur.photoProfil = relativePath; //  Assure-toi que ce champ correspond à ton modèle
     }
 
     await utilisateur.save();

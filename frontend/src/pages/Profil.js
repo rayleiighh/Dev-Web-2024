@@ -9,9 +9,11 @@ const Profil = ({ user, setUser }) => {
   const [email, setEmail] = useState('');
   const [ancienMotDePasse, setAncienMotDePasse] = useState('');
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState('');
+  const [confirmationMotDePasse, setConfirmationMotDePasse] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
-  const [photo, setPhoto] = useState(null); // 🆕 Ajout pour la photo
+  const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -21,22 +23,25 @@ const Profil = ({ user, setUser }) => {
   }, [user]);
 
   const handleFileChange = (e) => {
-    setPhoto(e.target.files[0]); // 🆕 stocke la photo sélectionnée
+    setPhoto(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
 
+    if (nouveauMotDePasse && nouveauMotDePasse !== confirmationMotDePasse) {
+      setErreur("Les nouveaux mots de passe ne correspondent pas.");
+      return;
+    }
+
     try {
-      // 1. Mise à jour des infos (nom, email, mdp)
       await axios.put(
         'http://localhost:5000/api/utilisateurs/me',
         { nom, email, ancienMotDePasse, nouveauMotDePasse },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 2. Envoi de la photo si elle existe
       if (photo) {
         const formData = new FormData();
         formData.append('photo', photo);
@@ -49,7 +54,6 @@ const Profil = ({ user, setUser }) => {
         });
       }
 
-      // 3. Recharge les infos utilisateur à jour
       const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -59,6 +63,7 @@ const Profil = ({ user, setUser }) => {
       setErreur('');
       setAncienMotDePasse('');
       setNouveauMotDePasse('');
+      setConfirmationMotDePasse('');
       setPhoto(null);
       navigate('/dashboard');
     } catch (error) {
@@ -92,12 +97,24 @@ const Profil = ({ user, setUser }) => {
         <hr />
         <div className="form-group">
           <label>Ancien mot de passe</label>
-          <input type="password" className="form-control" value={ancienMotDePasse} onChange={(e) => setAncienMotDePasse(e.target.value)} />
+          <input type={showPassword ? "text" : "password"} className="form-control" value={ancienMotDePasse} onChange={(e) => setAncienMotDePasse(e.target.value)} />
         </div>
         <div className="form-group">
           <label>Nouveau mot de passe</label>
-          <input type="password" className="form-control" value={nouveauMotDePasse} onChange={(e) => setNouveauMotDePasse(e.target.value)} />
+          <input type={showPassword ? "text" : "password"} className="form-control" value={nouveauMotDePasse} onChange={(e) => setNouveauMotDePasse(e.target.value)} />
         </div>
+        <div className="form-group">
+          <label>Confirmez le nouveau mot de passe</label>
+          <input type={showPassword ? "text" : "password"} className="form-control" value={confirmationMotDePasse} onChange={(e) => setConfirmationMotDePasse(e.target.value)} />
+        </div>
+        <div className="custom-toggle my-3">
+            <label className="switch">
+                  <input type="checkbox" checked={showPassword} onChange={() => setShowPassword(!showPassword)} />
+                  <span className="slider round"></span>
+            </label>
+                 <span className="ms-2">Afficher les mots de passe</span>
+        </div>
+
         <div className="form-group mt-3">
           <label>Photo de profil</label>
           <input type="file" className="form-control" onChange={handleFileChange} />
