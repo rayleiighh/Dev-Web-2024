@@ -6,6 +6,7 @@ const Utilisateur = require('../models/utilisateurModel');
 const Appareil = require('../models/appareilModel');
 const Consommation = require('../models/consommationModel');
 const Notification = require('../models/notificationModel');
+const Multiprise = require('../models/multipriseModel'); 
 const nodemailer = require('nodemailer');
 
 
@@ -47,8 +48,9 @@ async function login(req, res) {
 // Inscription d'un nouvel utilisateur avec envoi d'email
 async function register(req, res) {
   try {
-    const { prenom, nom, email, motDePasse } = req.body;
-    if (!prenom || !nom || !email || !motDePasse) {
+    const { prenom, nom, email, motDePasse, deviceId } = req.body;
+
+    if (!prenom || !nom || !email || !motDePasse || !deviceId) {
       return res.status(400).json({ message: "Tous les champs sont requis." });
     }
 
@@ -57,27 +59,46 @@ async function register(req, res) {
       return res.status(400).json({ message: "Un compte avec cet email existe déjà." });
     }
 
+    // 🔄 Vérifie si une multiprise avec cet identifiantUnique existe
+    const multiprise = await Multiprise.findOne({ identifiantUnique: deviceId });
+    if (!multiprise) {
+      return res.status(404).json({ message: "❌ Aucune multiprise trouvée avec cet identifiant. Veuillez configurer l'appareil au préalable." });
+    }
+
+    // ✅ Création utilisateur
     const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
     await nouvelUtilisateur.save();
 
-    const prisesParDefaut = [
-      { nom: "Prise 1", gpioIndex: 0, utilisateur: nouvelUtilisateur._id },
-      { nom: "Prise 2", gpioIndex: 1, utilisateur: nouvelUtilisateur._id },
-      { nom: "Prise 3", gpioIndex: 2, utilisateur: nouvelUtilisateur._id },
-      { nom: "Prise 4", gpioIndex: 3, utilisateur: nouvelUtilisateur._id },
-    ];
-    await require('../models/appareilModel').insertMany(prisesParDefaut);
-    console.log("✅ Prises créées automatiquement pour :", nouvelUtilisateur.email);
+    // ➕ Associer l'utilisateur à la multiprise (si pas déjà présent)
+    if (!multiprise.utilisateurs.includes(nouvelUtilisateur._id)) {
+      multiprise.utilisateurs.push(nouvelUtilisateur._id);
+      await multiprise.save();
+    }
 
-    // Envoi d'un email de confirmation
+    // ✅ Créer les prises uniquement si la multiprise n'en possède pas encore
+    const prisesExistantes = await Appareil.countDocuments({ multiprise: multiprise._id });
+    if (prisesExistantes === 0) {
+      const prisesParDefaut = [
+        { nom: "Prise 1", gpioIndex: 0, multiprise: multiprise._id },
+        { nom: "Prise 2", gpioIndex: 1, multiprise: multiprise._id },
+        { nom: "Prise 3", gpioIndex: 2, multiprise: multiprise._id },
+        { nom: "Prise 4", gpioIndex: 3, multiprise: multiprise._id },
+      ];
+      await Appareil.insertMany(prisesParDefaut);
+      console.log(`✅ Prises créées pour multiprise ${deviceId}`);
+    } else {
+      console.log(`ℹ️ Les prises existent déjà pour multiprise ${deviceId}`);
+    }
+
+    // ✉️ Envoi de l’email
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     const mailOptions = {
@@ -91,9 +112,7 @@ async function register(req, res) {
           <p>Bienvenue sur <strong>PowerTrack</strong> !</p>
           <p>Votre compte a été créé avec succès ✅</p>
           <p style="margin-top: 30px;">Nous sommes ravis de vous compter parmi nous. 🔌</p>
-    
           <hr style="margin: 30px 0; border: none; border-top: 1px solid #ccc;" />
-    
           <p style="font-size: 14px; color: #999;">Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer ce message.</p>
         </div>
         <p style="font-size: 13px; color: #999; margin-top: 30px;">
@@ -115,11 +134,14 @@ async function register(req, res) {
       token,
       utilisateur: { id: nouvelUtilisateur._id, email, nom, prenom }
     });
+
   } catch (err) {
     console.error("Erreur lors de l'inscription:", err);
     res.status(500).json({ message: "Erreur serveur lors de l'inscription." });
   }
 }
+
+
 
 // Supprimer le compte utilisateur et toutes ses données associées
 async function supprimerMonCompte(req, res) {

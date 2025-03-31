@@ -1,11 +1,33 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const multipriseSchema = new mongoose.Schema({
-  nom: { type: String, required: true },  // Ex : "Multiprise salon"
-  identifiantUnique: { type: String, required: true, unique: true }, // UUID ou ID généré côté Raspberry
-  utilisateur: { type: mongoose.Schema.Types.ObjectId, ref: 'Utilisateur', default: null }, // Peut être nul si non encore lié
-  dateAppairage: { type: Date },
-  actif: { type: Boolean, default: true }
-}, { timestamps: true });
+  nom: {
+    type: String,
+    required: true,
+    default: "Nouvelle multiprise",
+  },
+  identifiantUnique: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  secret: {
+    type: String,
+    required: true,
+  },
+  statut: {
+    type: String,
+    enum: ["actif", "inactif"],
+    default: "actif",
+  },
+  utilisateurs: [{ 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Utilisateur",
+  }],
+  dateAppairage: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-module.exports = mongoose.model('Multiprise', multipriseSchema);
+module.exports = mongoose.model("Multiprise", multipriseSchema);

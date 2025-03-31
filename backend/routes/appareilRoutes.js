@@ -7,15 +7,17 @@ const {
   createAppareil,
   updateModeNuit
 } = require('../controllers/appareilController');
-const { verifAuth } = require('../middleware/auth');
 
-const auth = require('../middleware/auth');
+const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
+const { verifAuthDevice } = require('../middleware/authDevice');
 
-router.get('/', verifAuth, getAppareils);
-router.patch('/:id/etat', verifAuth, updateAppareilEtat);
-router.post('/init', verifAuth, initPrises);
-router.post('/', verifAuth, createAppareil);
-router.patch('/:id/mode-nuit', verifAuth, updateModeNuit);
+const autoriserAppareils = require("../middleware/autoriserAppareils");
+
+router.get("/", autoriserAppareils, getAppareils);
+router.patch("/:id/etat", verifAuthUtilisateur, updateAppareilEtat); 
+router.post('/init', verifAuthDevice , initPrises);
+router.post('/', verifAuthDevice , createAppareil);
+router.patch('/:id/mode-nuit', verifAuthDevice , updateModeNuit);
 
 
 module.exports = router;
