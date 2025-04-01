@@ -7,7 +7,7 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
-
+const { Server } = require("socket.io");
 require('dotenv').config();
 
 const connectDB = require('./config/db');
