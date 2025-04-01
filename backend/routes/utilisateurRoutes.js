@@ -3,8 +3,8 @@ const router = express.Router();
 const { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences } = require('../controllers/utilisateurController');
 const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
 const { body } = require('express-validator');
-
-
+const upload = require('../middleware/upload');  // Importer le middleware
+const { updateProfilePicture } = require('../controllers/utilisateurController');
 const { mettreAJourProfil } = require('../controllers/utilisateurController');
 
 
