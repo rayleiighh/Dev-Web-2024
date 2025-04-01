@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
     }
     
     try {
-      const notifications = await Notification.find({ utilisateur: req.userId })
+      const notifications = await Notification.find({ utilisateurs: req.userId })
         .populate('multiprise')
         .sort({ createdAt: -1 });
 

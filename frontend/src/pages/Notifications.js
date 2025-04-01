@@ -6,6 +6,27 @@ import { useNavigate } from 'react-router-dom'; // ← Ajout de l'import pour la
 const NotificationsPage = ({ user, notifications, setNotifications }) => {
   const [error, setError] = useState(null);
   const theme = user?.preferences?.theme;
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/notifications", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setNotifications(res.data);
+      } catch (err) {
+        console.error("❌ Erreur lors du chargement des notifications:", err);
+        setError("Impossible de charger les notifications.");
+      }
+    };
+  
+    if (notifications.length === 0) {
+      fetchNotifications();
+    }
+  }, []);
+  
   const navigate = useNavigate(); // ← Pour revenir à la page précédente
 
   const supprimerNotification = async (id) => {

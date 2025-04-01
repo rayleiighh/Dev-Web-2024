@@ -21,7 +21,21 @@ exports.creerConsommation = async (req, res) => {
       return res.status(404).json({ message: "Multiprise introuvable." });
     }
 
-    if (multiprise.utilisateur.toString() !== req.userId) {
+    if (!multiprise.utilisateurs || !Array.isArray(multiprise.utilisateurs)) {
+      return res.status(500).json({ message: "Aucun utilisateur lié à cette multiprise." });
+    }
+    console.log("🧪 req.userId =", req.userId);
+    console.log("👥 multiprise.utilisateurs =", multiprise.utilisateurs);
+    console.log("👥 as string =", multiprise.utilisateurs.map(u => u.toString()));
+
+
+    const userId = req.userId.toString(); // 🔥 sécurise la comparaison
+
+    const isAutorise =
+      Array.isArray(multiprise.utilisateurs) &&
+      multiprise.utilisateurs.map(u => u.toString()).includes(userId);
+
+    if (!isAutorise) {
       return res.status(403).json({ message: "Non autorisé à enregistrer pour cette multiprise." });
     }
 
@@ -53,9 +67,12 @@ exports.creerConsommation = async (req, res) => {
     if (value > SEUIL_ALERTE) {
       const contenuNotif = `Consommation élevée: ${value} A détectée sur "${multiprise.nom}"`;
 
+
+      const utilisateursCibles = multiprise.utilisateurs || [];
+
       const notif = new Notification({
-        utilisateur: new mongoose.Types.ObjectId(req.userId),
-        multiprise: new mongoose.Types.ObjectId(multiprise._id),
+        utilisateurs: utilisateursCibles,
+        multiprise: multiprise._id,
         contenu: contenuNotif,
         envoyee: false,
       });
@@ -66,13 +83,14 @@ exports.creerConsommation = async (req, res) => {
       const Utilisateur = require("../models/utilisateurModel");
       const utilisateur = await Utilisateur.findById(req.userId);
 
-      if (utilisateur?.preferences?.emailNotifications && utilisateur.email) {
-        try {
-          await sendEmail(utilisateur.email, "🔔 Alerte de consommation", contenuNotif);
-          notif.envoyee = true;
-          await notif.save();
-        } catch (err) {
-          console.error("Erreur lors de l'envoi de l'email :", err);
+      for (const userId of utilisateursCibles) {
+        const utilisateur = await Utilisateur.findById(userId);
+        if (utilisateur?.preferences?.emailNotifications && utilisateur.email) {
+          try {
+            await sendEmail(utilisateur.email, "🔔 Alerte de consommation", contenuNotif);
+          } catch (err) {
+            console.error("Erreur envoi mail :", err);
+          }
         }
       }
     }
@@ -117,10 +135,8 @@ exports.creerBatchConsommation = async (req, res) => {
 
       // 🔌 Émission immédiate en WebSocket
       if (global.io) {
-        global.io.emit('nouvelleConsommation', {
-          _id: nouvelleConso._id,
-          value: nouvelleConso.value,
-          timestamp: nouvelleConso.timestamp
+        utilisateursCibles.forEach((userId) => {
+          global.io.to(userId.toString()).emit("nouvelle-notification", notif);
         });
       }
     }

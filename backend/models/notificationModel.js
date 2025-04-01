@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  utilisateur: { type: mongoose.Schema.Types.ObjectId, ref: 'Utilisateur', required: true },
+  utilisateurs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Utilisateur'}],
   // Référence à l'utilisateur destinataire de la notification
   multiprise: { type: mongoose.Schema.Types.ObjectId, ref: 'Multiprise', required: true },
   // Appareil concerné par la notification (ex: appareil qui dépasse le seuil)
