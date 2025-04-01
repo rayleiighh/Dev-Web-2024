@@ -135,9 +135,11 @@ exports.creerBatchConsommation = async (req, res) => {
 
       // 🔌 Émission immédiate en WebSocket
       if (global.io) {
-        utilisateursCibles.forEach((userId) => {
-          global.io.to(userId.toString()).emit("nouvelle-notification", notif);
-        });
+        global.io.emit('nouvelleConsommation', {
+          _id: nouvelleConso._id,
+          value: nouvelleConso.value,
+          timestamp: nouvelleConso.timestamp
+      });
       }
     }
 
