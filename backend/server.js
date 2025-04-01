@@ -69,7 +69,7 @@ connectDB();
 // 📦 Routes API
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
-app.use('/api/consommations', consommationRoutes);
+app.use("/api/consommations", require("./routes/consommationRoutes"));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
