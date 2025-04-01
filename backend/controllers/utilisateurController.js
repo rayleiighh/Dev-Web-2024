@@ -78,6 +78,11 @@ async function register(req, res) {
     // ✅ Créer les prises uniquement si la multiprise n'en possède pas encore
     const prisesExistantes = await Appareil.countDocuments({ multiprise: multiprise._id });
     if (prisesExistantes === 0) {
+      
+      console.log("🎯 Création des prises avec multiprise ID :", multiprise?._id);
+      console.log("👤 Utilisateur ID :", nouvelUtilisateur._id);
+
+      
       const prisesParDefaut = [
         { nom: "Prise 1", gpioIndex: 0, multiprise: multiprise._id },
         { nom: "Prise 2", gpioIndex: 1, multiprise: multiprise._id },
