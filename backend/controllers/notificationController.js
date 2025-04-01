@@ -102,7 +102,10 @@ exports.supprimerNotification = async (req, res) => {
       return res.status(404).json({ message: "Notification introuvable." });
     }
 
-    if (!notif.utilisateurs.map(id => id.toString()).includes(req.userId)) {
+    // 🔧 Fix : convertir req.userId en string pour comparaison correcte
+    const userId = req.userId.toString();
+
+    if (!notif.utilisateurs.map(id => id.toString()).includes(userId)) {
       return res.status(403).json({ message: "Non autorisé à supprimer cette notification." });
     }
 
