@@ -67,6 +67,8 @@ io.on('connection', (socket) => {
 connectDB();
 
 // 📦 Routes API
+app.use("/api/multiprises", require("./routes/multiprisesRoutes"));
+app.use("/api/device-auth", require("./routes/deviceAuthRoutes"));
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use("/api/consommations", require("./routes/consommationRoutes"));

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const consommationController = require('../controllers/consommationController');
-
 const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
 const { verifAuthDevice } = require('../middleware/authDevice');
 

@@ -91,6 +91,15 @@ exports.creerBatchConsommation = async (req, res) => {
       return res.status(400).json({ message: "La liste des mesures est requise et ne doit pas être vide." });
     }
 
+    if (!req.deviceId) {
+      return res.status(401).json({ message: "Authentification par multiprise requise." });
+    }
+
+    const multiprise = await Multiprise.findOne({ identifiantUnique: req.deviceId });
+    if (!multiprise) {
+      return res.status(404).json({ message: "Multiprise non trouvée." });
+    }
+
     const createdMeasurements = [];
     for (const measurement of measurements) {
       if (typeof measurement.value !== 'number') {
@@ -99,12 +108,14 @@ exports.creerBatchConsommation = async (req, res) => {
 
       const nouvelleConso = new Consommation({
         value: measurement.value,
-        timestamp: measurement.timestamp ? new Date(measurement.timestamp * 1000) : new Date()
+        timestamp: measurement.timestamp ? new Date(measurement.timestamp * 1000) : new Date(),
+        multiprise: multiprise._id  // ✅ Ajout obligatoire
       });
+
       await nouvelleConso.save();
       createdMeasurements.push(nouvelleConso);
 
-      // Émission immédiate via WebSocket pour chaque mesure insérée
+      // 🔌 Émission immédiate en WebSocket
       if (global.io) {
         global.io.emit('nouvelleConsommation', {
           _id: nouvelleConso._id,
@@ -120,6 +131,7 @@ exports.creerBatchConsommation = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors de la création des mesures." });
   }
 };
+
 
 exports.getConsommationParId = async (req, res) => {
   try {

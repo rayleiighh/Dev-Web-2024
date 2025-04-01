@@ -75,7 +75,6 @@ async function verifierEmail(req, res) {
     utilisateur.verifie = true;
     await utilisateur.save();
 
-    // 💌 (optionnel) Envoi d'un email de bienvenue après activation
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -86,12 +85,11 @@ async function verifierEmail(req, res) {
       }
     });
 
-    await transporter.sendMail({
+    const mailOptions = {
       from: 'PowerTrack <powertrack5000@gmail.com>',
       to: utilisateur.email,
-      subject: "Bienvenue sur PowerTrack ",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+      subject: "Bienvenue sur PowerTrack",
+      html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
   <h2 style="color: #2c3e50;">Bienvenue <span style="color: #3498db;">${utilisateur.prenom}</span> !</h2>
   
   <p style="font-size: 16px; color: #333;">
@@ -114,9 +112,11 @@ async function verifierEmail(req, res) {
     Si vous avez des questions, contactez-nous à <a href="mailto:powertrack5000@gmail.com" style="color: #3498db;">powertrack5000@gmail.com</a>
   </p>
 </div>
+`
+    };
 
-      `
-    });
+    await transporter.sendMail(mailOptions);
+    console.log("Email de bienvenue envoyé !");
 
     res.status(200).json({ message: "Compte vérifié avec succès !" });
 
@@ -125,6 +125,7 @@ async function verifierEmail(req, res) {
     res.status(500).json({ message: "Erreur lors de la vérification du compte ou lien expiré" });
   }
 }
+
 
 
 
@@ -142,17 +143,23 @@ async function register(req, res) {
       return res.status(400).json({ message: "Un compte avec cet email existe déjà." });
     }
 
-    // 🔄 Vérifie si une multiprise avec cet identifiantUnique existe
+    // 🔎 Vérifie que la multiprise existe
     const multiprise = await Multiprise.findOne({ identifiantUnique: deviceId });
     if (!multiprise) {
       return res.status(404).json({ message: "❌ Aucune multiprise trouvée avec cet identifiant. Veuillez configurer l'appareil au préalable." });
     }
 
-    // ✅ Création utilisateur
-    const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
+    // ✅ Crée un nouvel utilisateur non vérifié
+    const nouvelUtilisateur = new Utilisateur({
+      prenom,
+      nom,
+      email,
+      motDePasse,
+      verifie: false
+    });
     await nouvelUtilisateur.save();
 
-    // ➕ Associer l'utilisateur à la multiprise (si pas déjà présent)
+    // ➕ Ajoute l'utilisateur à la multiprise s'il n'est pas encore lié
     if (!multiprise.utilisateurs.includes(nouvelUtilisateur._id)) {
       multiprise.utilisateurs.push(nouvelUtilisateur._id);
       await multiprise.save();
@@ -161,16 +168,11 @@ async function register(req, res) {
     // ✅ Créer les prises uniquement si la multiprise n'en possède pas encore
     const prisesExistantes = await Appareil.countDocuments({ multiprise: multiprise._id });
     if (prisesExistantes === 0) {
-      
-      console.log("🎯 Création des prises avec multiprise ID :", multiprise?._id);
-      console.log("👤 Utilisateur ID :", nouvelUtilisateur._id);
-
-      
       const prisesParDefaut = [
         { nom: "Prise 1", gpioIndex: 0, multiprise: multiprise._id },
         { nom: "Prise 2", gpioIndex: 1, multiprise: multiprise._id },
         { nom: "Prise 3", gpioIndex: 2, multiprise: multiprise._id },
-        { nom: "Prise 4", gpioIndex: 3, multiprise: multiprise._id },
+        { nom: "Prise 4", gpioIndex: 3, multiprise: multiprise._id }
       ];
       await Appareil.insertMany(prisesParDefaut);
       console.log(`✅ Prises créées pour multiprise ${deviceId}`);
@@ -178,21 +180,29 @@ async function register(req, res) {
       console.log(`ℹ️ Les prises existent déjà pour multiprise ${deviceId}`);
     }
 
-    // ✉️ Envoi de l’email
+    // 🔐 Création du token de vérification
+    const verificationToken = jwt.sign(
+      { id: nouvelUtilisateur._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    const urlDeVerification = `http://localhost:3000/verifier-email?token=${verificationToken}`;
+
+    // ✉️ Envoi de l’e-mail
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+        pass: process.env.EMAIL_PASS
+      }
     });
 
     const mailOptions = {
       from: 'PowerTrack - Suivi Énergie <powertrack5000@gmail.com>',
       to: nouvelUtilisateur.email,
-      replyTo: 'powertrack5000@gmail.com',
       subject: "Confirmez votre inscription sur PowerTrack",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f7f7f7; border-radius: 8px; border: 1px solid #ddd;">
@@ -207,22 +217,11 @@ async function register(req, res) {
         <p style="font-size: 13px; color: #999; margin-top: 30px;">
         — L’équipe PowerTrack<br>
         <a href="mailto:powertrack5000@gmail.com">powertrack5000@gmail.com</a>
-        </p>
-      `
+        </p>`
     };
 
-    try {
-      await transporter.sendMail({
-        from: 'PowerTrack <powertrack5000@gmail.com>',
-        to: utilisateur.email,
-        subject: "Votre mot de passe a été modifié",
-        html: `<p>Bonjour ${utilisateur.prenom}, votre mot de passe a bien été changé.</p>`
-      });
-      console.log("✅ Mail de changement de mot de passe envoyé !");
-    } catch (error) {
-      console.error("❌ Erreur lors de l'envoi du mail mot de passe :", error);
-    }
-    
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Email de vérification envoyé !");
 
     return res.status(200).json({
       message: "Un email de vérification a été envoyé. Veuillez confirmer pour activer votre compte."

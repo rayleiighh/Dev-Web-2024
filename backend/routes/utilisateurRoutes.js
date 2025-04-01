@@ -34,6 +34,7 @@ router.post('/register', [
     body('motDePasse').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères')
 ], register);
 
+router.get('/verifier-email', verifierEmail);
 router.post('/login', login);
 // Routes protégées
 router.get('/me', verifAuthUtilisateur, getMonProfil);  
