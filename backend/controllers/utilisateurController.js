@@ -6,6 +6,7 @@ const Utilisateur = require('../models/utilisateurModel');
 const Appareil = require('../models/appareilModel');
 const Consommation = require('../models/consommationModel');
 const Notification = require('../models/notificationModel');
+const Multiprise = require('../models/multipriseModel'); 
 const nodemailer = require('nodemailer');
 const multer = require('../middleware/upload'); 
 
@@ -130,8 +131,9 @@ async function verifierEmail(req, res) {
 // Inscription d'un nouvel utilisateur avec envoi d'email
 async function register(req, res) {
   try {
-    const { prenom, nom, email, motDePasse } = req.body;
-    if (!prenom || !nom || !email || !motDePasse) {
+    const { prenom, nom, email, motDePasse, deviceId } = req.body;
+
+    if (!prenom || !nom || !email || !motDePasse || !deviceId) {
       return res.status(400).json({ message: "Tous les champs sont requis." });
     }
 
@@ -140,28 +142,51 @@ async function register(req, res) {
       return res.status(400).json({ message: "Un compte avec cet email existe déjà." });
     }
 
-    const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse, verifie: false });
+    // 🔄 Vérifie si une multiprise avec cet identifiantUnique existe
+    const multiprise = await Multiprise.findOne({ identifiantUnique: deviceId });
+    if (!multiprise) {
+      return res.status(404).json({ message: "❌ Aucune multiprise trouvée avec cet identifiant. Veuillez configurer l'appareil au préalable." });
+    }
+
+    // ✅ Création utilisateur
+    const nouvelUtilisateur = new Utilisateur({ prenom, nom, email, motDePasse });
     await nouvelUtilisateur.save();
 
-    const prisesParDefaut = [
-      { nom: "Prise 1", gpioIndex: 0, utilisateur: nouvelUtilisateur._id },
-      { nom: "Prise 2", gpioIndex: 1, utilisateur: nouvelUtilisateur._id },
-      { nom: "Prise 3", gpioIndex: 2, utilisateur: nouvelUtilisateur._id },
-      { nom: "Prise 4", gpioIndex: 3, utilisateur: nouvelUtilisateur._id },
-    ];
-    await require('../models/appareilModel').insertMany(prisesParDefaut);
+    // ➕ Associer l'utilisateur à la multiprise (si pas déjà présent)
+    if (!multiprise.utilisateurs.includes(nouvelUtilisateur._id)) {
+      multiprise.utilisateurs.push(nouvelUtilisateur._id);
+      await multiprise.save();
+    }
 
-    const verificationToken = jwt.sign({ id: nouvelUtilisateur._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    const urlDeVerification = `http://localhost:3000/verifier-email?token=${verificationToken}`;
+    // ✅ Créer les prises uniquement si la multiprise n'en possède pas encore
+    const prisesExistantes = await Appareil.countDocuments({ multiprise: multiprise._id });
+    if (prisesExistantes === 0) {
+      
+      console.log("🎯 Création des prises avec multiprise ID :", multiprise?._id);
+      console.log("👤 Utilisateur ID :", nouvelUtilisateur._id);
 
+      
+      const prisesParDefaut = [
+        { nom: "Prise 1", gpioIndex: 0, multiprise: multiprise._id },
+        { nom: "Prise 2", gpioIndex: 1, multiprise: multiprise._id },
+        { nom: "Prise 3", gpioIndex: 2, multiprise: multiprise._id },
+        { nom: "Prise 4", gpioIndex: 3, multiprise: multiprise._id },
+      ];
+      await Appareil.insertMany(prisesParDefaut);
+      console.log(`✅ Prises créées pour multiprise ${deviceId}`);
+    } else {
+      console.log(`ℹ️ Les prises existent déjà pour multiprise ${deviceId}`);
+    }
+
+    // ✉️ Envoi de l’email
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     const mailOptions = {
@@ -208,6 +233,8 @@ async function register(req, res) {
     res.status(500).json({ message: "Erreur serveur lors de l'inscription." });
   }
 }
+
+
 
 
 

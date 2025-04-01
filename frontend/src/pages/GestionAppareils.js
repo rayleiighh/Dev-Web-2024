@@ -37,6 +37,18 @@ function GestionAppareils() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Session expirée. Merci de vous reconnecter.");
+      navigate("/login");
+      return;
+    }
+    if (!token) {
+      console.warn("❌ Aucun token détecté, redirection vers login");
+      navigate("/login");
+      return;
+    }
+
     fetchAppareils();
 
     socket.on("etat_prise_changee", (data) => {

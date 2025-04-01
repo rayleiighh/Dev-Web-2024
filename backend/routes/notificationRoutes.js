@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const notificationController = require('../controllers/notificationController');
-const { verifAuth } = require('../middleware/auth');
+const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
 const Notification = require('../models/notificationModel');
 const Utilisateur = require('../models/utilisateurModel'); 
 const { sendEmail } = require('../services/notificationsService');
 
-router.use(verifAuth);
+router.use(verifAuthUtilisateur);
 
 // 🔍 Récupérer toutes les notifications de l'utilisateur
 router.get('/', async (req, res) => {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences } = require('../controllers/utilisateurController');
-const { verifAuth } = require('../middleware/auth');
+const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
 const { body } = require('express-validator');
 const upload = require('../middleware/upload');  // Importer le middleware
 const { updateProfilePicture } = require('../controllers/utilisateurController');
@@ -36,15 +36,14 @@ router.post('/register', [
 
 router.post('/login', login);
 // Routes protégées
-router.get('/me', verifAuth, getMonProfil);  
-router.put('/me', verifAuth, updateMonProfil); 
-router.get('/verifier-email', verifierEmail);
-router.delete('/supprimer-compte', verifAuth, supprimerMonCompte);
-router.patch('/profil', verifAuth, mettreAJourProfil);
-router.patch('/profil/photo', verifAuth, upload.single('photo'), updateProfilePicture);
+router.get('/me', verifAuthUtilisateur, getMonProfil);  
+router.put('/me', verifAuthUtilisateur, updateMonProfil); 
+router.delete('/supprimer-compte', verifAuthUtilisateur, supprimerMonCompte);
+router.patch('/profil', verifAuthUtilisateur, mettreAJourProfil);
+
 
 
 // Mise à jour des préférences utilisateur
-router.patch('/preferences', verifAuth, updatePreferences);
+router.patch('/preferences', verifAuthUtilisateur, updatePreferences);
 
 module.exports = router;

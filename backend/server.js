@@ -7,31 +7,27 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
-
+const { Server } = require("socket.io");
 require('dotenv').config();
 
 const connectDB = require('./config/db');
 
 // 🔧 Initialiser Express + HTTP server
 const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connecté !"))
+  .catch((err) => console.error("❌ Erreur MongoDB :", err));
+
 const server = http.createServer(app);
-
-// 🔌 Setup WebSocket (Socket.IO)
-const io = socketIo(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    credentials: true
-  }
-});
-
-// 🌍 Rendre le socket accessible globalement
+const io = new Server(server, { cors: { origin: "*" } });
 global.io = io;
-console.log("🧪 global.io est défini ?", !!global.io);
 
-const consommationRoutes = require('./routes/consommationRoutes');
-// 🔌 WebSocket : écouter les connexions
-io.on('connection', (socket) => {
+io.on("connection", (socket) => {
   console.log("🟢 Nouveau client connecté :", socket.id);
 
   socket.on('disconnect', () => {
@@ -46,8 +42,6 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-const multiprisesRoutes = require("./routes/multiprisesRoutes");
-
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan('dev'));
@@ -73,10 +67,9 @@ io.on('connection', (socket) => {
 connectDB();
 
 // 📦 Routes API
-app.use("/api/multiprises", multiprisesRoutes);
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
-app.use('/api/consommations', consommationRoutes);
+app.use("/api/consommations", require("./routes/consommationRoutes"));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -92,4 +85,3 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Serveur + WebSocket actif sur http://localhost:${PORT}`);
 });
-

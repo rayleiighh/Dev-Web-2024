@@ -1,24 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const consommationController = require('../controllers/consommationController');
-const { verifAuth } = require('../middleware/auth');
 
-// 🔒 Enregistrer une consommation individuelle
-+ router.post('/', verifAuth, consommationController.creerConsommation);
+const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
+const { verifAuthDevice } = require('../middleware/authDevice');
 
-// 🔒 Enregistrer un batch de consommations
-+ router.post('/batch', verifAuth, consommationController.creerBatchConsommation);
+// 🔒 Enregistrer une consommation individuelle (web app)
+router.post('/', verifAuthUtilisateur, consommationController.creerConsommation);
 
-// 🔒 Récupérer toutes les consommations formatées
-+ router.get('/', verifAuth, consommationController.getConsommations);
+// 🔒 Enregistrer un batch de consommations (pico)
+router.post('/batch', verifAuthDevice, consommationController.creerBatchConsommation);
 
-// 🔒 Récupérer la dernière consommation
-router.get('/latest', verifAuth, consommationController.getDerniereConsommation);
+// 🔒 Récupérer toutes les consommations formatées (web app)
+router.get('/', verifAuthUtilisateur, consommationController.getConsommations);
 
-// 🔒 Récupérer une consommation par ID
-+ router.get('/:id', verifAuth, consommationController.getConsommationParId);
+// 🔒 Récupérer la dernière consommation (web app)
+router.get('/latest', verifAuthUtilisateur, consommationController.getDerniereConsommation);
 
-// 🔒 Calculer la consommation moyenne pour un appareil
-+ router.get('/moyenne/:appareilId', verifAuth, consommationController.calculerMoyenneConsommation);
+// 🔒 Récupérer une consommation par ID (web app)
+router.get('/:id', verifAuthUtilisateur, consommationController.getConsommationParId);
+
+// 🔒 Calculer la consommation moyenne pour un appareil (web app)
+router.get('/moyenne/:appareilId', verifAuthUtilisateur, consommationController.calculerMoyenneConsommation);
 
 module.exports = router;
