@@ -1,0 +1,141 @@
+/* 🌙 Fond clair */
+.container-gestion {
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  padding: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* 🎛️ Section multiprise */
+.multiprise-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.multiprise {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* 🟢 Visuel de la prise (cercle) */
+.prise-visuelle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin: 0 auto 0.5rem auto;
+  cursor: pointer;
+  border: 4px solid #d0d7df;
+  transition: all 0.3s ease-in-out;
+}
+
+.prise-visuelle.active {
+  background-color: #0d6efd; /* bleu ON */
+  border-color: #0b5ed7;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+}
+
+.prise-visuelle.inactive {
+  background-color: #dee2e6;
+  border-color: #adb5bd;
+}
+
+/* 📛 Nom de la prise */
+.prise-nom {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #343a40;
+}
+
+/* ⚙️ Actions sous le nom */
+.prise-actions {
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+/* 🖊️ Icône modifier */
+.prise-actions button i {
+  margin-right: 4px;
+}
+
+.prise-item {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+}
+
+/* 🎨 Mode nuit bouton */
+button[title="Mode nuit"],
+button[title="Désactiver"] {
+  transition: all 0.3s ease-in-out;
+}
+
+button[title="Désactiver"]:hover {
+  transform: rotate(20deg);
+}
+
+/* 🖋️ Champ modif nom */
+.prise-nom input {
+  width: 80%;
+  margin: 0 auto;
+  font-size: 0.85rem;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .multiprise {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* Overlay sombre */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Fenêtre modale */
+.modal-night {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+}
+
+
+.prise-nom span {
+  font-size: 1.1rem;
+}
+
+.icone-nuit {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 16px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
