@@ -113,6 +113,10 @@ exports.updateModeNuit = async (req, res) => {
     const { id } = req.params;
     const { actif, heureDebut, heureFin } = req.body;
 
+    console.log("🔧 Mise à jour mode nuit de l'appareil ID :", id);
+    console.log("📥 Payload reçu :", req.body);
+    console.log("👤 Utilisateur ID :", req.userId);
+
     const multiprises = await Multiprise.find({ utilisateurs: req.userId });
     const idsMultiprises = multiprises.map(m => m._id);
 
@@ -133,8 +137,10 @@ exports.updateModeNuit = async (req, res) => {
     }
 
     res.status(200).json({ message: "Mode nuit mis à jour", appareil });
+
   } catch (error) {
     console.error("❌ Erreur updateModeNuit :", error);
     res.status(500).json({ message: "Erreur serveur lors de la mise à jour du mode nuit." });
   }
 };
+

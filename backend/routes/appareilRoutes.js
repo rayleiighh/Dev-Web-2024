@@ -17,7 +17,7 @@ router.get("/", autoriserAppareils, getAppareils);
 router.patch("/:id/etat", verifAuthUtilisateur, updateAppareilEtat); 
 router.post('/init', verifAuthDevice , initPrises);
 router.post('/', verifAuthDevice , createAppareil);
-router.patch('/:id/mode-nuit', verifAuthDevice , updateModeNuit);
+router.patch('/:id/mode-nuit', autoriserAppareils , updateModeNuit);
 
 
 module.exports = router;
