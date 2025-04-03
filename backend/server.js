@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
 
 // 🛡️ Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'https://dev-web-2024.vercel.app/',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));
