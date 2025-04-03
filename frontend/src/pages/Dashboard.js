@@ -65,7 +65,7 @@ function Dashboard({ user, setUser  }) {
     }
     try {
       await axios.patch(
-        `http://localhost:5000/api/appareils/${appareilId}/seuil`,
+        `${process.env.REACT_APP_API_URL}/api/appareils/${appareilId}/seuil`,
         { seuil: parseInt(seuil) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -87,7 +87,7 @@ function Dashboard({ user, setUser  }) {
 
     if (!socketRef.current) {
       console.log("🔌 Tentative de connexion au WebSocket...");
-      socketRef.current = io("http://localhost:5000", {
+      socketRef.current = io(`${process.env.REACT_APP_API_URL}`, {
         transports: ['websocket']
       });
 
@@ -121,7 +121,7 @@ function Dashboard({ user, setUser  }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUtilisateur(res.data);
@@ -171,7 +171,7 @@ function Dashboard({ user, setUser  }) {
 >
 {utilisateur?.photoProfil ? (
   <img
-    src={`http://localhost:5000/${utilisateur.photoProfil}`}
+    src={`${process.env.REACT_APP_API_URL}/${utilisateur.photoProfil}`}
     alt="Profil"
     className="rounded-circle"
     style={{ width: 60, height: 60, objectFit: 'cover' }}

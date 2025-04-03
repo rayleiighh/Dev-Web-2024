@@ -15,7 +15,7 @@ const Preferences = ({ user, setUser }) => {
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPreferences(res.data.preferences || {});
@@ -38,13 +38,13 @@ const Preferences = ({ user, setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch('http://localhost:5000/api/utilisateurs/preferences', preferences, {
+      await axios.patch(`${process.env.REACT_APP_API_URL}/api/utilisateurs/preferences`, preferences, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("✅ Préférences mises à jour !");
   
       // 🔁 Re-fetch du user à jour
-      const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data); // 🔥 met à jour le user global dans App.js

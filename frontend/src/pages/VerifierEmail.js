@@ -14,7 +14,7 @@ const VerifierEmail = () => {
 
     const verifier = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/utilisateurs/verifier-email?token=${token}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/verifier-email?token=${token}`);
         setStatus('success');
         setMessage(res.data.message);
       } catch (err) {
