@@ -13,6 +13,8 @@ function Dashboard({ user, setUser  }) {
   // const [onglet, setOnglet] = useState("today");
   const [seuils, setSeuils] = useState({});
   const [error, setError] = useState(null);
+  const [multipriseActive, setMultipriseActive] = useState(true); // 🆕 par défaut active
+  const timeoutRef = useRef(null);
   const socketRef = useRef(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -21,102 +23,90 @@ function Dashboard({ user, setUser  }) {
     { nom: 'iPhone de Saad', couleur: 'primary' },
     { nom: 'PC Asus', couleur: 'danger' }
   ];
-
-  const fetchDerniereConso = async () => {
-    try {
-      console.log("📡 Envoi de la requête pour récupérer la dernière consommation...");
-      const token = localStorage.getItem('token'); // Assurez-vous que le token est bien stocké
-      const response = await fetch('/api/consommations/latest', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      console.log("Réponse de l'API :", response);
   
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP : ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log("Données de l'API :", data);
-  
-      if (data && data.value) {
-        setDerniereConso(data);
-      } else {
-        console.warn("⚠️ Données de l'API invalides :", data);
-      }
-    } catch (error) {
-      console.error("❌ Erreur récupération dernière consommation :", error);
-    }
+  const isMultipriseActive = () => {
+    if (!derniereConso || !derniereConso.timestamp) return false;
+    const now = new Date();
+    const dateConso = new Date(derniereConso.timestamp);
+    return (now - dateConso) / 1000 < 45; // max 30s de délai
   };
-
-
-  
-
-  const handleSeuilChange = (e, appareilId) => {
-    setSeuils({ ...seuils, [appareilId]: e.target.value });
-  };
-
-  const handleUpdateSeuil = async (appareilId) => {
-    const seuil = seuils[appareilId];
-    if (!seuil || isNaN(seuil)) {
-      alert("❗ Veuillez entrer un seuil numérique valide.");
-      return;
-    }
-    try {
-      await axios.patch(
-        `http://localhost:5000/api/appareils/${appareilId}/seuil`,
-        { seuil: parseInt(seuil) },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert("✅ Seuil mis à jour !");
-    } catch (err) {
-      console.error("Erreur mise à jour seuil:", err);
-      alert("❌ Erreur lors de la mise à jour.");
-    }
-  };
-
-
-
-  const unite = utilisateur?.preferences?.unite || 'kWh';
 
   useEffect(() => {
-    
-    
-    fetchDerniereConso();
+    const interval = setInterval(async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/consommations/latest', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+  
+        const data = await response.json();
+        console.log("🔍 Résultat API:", data);
+  
+        if (!multipriseActive) { // 🔥 Ne mettre hors ligne que si déjà offline via WebSocket
+          if (data.active === false) {
+            setMultipriseActive(false);
+            setDerniereConso(null);
+          } else {
+            setMultipriseActive(true);
+            setDerniereConso(data);
+          }
+        }
+  
+      } catch (error) {
+        console.error("❌ Erreur récupération API :", error);
+      }
+    }, 30000); // 🔄 Toutes les 30 secondes seulement
+  
+    return () => clearInterval(interval);
+  }, [multipriseActive]);
+  
 
+  useEffect(() => {
     if (!socketRef.current) {
       console.log("🔌 Tentative de connexion au WebSocket...");
       socketRef.current = io("http://localhost:5000", {
         transports: ['websocket']
       });
-
+  
       socketRef.current.on('connect', () => {
         console.log("🟢 Connecté au WebSocket !");
       });
-
+  
       socketRef.current.on('nouvelleConsommation', (data) => {
-        console.log("⚡ Donnée WebSocket reçue :", data);
+        console.log('⚡ Nouvelle consommation WebSocket :', data);
         setDerniereConso(data);
+        setMultipriseActive(true);
+  
+        // Reset du timer
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          console.warn('⏳ Timeout WebSocket sans nouvelles données');
+          setMultipriseActive(false);
+          setDerniereConso(null);
+        }, 60000); // 🕐 60 secondes de marge si plus de nouvelles données WebSocket
       });
-
-      socketRef.current.on('error', (error) => {
-        console.error('WebSocket error:', error);
-      });
-
+  
       socketRef.current.on('disconnect', () => {
         console.log("🔌 WebSocket déconnecté");
       });
     }
-
+  
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
         console.log("🔌 Socket déconnectée proprement");
       }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, []);
+  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -159,29 +149,28 @@ function Dashboard({ user, setUser  }) {
         <div className="d-flex align-items-start gap-3">
           {/* Emplacement pour la photo de profil */}
           <div
-  className="profile-picture-placeholder rounded-circle bg-light"
-  style={{
-    width: 60,
-    height: 60,
-    overflow: "hidden",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  }}
->
-{utilisateur?.photoProfil ? (
-  <img
-    src={`http://localhost:5000/${utilisateur.photoProfil}`}
-    alt="Profil"
-    className="rounded-circle"
-    style={{ width: 60, height: 60, objectFit: 'cover' }}
-  />
-) : (
-  <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}></div>
-)}
+            className="profile-picture-placeholder rounded-circle bg-light"
+            style={{
+              width: 60,
+              height: 60,
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+          {utilisateur?.photoProfil ? (
+          <img
+            src={`http://localhost:5000/${utilisateur.photoProfil}`}
+            alt="Profil"
+            className="rounded-circle"
+            style={{ width: 60, height: 60, objectFit: 'cover' }}
+          />
+          ) : (
+            <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}></div>
+          )}
 
-</div>
-
+        </div>
 
           {/* Titre et message de bienvenue */}
           <div>
@@ -233,7 +222,7 @@ function Dashboard({ user, setUser  }) {
             </tr>
           </thead>
           <tbody>
-            {derniereConso ? (
+            {multipriseActive && derniereConso ? (
               <tr>
                 <td>{new Date(derniereConso.timestamp).toLocaleTimeString('fr-FR', { timeZone: 'UTC' })}</td>
                 <td>{(derniereConso.value * 0.001).toFixed(4)}</td>
@@ -243,8 +232,8 @@ function Dashboard({ user, setUser  }) {
               <tr>
                 <td colSpan="3">
                   <div className="d-flex justify-content-center align-items-center">
-                    <div className="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                    <span>En attente de données temps réel...</span>
+                    <div className="spinner-border spinner-border-sm text-danger me-2" role="status"></div>
+                    <span className="text-danger">Multiprise éteinte ou hors ligne...</span>
                   </div>
                 </td>
               </tr>

@@ -14,9 +14,11 @@ const connectDB = require('./config/db');
 
 // 🔧 Initialiser Express + HTTP server
 const app = express();
-
+app.set('etag', false);
+app.set('trust proxy', true);
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 mongoose
   .connect(process.env.MONGO_URI)
