@@ -1,4 +1,4 @@
-// ✅ Preferences.js (mise à jour avec bouton retour type Bootstrap)
+// ✅ Preferences.js (mise à jour : thème clair/sombre en FR pour backend)
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './themes.css';
@@ -7,17 +7,18 @@ import { useNavigate } from 'react-router-dom';
 const Preferences = ({ user, setUser }) => {
   const [preferences, setPreferences] = useState({
     unite: 'kWh',
-    theme: 'light',
+    theme: 'clair',
     emailNotifications: true,
   });
 
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   useEffect(() => {
     document.body.classList.remove('light-theme', 'dark-theme');
-    document.body.classList.add(`${preferences.theme}-theme`);
+    document.body.classList.add(`${preferences.theme === 'sombre' ? 'dark' : 'light'}-theme`);
   }, [preferences.theme]);
 
   useEffect(() => {
@@ -45,12 +46,14 @@ const Preferences = ({ user, setUser }) => {
 
     if (name === 'theme') {
       document.body.classList.remove('light-theme', 'dark-theme');
-      document.body.classList.add(`${value}-theme`);
+      document.body.classList.add(`${value === 'sombre' ? 'dark' : 'light'}-theme`);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // sécurité en plus
+    setLoading(true);
     try {
       await axios.put('http://localhost:5000/api/utilisateurs/me', {
         preferences,
@@ -61,6 +64,9 @@ const Preferences = ({ user, setUser }) => {
     } catch (err) {
       console.error("Erreur sauvegarde:", err);
       setMessage("Erreur lors de l'enregistrement des préférences.");
+    } finally {
+      // Délai pour bloquer les spams rapides
+      setTimeout(() => setLoading(false), 1500); 
     }
   };
 
@@ -88,8 +94,8 @@ const Preferences = ({ user, setUser }) => {
         <label>
           Thème :
           <select name="theme" value={preferences.theme} onChange={handleChange}>
-            <option value="light">Clair</option>
-            <option value="dark">Sombre</option>
+            <option value="clair">Clair</option>
+            <option value="sombre">Sombre</option>
           </select>
         </label>
         <label>
@@ -101,7 +107,9 @@ const Preferences = ({ user, setUser }) => {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Sauvegarder</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Enregistrement..." : "Sauvegarder"}
+        </button>
       </form>
     </div>
   );
