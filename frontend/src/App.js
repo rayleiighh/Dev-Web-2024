@@ -13,6 +13,7 @@ import { io } from 'socket.io-client';
 import Parametre from './pages/Parametre';
 import Profil from './pages/Profil';
 import VerifierEmail from './pages/VerifierEmail';
+import Contact from './pages/Contact'; // ajuste le chemin si besoin
 
 
 const App = () => {
@@ -114,6 +115,7 @@ const App = () => {
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/verifier-email" element={<VerifierEmail />} />
+        <Route path="/contact" element={<Contact />} />
 
 
 

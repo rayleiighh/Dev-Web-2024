@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
 const { Server } = require("socket.io");
+const contactRoutes = require('./routes/contactRoutes');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -75,6 +76,9 @@ app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use("/api/consommations", require("./routes/consommationRoutes"));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/contact', contactRoutes);
+console.log("✅ Route /api/contact bien chargée !");
+
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
