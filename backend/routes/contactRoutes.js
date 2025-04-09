@@ -69,5 +69,4 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: "Erreur lors de l'envoi du message." });
   }
 });
-
 module.exports = router;
