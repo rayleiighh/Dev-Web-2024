@@ -25,7 +25,7 @@ const App = () => {
     if (!user) return;
 
     const token = localStorage.getItem('token');
-    const socket = io('http://localhost:5000', {
+    const socket = io(`${process.env.REACT_APP_API_URL}`, {
       auth: { token }
     });
 
@@ -59,7 +59,7 @@ const App = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.get('http://localhost:5000/api/utilisateurs/me', {
+      axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => setUser(res.data))
@@ -79,7 +79,7 @@ const App = () => {
 
     const token = localStorage.getItem('token');
     if (token) {
-      axios.get('http://localhost:5000/api/notifications', {
+      axios.get(`${process.env.REACT_APP_API_URL}/api/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => setNotifications(res.data))

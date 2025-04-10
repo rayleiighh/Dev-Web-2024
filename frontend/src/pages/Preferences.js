@@ -24,7 +24,7 @@ const Preferences = ({ user, setUser }) => {
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPreferences(res.data.preferences || {});
