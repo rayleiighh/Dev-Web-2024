@@ -55,7 +55,7 @@ const Preferences = ({ user, setUser }) => {
     if (loading) return; // sécurité en plus
     setLoading(true);
     try {
-      await axios.put('http://localhost:5000/api/utilisateurs/me', {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
         preferences,
       }, {
         headers: { Authorization: `Bearer ${token}` },
