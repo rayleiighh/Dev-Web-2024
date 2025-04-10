@@ -26,7 +26,7 @@ function Historique() {
       setLoading(true);
       setError(null);
 
-      let url = `${process.env.REACT_APP_API_URL}/api/consommations`;
+      let url = "http://localhost:5000/api/consommations";
       const params = [];
 
       if (dateDebut) params.push(`debut=${dateDebut}`);

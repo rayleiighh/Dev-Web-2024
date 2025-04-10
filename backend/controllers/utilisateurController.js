@@ -101,7 +101,7 @@ async function verifierEmail(req, res) {
   </p>
 
   <div style="text-align: center; margin-top: 30px;">
-    <a href="${process.env.FRONTEND_URL}" style="background-color: #3498db; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+    <a href="http://localhost:3000" style="background-color: #3498db; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
       Se connecter à PowerTrack
     </a>
   </div>
@@ -187,7 +187,7 @@ async function register(req, res) {
       { expiresIn: '1d' }
     );
 
-    const urlDeVerification = `${process.env.FRONTEND_URL}/verifier-email?token=${verificationToken}`;
+    const urlDeVerification = `http://localhost:3000/verifier-email?token=${verificationToken}`;
 
     // ✉️ Envoi de l’e-mail
     const transporter = nodemailer.createTransport({

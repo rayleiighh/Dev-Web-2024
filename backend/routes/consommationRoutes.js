@@ -14,7 +14,10 @@ router.post('/batch', verifAuthDevice, consommationController.creerBatchConsomma
 router.get('/', verifAuthUtilisateur, consommationController.getConsommations);
 
 // 🔒 Récupérer la dernière consommation (web app)
-router.get('/latest', verifAuthUtilisateur, consommationController.getDerniereConsommation);
+router.get('/latest', (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  }, consommationController.getDerniereConsommation);
 
 // 🔒 Récupérer une consommation par ID (web app)
 router.get('/:id', verifAuthUtilisateur, consommationController.getConsommationParId);

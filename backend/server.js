@@ -8,15 +8,18 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
 const { Server } = require("socket.io");
+const contactRoutes = require('./routes/contactRoutes');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
 
 // 🔧 Initialiser Express + HTTP server
 const app = express();
-
+app.set('etag', false);
+app.set('trust proxy', true);
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -37,7 +40,7 @@ io.on("connection", (socket) => {
 
 // 🛡️ Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://dev-web-2024.vercel.app/',
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));
@@ -73,6 +76,9 @@ app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
 app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use("/api/consommations", require("./routes/consommationRoutes"));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/contact', contactRoutes);
+console.log("✅ Route /api/contact bien chargée !");
+
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

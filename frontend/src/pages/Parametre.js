@@ -17,7 +17,7 @@ function Parametre({ user, setUser }) {
     if (!confirmation) return;
 
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/utilisateurs/supprimer-compte`, {
+      await axios.delete('http://localhost:5000/api/utilisateurs/supprimer-compte', {
         headers: { Authorization: `Bearer ${token}` }
       });
       localStorage.removeItem('token');

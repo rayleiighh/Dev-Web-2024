@@ -1,21 +1,30 @@
-// 📄 src/pages/Preferences.js
+// ✅ Preferences.js (mise à jour : thème clair/sombre en FR pour backend)
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './themes.css';
+import { useNavigate } from 'react-router-dom';
 
 const Preferences = ({ user, setUser }) => {
   const [preferences, setPreferences] = useState({
     unite: 'kWh',
-    theme: 'light',
+    theme: 'clair',
     emailNotifications: true,
   });
 
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.classList.remove('light-theme', 'dark-theme');
+    document.body.classList.add(`${preferences.theme === 'sombre' ? 'dark' : 'light'}-theme`);
+  }, [preferences.theme]);
 
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
+        const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPreferences(res.data.preferences || {});
@@ -29,82 +38,78 @@ const Preferences = ({ user, setUser }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setPreferences({
+    const newPreferences = {
       ...preferences,
       [name]: type === 'checkbox' ? checked : value,
-    });
+    };
+    setPreferences(newPreferences);
+
+    if (name === 'theme') {
+      document.body.classList.remove('light-theme', 'dark-theme');
+      document.body.classList.add(`${value === 'sombre' ? 'dark' : 'light'}-theme`);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // sécurité en plus
+    setLoading(true);
     try {
-      await axios.patch(`${process.env.REACT_APP_API_URL}/api/utilisateurs/preferences`, preferences, {
+      await axios.put('http://localhost:5000/api/utilisateurs/me', {
+        preferences,
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setMessage("✅ Préférences mises à jour !");
-  
-      // 🔁 Re-fetch du user à jour
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(res.data); // 🔥 met à jour le user global dans App.js
-  
+      setMessage('Préférences enregistrées avec succès.');
     } catch (err) {
-      console.error("Erreur mise à jour:", err);
-      setMessage("❌ Erreur lors de la mise à jour.");
+      console.error("Erreur sauvegarde:", err);
+      setMessage("Erreur lors de l'enregistrement des préférences.");
+    } finally {
+      // Délai pour bloquer les spams rapides
+      setTimeout(() => setLoading(false), 1500); 
     }
   };
 
-  useEffect(() => {
-    const theme = preferences.theme;
-    if (theme === 'dark') {
-      document.body.classList.add('bg-dark', 'text-white');
-    } else {
-      document.body.classList.remove('bg-dark', 'text-white');
-    }
-    return () => {
-      document.body.classList.remove('bg-dark', 'text-white');
-    };
-  }, [preferences.theme]);
-
   return (
-    <div className="container mt-4">
-      <h2>🛠️ Paramètres & Préférences</h2>
+    <div className="preferences-container">
+      <button
+        className="btn btn-outline-dark rounded-circle"
+        onClick={() => navigate(-1)}
+        aria-label="Retour"
+        style={{ marginBottom: '1rem' }}
+      >
+        <i className="bi bi-arrow-left"></i>
+      </button>
 
-      {message && <p className="alert alert-info mt-3">{message}</p>}
-
-      <form onSubmit={handleSubmit} className="mt-4">
-        <div className="mb-3">
-          <label>Unité de consommation :</label>
-          <select name="unite" value={preferences.unite} onChange={handleChange} className="form-select">
+      <h2>Préférences utilisateur</h2>
+      {message && <p>{message}</p>}
+      <form onSubmit={handleSubmit}>
+        <label>
+          Unité de consommation :
+          <select name="unite" value={preferences.unite} onChange={handleChange}>
             <option value="kWh">kWh</option>
             <option value="Wh">Wh</option>
           </select>
-        </div>
-
-        <div className="mb-3">
-          <label>Thème :</label>
-          <select name="theme" value={preferences.theme} onChange={handleChange} className="form-select">
-            <option value="light">Clair</option>
-            <option value="dark">Sombre</option>
+        </label>
+        <label>
+          Thème :
+          <select name="theme" value={preferences.theme} onChange={handleChange}>
+            <option value="clair">Clair</option>
+            <option value="sombre">Sombre</option>
           </select>
-        </div>
-
-        <div className="form-check mb-3">
+        </label>
+        <label>
+          Notifications par email :
           <input
             type="checkbox"
             name="emailNotifications"
             checked={preferences.emailNotifications}
             onChange={handleChange}
-            className="form-check-input"
-            id="notifCheck"
           />
-          <label className="form-check-label" htmlFor="notifCheck">
-            Recevoir des alertes par email 📩
-          </label>
-        </div>
-
-        <button type="submit" className="btn btn-primary">Enregistrer</button>
+        </label>
+        <button type="submit" disabled={loading}>
+          {loading ? "Enregistrement..." : "Sauvegarder"}
+        </button>
       </form>
     </div>
   );
