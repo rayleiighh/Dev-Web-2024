@@ -1,0 +1,144 @@
+
+.contact-page {
+  position: relative;
+  min-height: 100vh;
+  background: #f0f4f8;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #1c1c1c;
+  color: white;
+}
+
+
+.contact-container {
+  max-width: 600px;
+  margin: 80px auto 30px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease-in-out;
+}
+
+/* === Titre === */
+.contact-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+/* === Formulaire === */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #f5f6fa;
+  transition: border 0.2s ease;
+  font-family: inherit;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  background-color: #fff;
+}
+
+.contact-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* === Bouton Envoyer === */
+.contact-form button {
+  background-color: #3498db;
+  color: white;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.contact-form button:hover {
+  background-color: #0d5ab2;
+}
+
+.contact-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* === Message de confirmation === */
+.confirmation-message {
+  text-align: center;
+  margin-top: 15px;
+  color: green;
+  font-weight: 500;
+}
+
+/* === Animation de chargement === */
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid white;
+  border-right: 3px solid white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .contact-container {
+    margin: 60px 20px 20px;
+    padding: 30px 20px;
+  }
+
+  .contact-title {
+    font-size: 1.8rem;
+  }
+}

@@ -186,16 +186,41 @@ exports.getConsommations = async (req, res) => {
 
 exports.getDerniereConsommation = async (req, res) => {
   try {
-    const derniereConso = await Consommation.findOne().sort({ timestamp: -1 });
-    if (!derniereConso) {
+    const consommation = await Consommation.findOne().sort({ timestamp: -1 });
+
+    if (!consommation) {
       return res.status(404).json({ message: "Aucune consommation trouvée." });
     }
-    res.status(200).json(derniereConso);
+
+    const nowUTC = new Date(Date.now()); // UTC
+    const timestampUTC = new Date(consommation.timestamp);
+
+    let diffInSeconds = (nowUTC.getTime() - timestampUTC.getTime()) / 1000;
+    console.log(`⏱ Différence avec dernière consommation : ${diffInSeconds.toFixed(1)} secondes`);
+
+    if (diffInSeconds < 0) {
+      console.warn("⚠️ Timestamp dans le futur détecté !");
+      diffInSeconds = Math.abs(diffInSeconds); // ⚡ On corrige en valeur absolue pour éviter le bug
+    }
+
+    if (diffInSeconds > 45) {
+      return res.status(200).json({ active: false, message: "Multiprise éteinte" });
+    }
+
+    return res.status(200).json({
+      active: true,
+      _id: consommation._id,
+      value: consommation.value,
+      timestamp: consommation.timestamp
+    });
+
   } catch (err) {
-    console.error("❌ Erreur récupération dernière consommation:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la récupération de la dernière consommation." });
+    console.error("Erreur récupération dernière consommation:", err);
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
+
+
 
 exports.calculerMoyenneConsommation = async (req, res) => {
   try {

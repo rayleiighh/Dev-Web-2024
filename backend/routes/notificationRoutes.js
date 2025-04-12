@@ -77,6 +77,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.post('/generer-infos', notificationController.genererNotificationInfo);
 
 router.post('/', notificationController.creerNotification);
 

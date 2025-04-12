@@ -117,3 +117,15 @@ exports.supprimerNotification = async (req, res) => {
   }
 };
 
+const generateInfoNotifications = require('../jobs/generateInfoNotifications');
+
+exports.genererNotificationInfo = async (req, res) => {
+  try {
+    await generateInfoNotifications();
+    res.status(200).json({ message: 'Notifications informatives générées avec succès.' });
+  } catch (error) {
+    console.error("❌ Erreur génération manuelle :", error);
+    res.status(500).json({ message: "Erreur lors de la génération." });
+  }
+};
+
