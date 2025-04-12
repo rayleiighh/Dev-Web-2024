@@ -13,16 +13,20 @@ const Register = () => {
   const [deviceId, setDeviceId] = useState('');
   const [error, setError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     if (password !== confirmPassword) {
       setPasswordError("Les mots de passe ne correspondent pas.");
       return;
     }
-
+  
     setPasswordError("");
+    setLoading(true);
+  
     try {
       await axios.post('http://localhost:5000/api/utilisateurs/register', {
         prenom,
@@ -34,8 +38,11 @@ const Register = () => {
       navigate('/');
     } catch (err) {
       setError("Échec de l’inscription. Vérifiez vos informations ou le numéro de série.");
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   return (
     <div className="auth-container">
@@ -62,7 +69,7 @@ const Register = () => {
           </p>
         )}
         <input type="text" placeholder="Numéro de série de la multiprise" value={deviceId} onChange={(e) => setDeviceId(e.target.value)} required />
-        <button type="submit">S'inscrire</button>
+        <button type="submit" disabled={loading}>{loading ? "Chargement..." : "S'inscrire"}</button>
       </form>
       <p>Déjà un compte ? <a href="/">Connectez-vous</a></p>
     </div>
