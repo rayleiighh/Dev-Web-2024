@@ -77,10 +77,33 @@ function Historique() {
     }]
   };
 
-  const handleExport = () => {
-    alert("📥 Export CSV en cours de développement !");
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch('http://localhost:5000/api/consommations', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`Erreur lors de l'export CSV : ${response.status}`);
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.setAttribute('download', 'consommations.csv');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Erreur lors de l'export CSV :", error);
+      alert("Erreur lors de l'export CSV, voir la console pour plus de détails.");
+    }
   };
-
+  
   if (loading) return <p>⏳ Chargement en cours...</p>;
   if (error) return <p>❌ Erreur : {error}</p>;
 

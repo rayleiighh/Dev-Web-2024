@@ -246,3 +246,24 @@ exports.calculerMoyenneConsommation = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors du calcul de la moyenne." });
   }
 };
+
+/*
+const fs = require('fs');
+const { Parser } = require('json2csv');
+
+exports.exporterDonnees = async (req, res) => {
+  try {
+    const consommations = await Consommation.find().populate('appareil');
+
+    const json2csvParser = new Parser({ delimiter: ';' });
+    const csv = '\uFEFF' + json2csvParser.parse(formattedData); // ⚠️ BOM UTF-8 pour Excel
+
+    res.header('Content-Type', 'text/csv; charset=utf-8');
+    res.attachment('consommations.csv');
+    return res.send(csv);
+  } catch (err) {
+    console.error('Erreur lors de l’export CSV :', err);
+    res.status(500).send('Erreur serveur');
+  }
+};
+*/  
