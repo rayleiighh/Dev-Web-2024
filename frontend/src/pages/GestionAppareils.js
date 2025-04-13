@@ -138,8 +138,9 @@ function GestionAppareils() {
 
   return (
     <div className="container-gestion">
-      <div className="d-flex align-items-center justify-content-between px-3 py-2">
-        <button className="btn btn-outline-dark rounded-circle" onClick={() => navigate(-1)}>
+      <div className="d-flex align-items-center justify-content-between px-3 py-2 position-relative">
+      <div className="placeholder" aria-hidden="true"></div>
+        <button className="btn btn-outline-dark rounded-circle fixed-button" onClick={() => navigate(-1)}>
           <i className="bi bi-arrow-left"></i>
         </button>
 

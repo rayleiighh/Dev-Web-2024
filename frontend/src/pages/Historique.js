@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Historique.css';
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend);
 
@@ -20,6 +21,7 @@ function Historique() {
   const [dateFin, setDateFin] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetchConsommations = useCallback(async () => {
     try {
@@ -111,10 +113,16 @@ function Historique() {
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>📊 Historique des consommations</h4>
-        <button onClick={() => window.location.href = "/"} className="btn btn-outline-secondary">
-          ⬅ Retour Dashboard
+
+        <button className="btn btn-outline-dark rounded-circle fixed-button" 
+          onClick={() => navigate(-1)}>
+          <i className="bi bi-arrow-left"></i> 
         </button>
+
+      
       </div>
+
+      
 
       <div className="row g-3 mb-3">
         <div className="col-md-3">
