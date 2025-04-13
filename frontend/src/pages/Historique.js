@@ -82,7 +82,7 @@ function Historique() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch('http://localhost:5000/api/consommations', {
+      const response = await fetch('http://localhost:5000/api/consommations/export-csv', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

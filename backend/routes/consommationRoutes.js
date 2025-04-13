@@ -7,6 +7,7 @@ const { Parser } = require('json2csv');
 const Consommation = require('../models/consommationModel');
 
 
+router.get('/export-csv', verifAuthUtilisateur, consommationController.exporterConsommationsEnCSV);
 
 // 🔒 Enregistrer une consommation individuelle (web app)
 router.post('/', verifAuthUtilisateur, consommationController.creerConsommation);
@@ -30,6 +31,4 @@ router.get('/:id', verifAuthUtilisateur, consommationController.getConsommationP
 router.get('/moyenne/:appareilId', verifAuthUtilisateur, consommationController.calculerMoyenneConsommation);
 
 
-//router.get('/export-csv', verifAuthUtilisateur, consommationController.exporterDonnes);
-
-module.exports = router;
+module.exports = router; 

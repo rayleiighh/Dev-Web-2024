@@ -4,6 +4,7 @@ const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
 const Multiprise = require("../models/multipriseModel");
 const { sendEmail } = require('../services/notificationsService');
+const { Parser } = require('json2csv'); 
 
 
 exports.creerConsommation = async (req, res) => {
@@ -272,23 +273,22 @@ exports.calculerMoyenneConsommation = async (req, res) => {
   }
 };
 
-/*
-const fs = require('fs');
-const { Parser } = require('json2csv');
 
-exports.exporterDonnees = async (req, res) => {
+exports.exporterConsommationsEnCSV = async (req, res) => {
   try {
-    const consommations = await Consommation.find().populate('appareil');
+    const consommations = await Consommation.find({}).lean();
 
-    const json2csvParser = new Parser({ delimiter: ';' });
-    const csv = '\uFEFF' + json2csvParser.parse(formattedData); // ⚠️ BOM UTF-8 pour Excel
+    const fields = ['timestamp', 'value', 'multiprise']; // Tu choisis ici les colonnes
+    const opts = { fields };
 
-    res.header('Content-Type', 'text/csv; charset=utf-8');
+    const parser = new Parser(opts);
+    const csv = parser.parse(consommations);
+
+    res.header('Content-Type', 'text/csv');
     res.attachment('consommations.csv');
     return res.send(csv);
   } catch (err) {
-    console.error('Erreur lors de l’export CSV :', err);
-    res.status(500).send('Erreur serveur');
+    console.error('Erreur export CSV:', err);
+    res.status(500).json({ message: 'Erreur serveur lors de l’export CSV.' });
   }
 };
-*/  
