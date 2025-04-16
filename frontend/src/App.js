@@ -101,11 +101,21 @@ const App = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        fontWeight: 'bold',
-        fontSize: '18px'
+        flexDirection: 'column',
+        backgroundColor: '#f4f7fa',
+        fontFamily: 'Segoe UI, sans-serif'
       }}>
-        Chargement...
+        <div className="loader-spinner"></div>
+        <p style={{
+          marginTop: '20px',
+          fontSize: '18px',
+          fontWeight: 500,
+          color: '#555'
+        }}>
+          Chargement en cours...
+        </p>
       </div>
+      
     );
   }
 
