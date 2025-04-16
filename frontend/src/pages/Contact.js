@@ -36,10 +36,8 @@ const Contact = () => {
   return (
     <div className="contact-page">
       <button
-        className="btn btn-outline-dark rounded-circle"
+        className="btn btn-outline-dark rounded-circle fixed-bouton"
         onClick={() => navigate(-1)}
-        aria-label="Retour"
-        style={{ marginBottom: '1rem' }}
       >
         <i className="bi bi-arrow-left"></i>
       </button>

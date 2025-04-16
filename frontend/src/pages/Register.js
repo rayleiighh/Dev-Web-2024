@@ -9,25 +9,40 @@ const Register = () => {
   const [nom, setNom] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [deviceId, setDeviceId] = useState(''); // ✅ Champ ajouté
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [deviceId, setDeviceId] = useState('');
   const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    if (password !== confirmPassword) {
+      setPasswordError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+  
+    setPasswordError("");
+    setLoading(true);
+  
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/utilisateurs/register`, {
         prenom,
         nom,
         email,
         motDePasse: password,
-        deviceId // ✅ Inclus dans la requête
+        deviceId
       });
       navigate('/');
     } catch (err) {
       setError("Échec de l’inscription. Vérifiez vos informations ou le numéro de série.");
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   return (
     <div className="auth-container">
@@ -38,8 +53,23 @@ const Register = () => {
         <input type="text" placeholder="Nom" value={nom} onChange={(e) => setNom(e.target.value)} required />
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input
+          type="password"
+          placeholder="Confirmer le mot de passe"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          style={{
+            border: passwordError ? '1px solid red' : undefined
+          }}
+        />
+        {passwordError && (
+          <p style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+            {passwordError}
+          </p>
+        )}
         <input type="text" placeholder="Numéro de série de la multiprise" value={deviceId} onChange={(e) => setDeviceId(e.target.value)} required />
-        <button type="submit">S'inscrire</button>
+        <button type="submit" disabled={loading}>{loading ? "Chargement..." : "S'inscrire"}</button>
       </form>
       <p>Déjà un compte ? <a href="/">Connectez-vous</a></p>
     </div>

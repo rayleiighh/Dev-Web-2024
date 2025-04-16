@@ -17,6 +17,7 @@ const connectDB = require('./config/db');
 const app = express();
 app.set('etag', false);
 app.set('trust proxy', true);
+app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -39,13 +40,7 @@ io.on("connection", (socket) => {
 
 // 🛡️ Middlewares
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || origin.includes('vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS non autorisé : ' + origin));
-    }
-  },
+  origin: process.env.FRONTEND_URL || `${process.env.FRONTEND_URL}`,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));

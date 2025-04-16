@@ -139,3 +139,11 @@ button[title="Désactiver"]:hover {
   padding: 2px;
   box-shadow: 0 0 3px rgba(0,0,0,0.2);
 }
+
+
+.fixed-button {
+  position: fixed; 
+  top: 20px;       
+  left: 20px;      
+  z-index: 1000;   
+}

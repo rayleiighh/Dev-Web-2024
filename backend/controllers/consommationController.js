@@ -4,6 +4,7 @@ const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
 const Multiprise = require("../models/multipriseModel");
 const { sendEmail } = require('../services/notificationsService');
+const { Parser } = require('json2csv'); 
 
 
 exports.creerConsommation = async (req, res) => {
@@ -269,5 +270,25 @@ exports.calculerMoyenneConsommation = async (req, res) => {
   } catch (err) {
     console.error("❌ Erreur calcul moyenne consommation :", err);
     res.status(500).json({ message: "Erreur serveur lors du calcul de la moyenne." });
+  }
+};
+
+
+exports.exporterConsommationsEnCSV = async (req, res) => {
+  try {
+    const consommations = await Consommation.find({}).lean();
+
+    const fields = ['timestamp', 'value', 'multiprise']; // Tu choisis ici les colonnes
+    const opts = { fields };
+
+    const parser = new Parser(opts);
+    const csv = parser.parse(consommations);
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('consommations.csv');
+    return res.send(csv);
+  } catch (err) {
+    console.error('Erreur export CSV:', err);
+    res.status(500).json({ message: 'Erreur serveur lors de l’export CSV.' });
   }
 };

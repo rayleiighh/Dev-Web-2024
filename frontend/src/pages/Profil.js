@@ -14,6 +14,7 @@ const Profil = ({ user, setUser }) => {
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
   const [photo, setPhoto] = useState(null);
+  const [loading, setLoading] = useState(false); // 🌀
 
   useEffect(() => {
     if (user) {
@@ -29,23 +30,27 @@ const Profil = ({ user, setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
-
+  
     if (nouveauMotDePasse && nouveauMotDePasse !== confirmationMotDePasse) {
       setErreur("Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
-
+  
+    setLoading(true); // Démarre l'état de chargement
+  
     try {
+      // Mise à jour des infos utilisateur (nom, email, mdp)
       await axios.put(
         `${process.env.REACT_APP_API_URL}/api/utilisateurs/me`,
         { nom, email, ancienMotDePasse, nouveauMotDePasse },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
+      // Envoi de la photo si sélectionnée
       if (photo) {
         const formData = new FormData();
         formData.append('photo', photo);
-
+  
         await axios.patch(`${process.env.REACT_APP_API_URL}/api/utilisateurs/profil/photo`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,25 +58,30 @@ const Profil = ({ user, setUser }) => {
           },
         });
       }
-
+  
+      // Recharge les infos utilisateur à jour
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
-
-      setMessage("✅ Profil mis à jour avec succès");
+  
+      // Reset des champs et message de succès
+      setMessage("Profil mis à jour avec succès");
       setErreur('');
       setAncienMotDePasse('');
       setNouveauMotDePasse('');
       setConfirmationMotDePasse('');
       setPhoto(null);
-      navigate('/dashboard');
     } catch (error) {
       console.error(error);
       setErreur(error.response?.data?.message || "Erreur lors de la mise à jour du profil");
       setMessage('');
+    } finally {
+      // On garde le spinner visible au moins 800ms pour l'expérience utilisateur
+      setTimeout(() => setLoading(false), 800);
     }
   };
+  
 
   return (
     <div className="container mt-4">
@@ -108,18 +118,28 @@ const Profil = ({ user, setUser }) => {
           <input type={showPassword ? "text" : "password"} className="form-control" value={confirmationMotDePasse} onChange={(e) => setConfirmationMotDePasse(e.target.value)} />
         </div>
         <div className="custom-toggle my-3">
-            <label className="switch">
-                  <input type="checkbox" checked={showPassword} onChange={() => setShowPassword(!showPassword)} />
-                  <span className="slider round"></span>
-            </label>
-                 <span className="ms-2">Afficher les mots de passe</span>
+          <label className="switch">
+            <input type="checkbox" checked={showPassword} onChange={() => setShowPassword(!showPassword)} />
+            <span className="slider round"></span>
+          </label>
+          <span className="ms-2">Afficher les mots de passe</span>
         </div>
 
         <div className="form-group mt-3">
           <label>Photo de profil</label>
           <input type="file" className="form-control" onChange={handleFileChange} />
         </div>
-        <button type="submit" className="btn btn-primary mt-3">Enregistrer</button>
+
+        <button type="submit" className="btn btn-primary mt-3" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+              Enregistrement...
+            </>
+          ) : (
+            'Enregistrer'
+          )}
+        </button>
       </form>
     </div>
   );

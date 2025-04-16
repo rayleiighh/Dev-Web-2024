@@ -3,6 +3,11 @@ const router = express.Router();
 const consommationController = require('../controllers/consommationController');
 const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
 const { verifAuthDevice } = require('../middleware/authDevice');
+const { Parser } = require('json2csv');
+const Consommation = require('../models/consommationModel');
+
+
+router.get('/export-csv', verifAuthUtilisateur, consommationController.exporterConsommationsEnCSV);
 
 // 🔒 Enregistrer une consommation individuelle (web app)
 router.post('/', verifAuthUtilisateur, consommationController.creerConsommation);
@@ -25,4 +30,5 @@ router.get('/:id', verifAuthUtilisateur, consommationController.getConsommationP
 // 🔒 Calculer la consommation moyenne pour un appareil (web app)
 router.get('/moyenne/:appareilId', verifAuthUtilisateur, consommationController.calculerMoyenneConsommation);
 
-module.exports = router;
+
+module.exports = router; 
