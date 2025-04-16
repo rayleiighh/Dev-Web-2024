@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import './Contact.css';
 import { useNavigate } from 'react-router-dom';
 
-const Contact = () => {
-  const [nom, setNom] = useState('');
-  const [email, setEmail] = useState('');
+const Contact = ({ user }) => {
   const [message, setMessage] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,17 +11,20 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const res = await fetch('http://localhost:5000/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom, email, message })
+        body: JSON.stringify({
+          nom: user?.nom || 'Utilisateur inconnu',
+          email: user?.email || 'non défini',
+          message
+        })
       });
 
       const data = await res.json();
       setConfirmation(data.message);
-      setNom('');
-      setEmail('');
       setMessage('');
     } catch (error) {
       console.error('Erreur lors de l’envoi du message :', error);
@@ -45,26 +46,19 @@ const Contact = () => {
       <div className="contact-container">
         <h2 className="contact-title">Contactez-nous</h2>
         <form onSubmit={handleSubmit} className="contact-form">
-          <input
-            type="text"
-            placeholder="Votre nom"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Votre adresse e-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <textarea
+        <textarea
             placeholder="Votre message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // empêche le saut de ligne
+                handleSubmit(e); // soumet le formulaire
+              }
+            }}
           />
+
           <button type="submit" disabled={loading}>
             {loading ? <span className="loader" /> : 'Envoyer'}
           </button>

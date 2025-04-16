@@ -107,3 +107,34 @@ a:hover {
   transform: scale(1.2);
   color: #0056b3;
 }
+.btn-contact-link {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-weight: bold;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.btn-contact-link:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+.help-button {
+  margin-top: 25px;
+  background: none;
+  border: 2px solid #3498db;
+  color: #3498db;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.help-button:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+
