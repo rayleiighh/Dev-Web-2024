@@ -8,36 +8,50 @@ import NotificationsPage from './pages/Notifications';
 import Preferences from './pages/Preferences';
 import Historique from './pages/Historique';
 import GestionAppareils from './pages/GestionAppareils';
-import Navbar from './components/Navbar';
-import { io } from 'socket.io-client';
 import Parametre from './pages/Parametre';
 import Profil from './pages/Profil';
 import VerifierEmail from './pages/VerifierEmail';
-import Contact from './pages/Contact'; // ajuste le chemin si besoin
+import Contact from './pages/Contact';
 import ContactLogin from './pages/ContactLogin';
-
+import { io } from 'socket.io-client';
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // 👈 nouveau state
 
-  // Dans App.js
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.get('http://localhost:5000/api/utilisateurs/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          setUser(res.data);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          setUser(null);
+          setNotifications([]);
+        })
+        .finally(() => setIsLoading(false)); // 👈 stop loading quoi qu’il arrive
+    } else {
+      setIsLoading(false); // 👈 si pas de token, on arrête aussi le chargement
+    }
+  }, []);
+
   useEffect(() => {
     if (!user) return;
 
     const token = localStorage.getItem('token');
-    const socket = io('http://localhost:5000', {
-      auth: { token }
-    });
+    const socket = io('http://localhost:5000', { auth: { token } });
 
     socket.on('connect', () => {
       console.log("✅ Connecté au WebSocket");
     });
 
     socket.on('nouvelle-notification', (notif) => {
-      console.log("📥 Nouvelle notification:", notif);
       setNotifications(prev => {
-        // Évite les doublons
         const existeDeja = prev.some(n => n._id === notif._id);
         return existeDeja ? prev : [notif, ...prev];
       });
@@ -51,50 +65,28 @@ const App = () => {
       socket.disconnect();
       console.log("❌ Déconnecté du WebSocket");
     };
-    }, [user]); // Se reconnecte quand l'utilisateur change
-
-
-
-  
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.get('http://localhost:5000/api/utilisateurs/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem('token');
-        setUser(null);
-        setNotifications([]); // 🔥 Réinitialisation après déconnexion automatique
-      });
-    }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
-      setNotifications([]); // 🔥 Réinitialisation des notifications si l'utilisateur change
+      setNotifications([]);
       return;
     }
 
     const token = localStorage.getItem('token');
-    if (token) {
-      axios.get('http://localhost:5000/api/notifications', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+    axios.get('http://localhost:5000/api/notifications', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(res => setNotifications(res.data))
       .catch(err => {
         console.error("Erreur lors de la récupération des notifications", err);
         setNotifications([]);
       });
-    }
-  }, [user]); // 🔥 Recharge les notifications à chaque changement d'utilisateur
+  }, [user]);
 
   useEffect(() => {
     const utilisateur = JSON.parse(localStorage.getItem('utilisateur'));
     const theme = utilisateur?.preferences?.theme || 'light';
-    
     if (theme === 'dark') {
       document.body.classList.add('dark-mode');
     } else {
@@ -102,9 +94,23 @@ const App = () => {
     }
   }, []);
 
+  if (isLoading) {
+    return (
+      <div style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontWeight: 'bold',
+        fontSize: '18px'
+      }}>
+        Chargement...
+      </div>
+    );
+  }
+
   return (
     <Router>
-   {/* <Navbar user={user} setUser={setUser} notifications={notifications} setNotifications={setNotifications} /> */}
       <Routes>
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
@@ -118,9 +124,6 @@ const App = () => {
         <Route path="/verifier-email" element={<VerifierEmail />} />
         <Route path="/contact" element={<Contact user={user} />} />
         <Route path="/contact-login" element={<ContactLogin />} />
-
-
-
       </Routes>
     </Router>
   );
