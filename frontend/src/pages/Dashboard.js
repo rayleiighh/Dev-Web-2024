@@ -161,11 +161,13 @@ function Dashboard({ user, setUser  }) {
           >
           {utilisateur?.photoProfil ? (
           <img
-            src={`http://localhost:5000/${utilisateur.photoProfil}`}
-            alt="Profil"
-            className="rounded-circle"
-            style={{ width: 60, height: 60, objectFit: 'cover' }}
-          />
+          src={`http://localhost:5000/${utilisateur.photoProfil}`}
+          alt="Profil"
+          className="rounded-circle"
+          style={{ width: 60, height: 60, objectFit: 'cover' }}
+        />
+        
+        
           ) : (
             <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}></div>
           )}

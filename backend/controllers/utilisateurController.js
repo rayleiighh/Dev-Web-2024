@@ -417,20 +417,25 @@ async function updateMonProfil(req, res) {
 const updateProfilePicture = async (req, res) => {
   try {
     const utilisateur = await Utilisateur.findById(req.userId);
-    console.log("Fichier reçu :", req.file);
-    console.log("ID utilisateur:", req.userId);
+    
+
     if (!utilisateur) {
       return res.status(404).json({ message: 'Utilisateur non trouvé.' });
     }
 
     if (req.file) {
-      const relativePath = req.file.path.replace(/\\/g, '/'); // Windows fix
-      utilisateur.photoProfil = relativePath; //  Assure-toi que ce champ correspond à ton modèle
+      // ✅ Chemin relatif pour que le frontend puisse accéder via http://localhost:5000/uploads/profiles/...
+      const relativePath = `uploads/profiles/${req.file.filename}`;
+      utilisateur.photoProfil = relativePath;
+      
     }
 
     await utilisateur.save();
 
-    res.status(200).json({ message: 'Photo de profil mise à jour avec succès.', photo: utilisateur.photoProfil });
+    res.status(200).json({
+      message: 'Photo de profil mise à jour avec succès.',
+      photo: utilisateur.photoProfil
+    });
   } catch (err) {
     console.error("Erreur mise à jour photo de profil:", err);
     res.status(500).json({ message: "Erreur serveur lors de la mise à jour de la photo." });
