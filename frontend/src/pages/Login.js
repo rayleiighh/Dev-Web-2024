@@ -51,9 +51,18 @@ const Login = ({ setUser }) => {
         />
         <button type="submit">Se connecter</button>
       </form>
+
       <p>
         Pas encore de compte ? <a href="/register">Inscrivez-vous</a>
       </p>
+      <button
+        className="help-button"
+        onClick={() => window.location.href = '/contact-login'}>
+          Besoin d’aide ?
+      </button>
+
+
+      
     </div>
   );
 };

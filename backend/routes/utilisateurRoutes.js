@@ -41,6 +41,7 @@ router.get('/me', verifAuthUtilisateur, getMonProfil);
 router.put('/me', verifAuthUtilisateur, updateMonProfil); 
 router.delete('/supprimer-compte', verifAuthUtilisateur, supprimerMonCompte);
 router.patch('/profil', verifAuthUtilisateur, mettreAJourProfil);
+router.patch('/profil/photo', verifAuthUtilisateur, upload.single('photo'), updateProfilePicture);
 
 
 

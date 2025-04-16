@@ -24,6 +24,16 @@ body {
 .user-header img {
   border: 1px solid #dee2e6;
 }
+.photo-profil {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
 
 /* ========================
    📝 Titres

@@ -162,10 +162,13 @@ function Dashboard({ user, setUser  }) {
           {utilisateur?.photoProfil ? (
           <img
             src={`${process.env.REACT_APP_API_URL}/${utilisateur.photoProfil}`}
-            alt="Profil"
-            className="rounded-circle"
-            style={{ width: 60, height: 60, objectFit: 'cover' }}
-          />
+          alt="Profil"
+          className="rounded-circle"
+          crossOrigin="anonymous"
+          style={{ width: 60, height: 60, objectFit: 'cover' }}
+        />
+        
+        
           ) : (
             <div className="profile-picture-placeholder rounded-circle bg-light" style={{ width: 60, height: 60 }}></div>
           )}
