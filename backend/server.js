@@ -79,7 +79,13 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/contact', contactRoutes);
 console.log("✅ Route /api/contact bien chargée !");
 
+// Autoriser l'accès CORS pour les fichiers dans /uploads
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // ← frontend
+  next();
+});
 
+// Servir les fichiers statiques
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ❌ Gestion des erreurs globales

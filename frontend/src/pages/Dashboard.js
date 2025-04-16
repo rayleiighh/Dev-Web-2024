@@ -164,6 +164,7 @@ function Dashboard({ user, setUser  }) {
           src={`http://localhost:5000/${utilisateur.photoProfil}`}
           alt="Profil"
           className="rounded-circle"
+          crossOrigin="anonymous"
           style={{ width: 60, height: 60, objectFit: 'cover' }}
         />
         
