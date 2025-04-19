@@ -167,8 +167,32 @@ exports.getConsommationParId = async (req, res) => {
 
 exports.getConsommations = async (req, res) => {
   try {
-    const consommations = await Consommation.find().sort({ timestamp: -1 }).limit(50);
-    // Formatage côté serveur : conversion de la date en chaîne lisible
+    const { debut, fin } = req.query;
+
+    const filtre = {};
+
+    if (debut || fin) {
+      filtre.timestamp = {};
+      if (debut) {
+        const dateDebut = new Date(debut);
+        if (!isNaN(dateDebut)) filtre.timestamp.$gte = dateDebut;
+      }
+      if (fin) {
+        const dateFin = new Date(fin);
+        if (!isNaN(dateFin)) filtre.timestamp.$lte = dateFin;
+      }
+    }
+
+    // 🧠 Préparer la requête
+    let requete = Consommation.find(filtre).sort({ timestamp: -1 });
+
+    // ✅ Si aucun filtre de dates, on limite à 20 résultats
+    if (!debut && !fin) {
+      requete = requete.limit(20);
+    }
+
+    const consommations = await requete;
+
     const dataFormatee = consommations.map(c => {
       const dateObj = new Date(c.timestamp);
       const dateLisible = dateObj.toLocaleString('fr-FR', {
@@ -176,14 +200,25 @@ exports.getConsommations = async (req, res) => {
         dateStyle: 'short',
         timeStyle: 'medium'
       });
-      return { ...c._doc, timestamp: dateLisible };
+      return {
+        _id: c._id,
+        value: c.value,
+        timestamp: c.timestamp,
+        appareil: c.appareil,
+        multiprise: c.multiprise,
+        timestampISO: c.timestamp,
+        timestampLisible: dateLisible
+      };
     });
+
     res.status(200).json(dataFormatee);
   } catch (err) {
     console.error("❌ Erreur récupération consommations:", err);
     res.status(500).json({ message: "Erreur serveur lors de la récupération." });
   }
 };
+
+
 
 exports.getDerniereConsommation = async (req, res) => {
   try {
