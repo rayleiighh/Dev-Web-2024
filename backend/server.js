@@ -12,6 +12,9 @@ const contactRoutes = require('./routes/contactRoutes');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
+const cron = require('node-cron');
+const generateInfoNotifications = require('./jobs/generateInfoNotifications');
+
 
 // 🔧 Initialiser Express + HTTP server
 const app = express();
@@ -25,6 +28,12 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connecté !"))
   .catch((err) => console.error("❌ Erreur MongoDB :", err));
+
+
+cron.schedule('0 18 * * *', () => {
+  console.log("⏰ Génération automatique des notifications informatives à 18h");
+  generateInfoNotifications();
+});
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
