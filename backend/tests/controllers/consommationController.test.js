@@ -1,3 +1,5 @@
+// tests/controllers/consommationController.test.js
+
 const mongoose = require('mongoose');
 const mockNotificationSave = jest.fn();
 const mockNotificationCreate = jest.fn();
@@ -5,17 +7,12 @@ const mockNotificationConstructor = jest.fn().mockImplementation(() => ({
   save: mockNotificationSave
 }));
 
-// Mock statique .create()
+// static .create()
 mockNotificationConstructor.create = mockNotificationCreate;
 
-// Mock complet
+// full mock
 jest.mock('../../models/notificationModel', () => mockNotificationConstructor);
 
-
-const mockConsommationFindOneExec = jest.fn();
-
-// Mock pour Consommation
-const mockConsommationFindOne = jest.fn();
 const mockSave = jest.fn().mockResolvedValue({
   _id: new mongoose.Types.ObjectId(),
   value: 12,
@@ -25,26 +22,17 @@ let mockConsommationExec = jest.fn();
 
 jest.mock('../../models/consommationModel', () => {
   const mockInstance = { save: mockSave };
-  const mockModel = jest.fn(() => mockInstance);  // new Consommation()
+  const mockModel = jest.fn(() => mockInstance);
   mockModel.create = jest.fn().mockResolvedValue(mockInstance);
-
-  // findOne().sort(...) doit retourner **directement** la promesse de mockConsommationExec
   mockModel.findOne = jest.fn(() => ({
-    sort: jest.fn(() => 
-      // la promesse contrôlée par vos mockResolvedValue/mockRejectedValue
-      mockConsommationExec()
-    )
+    sort: jest.fn(() => mockConsommationExec())
   }));
-
   return mockModel;
 });
 
-
 const now = new Date();
-const oldDate = new Date(now.getTime() - 60000); // 60 sec
-const recentDate = new Date(now.getTime() - 30000); // 30 sec
-
-
+const oldDate = new Date(now.getTime() - 60000);
+const recentDate = new Date(now.getTime() - 30000);
 
 jest.mock('../../models/multipriseModel');
 jest.mock('../../models/utilisateurModel');
@@ -59,19 +47,19 @@ jest.mock('nodemailer', () => ({
 jest.mock('../../services/notificationsService', () => ({
   sendEmail: jest.fn().mockResolvedValue(true)
 }));
-const { getDerniereConsommation } = require('../../controllers/consommationController');
 
-const { creerConsommation, creerBatchConsommation } = require('../../controllers/consommationController');
+const {
+  creerConsommation,
+  creerBatchConsommation,
+  getDerniereConsommation
+} = require('../../controllers/consommationController');
 const Multiprise = require('../../models/multipriseModel');
 const Utilisateur = require('../../models/utilisateurModel');
 const Appareil = require('../../models/appareilModel');
-const Notification = require('../../models/notificationModel');
-const Consommation = require('../../models/consommationModel');
-const nodemailer = require('nodemailer');
 
-describe('creerConsommation', () => {
+describe('createConsumption', () => {
   let req, res;
-  const fakeObjectId = new mongoose.Types.ObjectId();
+  const fakeId = new mongoose.Types.ObjectId();
 
   beforeEach(() => {
     req = {
@@ -82,23 +70,13 @@ describe('creerConsommation', () => {
         identifiantUnique: 'rasp-01'
       }
     };
-
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    };
-
-    global.io = {
-      to: jest.fn().mockReturnThis(),
-      emit: jest.fn()
-    };
-
+    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    global.io = { to: jest.fn().mockReturnThis(), emit: jest.fn() };
     jest.clearAllMocks();
   });
 
-  it('retourne 400 si un champ est manquant', async () => {
-    req.body = { value: 12 }; // identifiantUnique manquant
-
+  it('should return 400 if a required field is missing', async () => {
+    req.body = { value: 12 }; // missing identifiantUnique
     await creerConsommation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
@@ -107,9 +85,8 @@ describe('creerConsommation', () => {
     });
   });
 
-  it('retourne 404 si multiprise non trouvée', async () => {
+  it('should return 404 if power strip not found', async () => {
     Multiprise.findOne.mockResolvedValue(null);
-
     await creerConsommation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
@@ -118,16 +95,15 @@ describe('creerConsommation', () => {
     });
   });
 
-  it('crée une consommation et émet un événement WebSocket', async () => {
-    const mockMultiprise = {
-      _id: fakeObjectId,
+  it('should create a consumption and emit a WebSocket event', async () => {
+    const mockM = {
+      _id: fakeId,
       utilisateurs: ['user123'],
       nom: 'Ma multiprise',
       identifiantUnique: 'rasp-01'
     };
-
-    Multiprise.findOne.mockResolvedValue(mockMultiprise);
-    Appareil.findOne.mockResolvedValue({ _id: fakeObjectId });
+    Multiprise.findOne.mockResolvedValue(mockM);
+    Appareil.findOne.mockResolvedValue({ _id: fakeId });
     Utilisateur.findById.mockResolvedValue({
       email: 'test@example.com',
       preferences: { emailNotifications: true }
@@ -138,15 +114,15 @@ describe('creerConsommation', () => {
     expect(mockSave).toHaveBeenCalled();
     expect(global.io.emit).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      message: expect.stringContaining("Consommation enregistrée")
-    }));
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining("Consommation enregistrée") })
+    );
   });
 });
 
-describe('creerBatchConsommation', () => {
+describe('createBatchConsumption', () => {
   let req, res;
-  const fakeObjectId = new mongoose.Types.ObjectId();
+  const fakeId = new mongoose.Types.ObjectId();
 
   beforeEach(() => {
     req = {
@@ -159,22 +135,13 @@ describe('creerBatchConsommation', () => {
         ]
       }
     };
-
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    };
-
-    global.io = {
-      emit: jest.fn()
-    };
-
+    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    global.io = { emit: jest.fn() };
     jest.clearAllMocks();
   });
 
-  it('retourne 400 si la liste est vide', async () => {
+  it('should return 400 if the measurements list is empty', async () => {
     req.body.measurements = [];
-
     await creerBatchConsommation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
@@ -183,26 +150,24 @@ describe('creerBatchConsommation', () => {
     });
   });
 
-  it('retourne 404 si multiprise non trouvée', async () => {
+  it('should return 404 if power strip not found', async () => {
     Multiprise.findOne.mockResolvedValue(null);
-  
     await creerBatchConsommation(req, res);
-  
+
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({
       message: expect.stringContaining("Multiprise non trouvée")
     });
   });
-  
-  it('crée les consommations, envoie les WebSocket et notifications', async () => {
-    const mockMultiprise = {
-      _id: fakeObjectId,
+
+  it('should create measurements, emit WebSocket events and notifications', async () => {
+    const mockM = {
+      _id: fakeId,
       utilisateurs: ['user123'],
       nom: 'Ma multiprise',
       identifiantUnique: 'rasp-01'
     };
-
-    Multiprise.findOne.mockResolvedValue(mockMultiprise);
+    Multiprise.findOne.mockResolvedValue(mockM);
     Utilisateur.findById.mockResolvedValue({
       email: 'test@example.com',
       preferences: { emailNotifications: true }
@@ -215,40 +180,36 @@ describe('creerBatchConsommation', () => {
     expect(res.status).toHaveBeenCalledWith(201);
   });
 });
-describe('getDerniereConsommation', () => {
+
+describe('getLastConsumption', () => {
   const now = new Date('2025-04-20T14:00:00Z');
-  const oldDate = new Date(now.getTime() - 60 * 1000);
-  const recentDate = new Date(now.getTime() - 30 * 1000);
+  const oldDate = new Date(now.getTime() - 60000);
+  const recentDate = new Date(now.getTime() - 30000);
   let req, res;
 
   beforeEach(() => {
-    // On fixe l’heure aux tests
     jest.useFakeTimers().setSystemTime(now);
-    // On reset tous les mocks (y compris mockConsommationExec)
     jest.clearAllMocks();
     mockConsommationExec = jest.fn();
-    
-    // On prépare req/res
+
     req = { params: { identifiantUnique: 'rasp-01' } };
     res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
   });
 
-  it('retourne 404 si aucune consommation trouvée', async () => {
+  it('should return 404 if no consumption is found', async () => {
     mockConsommationExec.mockResolvedValue(null);
-
     await getDerniereConsommation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ message: "Aucune consommation trouvée." });
   });
 
-  it('retourne active: false si >45s', async () => {
+  it('should return active: false if older than 45 seconds', async () => {
     mockConsommationExec.mockResolvedValue({
       _id: 'id1',
       value: 10,
       timestamp: oldDate
     });
-
     await getDerniereConsommation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
@@ -258,29 +219,26 @@ describe('getDerniereConsommation', () => {
     });
   });
 
-  it('retourne active: true si consommation récente', async () => {
+  it('should return active: true if recent consumption', async () => {
     mockConsommationExec.mockResolvedValue({
-      _id: "conso456",
+      _id: 'conso456',
       value: 12,
       timestamp: recentDate
     });
-
     await getDerniereConsommation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       active: true,
-      _id: "conso456",
+      _id: 'conso456',
       value: 12,
       timestamp: recentDate
     });
   });
 
-  it('gère une erreur serveur', async () => {
+  it('should handle server errors', async () => {
     const err = new Error("DB ERROR");
     mockConsommationExec.mockRejectedValue(err);
-
-    // On spy console.error
     console.error = jest.fn();
 
     await getDerniereConsommation(req, res);
@@ -293,4 +251,3 @@ describe('getDerniereConsommation', () => {
     expect(res.json).toHaveBeenCalledWith({ message: "Erreur serveur." });
   });
 });
-
