@@ -1,0 +1,135 @@
+/* 🌐 Contexte général */
+.parametre-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef5fc, #fefefe);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* 🧭 Haut de page avec titre + flèche */
+  /* 🧭 En-tête : flèche à gauche et titre centré */
+.header-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 2.5rem;
+  }
+  
+  /* La flèche reste collée à gauche */
+  .header-wrapper .btn {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+  
+  /* Le titre est centré, et la flèche ne le pousse pas */
+  .header-wrapper {
+    display: flex;
+    align-items: center;
+    padding-left: 2rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .back-button-wrapper {
+    flex-shrink: 0;
+  }
+  
+  .parametre-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+  .top-left {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+  }
+  
+  
+  
+  /* 🧩 Zone des boutons */
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    width: 100%;
+    max-width: 500px;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.07);
+    animation: fadeIn 0.4s ease-in-out;
+  }
+  
+  /* 🖱️ Style générique des boutons */
+  .parametre-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+  
+  /* 🎨 Bouton "Modifier mon profil" */
+  .btn-modifier {
+    background-color: #607d8b;
+    color: #fff;
+  }
+  
+  .btn-modifier:hover {
+    background-color: #546e7a;
+  }
+  
+  /* 🎨 Bouton "Gérer mes préférences" */
+  .btn-preferences {
+    background-color: #1e88e5;
+    color: #fff;
+  }
+  
+  .btn-preferences:hover {
+    background-color: #1976d2;
+  }
+  
+  /* 🎨 Bouton "Se déconnecter" */
+  .btn-deconnexion {
+    background-color: #ffffff;
+    color: #e53935;
+    border: 2px solid #e53935;
+  }
+  
+  .btn-deconnexion:hover {
+    background-color: #e53935;
+    color: #fff;
+  }
+  
+  /* 🛑 Bouton "Supprimer mon compte" */
+  .btn-supprimer {
+    background-color: #d32f2f;
+    color: #fff;
+  }
+  
+  .btn-supprimer:hover {
+    background-color: #b71c1c;
+  }
+  
+  /* ✨ Apparition fluide */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

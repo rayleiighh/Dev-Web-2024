@@ -188,18 +188,19 @@ function Dashboard({ user, setUser  }) {
         <div className="d-flex flex-column align-items-end gap-2">
           {/* Bouton Settings (⚙️) */}
           <IconButton
-            icon="icons8-option-100.png" // Remplacez par l'icône ⚙️
+            icon="icons8-settings-50.png"
             label=""
             onClick={() => navigate('/parametre')}
             className="rounded-circle"
           />
-          {/* Bouton Notification (🔔) */}
+
           <IconButton
-            icon="icons8-notification.png" // Remplacez par l'icône 🔔
+            icon="icons8-notification-48.png"
             label=""
             onClick={() => navigate('/notifications')}
             className="rounded-circle"
           />
+
         </div>
       </div>
 
