@@ -45,7 +45,7 @@ function Historique() {
       setLoading(true);
       setError(null);
 
-      let url = "http://localhost:5000/api/consommations";
+      let url = `${process.env.REACT_APP_API_URL}/api/consommations`;
       console.log("📅 URL avec dates UTC :", url);
 
       let finFormatee = dateFin;
@@ -111,7 +111,7 @@ function Historique() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch('http://localhost:5000/api/consommations/export-csv', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/consommations/export-csv`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

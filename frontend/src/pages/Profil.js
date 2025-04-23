@@ -41,7 +41,7 @@ const Profil = ({ user, setUser }) => {
     try {
       // Mise à jour des infos utilisateur (nom, email, mdp)
       await axios.put(
-        'http://localhost:5000/api/utilisateurs/me',
+        `${process.env.REACT_APP_API_URL}/api/utilisateurs/me`,
         { nom, email, ancienMotDePasse, nouveauMotDePasse },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -51,7 +51,7 @@ const Profil = ({ user, setUser }) => {
         const formData = new FormData();
         formData.append('photo', photo);
   
-        await axios.patch('http://localhost:5000/api/utilisateurs/profil/photo', formData, {
+        await axios.patch(`${process.env.REACT_APP_API_URL}/api/utilisateurs/profil/photo`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
@@ -60,7 +60,7 @@ const Profil = ({ user, setUser }) => {
       }
   
       // Recharge les infos utilisateur à jour
-      const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);

@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
 
 // 🛡️ Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || `${process.env.FRONTEND_URL}`,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));
@@ -90,7 +90,7 @@ console.log("✅ Route /api/contact bien chargée !");
 
 // Autoriser l'accès CORS pour les fichiers dans /uploads
 app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // ← frontend
+  res.header('Access-Control-Allow-Origin', `${process.env.FRONTEND_URL}`); // ← frontend
   next();
 });
 

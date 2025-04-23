@@ -4,7 +4,7 @@ import './GestionAppareils.css';
 import { io } from "socket.io-client";
 import { useNavigate } from 'react-router-dom';
 
-const socket = io("http://localhost:5000");
+const socket = io(`${process.env.REACT_APP_API_URL}`);
 
 function GestionAppareils() {
   const [prises, setPrises] = useState([]);
@@ -18,7 +18,7 @@ function GestionAppareils() {
   const fetchAppareils = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:5000/api/appareils", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appareils`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -80,7 +80,7 @@ function GestionAppareils() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/appareils/${id}/etat`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/appareils/${id}/etat`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +110,7 @@ function GestionAppareils() {
       };
 
       try {
-        const res = await fetch(`http://localhost:5000/api/appareils/${prise._id}/mode-nuit`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/appareils/${prise._id}/mode-nuit`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -144,7 +144,7 @@ function GestionAppareils() {
     const token = localStorage.getItem("token");
   
     try {
-      const res = await fetch(`http://localhost:5000/api/appareils/${id}/nom`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/appareils/${id}/nom`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

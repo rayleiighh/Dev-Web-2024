@@ -28,7 +28,7 @@ const Register = () => {
     setLoading(true);
   
     try {
-      await axios.post('http://localhost:5000/api/utilisateurs/register', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/utilisateurs/register`, {
         prenom,
         nom,
         email,
