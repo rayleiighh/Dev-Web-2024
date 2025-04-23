@@ -132,8 +132,42 @@ function GestionAppareils() {
   };
 
   const handleModifier = (id) => {
-    const p = prises.find(p => p._id === id);
-    alert(`Modifier l’appareil : ${p.nom}`);
+    setPrises(prev =>
+      prev.map(p =>
+        p._id === id ? { ...p, enEdition: true, nouveauNom: p.nom } : p
+      )
+    );
+  };
+
+  const handleConfirmerNom = async (id) => {
+    const prise = prises.find(p => p._id === id);
+    const token = localStorage.getItem("token");
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/appareils/${id}/nom`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ nom: prise.nouveauNom })
+      });
+  
+      if (!res.ok) {
+        throw new Error(`Erreur HTTP : ${res.status}`);
+      }
+  
+      setPrises(prev =>
+        prev.map(p =>
+          p._id === id
+            ? { ...p, nom: prise.nouveauNom, enEdition: false, nouveauNom: "" }
+            : p
+        )
+      );
+    } catch (error) {
+      console.error("❌ Erreur MAJ nom :", error);
+      alert("Erreur lors de la mise à jour du nom.");
+    }
   };
 
   return (
@@ -184,9 +218,33 @@ function GestionAppareils() {
               >
                 {prise.modeNuit?.actif && <span className="icone-nuit">🌙</span>}
               </div>
-
-              <div className="prise-nom">{prise.nom}</div>
-
+              <div className="prise-nom">
+                {prise.enEdition ? (
+                  <>
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      value={prise.nouveauNom || prise.nom}
+                      onChange={(e) => {
+                        const nouveauNom = e.target.value;
+                        setPrises(prev =>
+                          prev.map(p =>
+                            p._id === prise._id ? { ...p, nouveauNom } : p
+                          )
+                        );
+                      }}
+                    />
+                    <button
+                      className="btn btn-sm btn-success mt-1"
+                      onClick={() => handleConfirmerNom(prise._id)}
+                    >
+                      Confirmer
+                    </button>
+                  </>
+                ) : (
+                  prise.nom
+                )}
+              </div>
               <div className="prise-actions d-flex align-items-center gap-2">
                 <button onClick={() => handleModifier(prise._id)} className="btn btn-link text-decoration-none p-0">
                   <i className="bi bi-pencil"></i> <small>modifier</small>

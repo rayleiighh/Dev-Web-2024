@@ -144,3 +144,31 @@ exports.updateModeNuit = async (req, res) => {
   }
 };
 
+exports.updateNomAppareil = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nom } = req.body;
+
+    if (!nom) {
+      return res.status(400).json({ message: "Le nouveau nom est requis." });
+    }
+
+    const multiprises = await Multiprise.find({ utilisateurs: req.userId });
+    const idsMultiprises = multiprises.map(m => m._id);
+
+    const appareil = await Appareil.findOneAndUpdate(
+      { _id: id, multiprise: { $in: idsMultiprises } },
+      { nom },
+      { new: true }
+    );
+
+    if (!appareil) {
+      return res.status(404).json({ message: "Appareil introuvable." });
+    }
+
+    res.status(200).json({ message: "Nom mis à jour avec succès", appareil });
+  } catch (err) {
+    console.error("❌ Erreur updateNomAppareil :", err);
+    res.status(500).json({ message: "Erreur serveur lors du renommage." });
+  }
+};
