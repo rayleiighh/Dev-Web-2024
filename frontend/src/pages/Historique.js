@@ -135,7 +135,7 @@ function Historique() {
     }
   };
   
-  if (loading) return <p>⏳ Chargement en cours...</p>;
+  if (loading) return <div className="loading-center">⏳ Chargement en cours...</div>;
   if (error) return <p>❌ Erreur : {error}</p>;
 
   return (
