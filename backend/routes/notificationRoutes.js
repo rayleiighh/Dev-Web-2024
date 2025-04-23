@@ -40,6 +40,43 @@ router.put('/:id/envoyer', notificationController.envoyerNotification);
 // ❌ Supprimer une notification
 router.delete('/:id', notificationController.supprimerNotification);
 
+
+router.post('/', async (req, res) => {
+  try {
+    const { contenu, multiprise } = req.body;
+    
+    // Création + envoi email immédiat
+    const notification = await Notification.create({
+      contenu,
+      utilisateur: req.userId,
+      multiprise
+    });
+
+    // Récupérer l'utilisateur avec ses préférences
+    const utilisateur = await Utilisateur.findById(req.userId);
+    
+    // Envoi email si activé
+    if (utilisateur.preferences?.emailNotifications && utilisateur.email) {
+      try {
+        await sendEmail(
+          utilisateur.email,
+          "Nouvelle alerte de consommation",
+          contenu
+        );
+        notification.envoyee = true;
+        await notification.save();
+      } catch (emailError) {
+        console.error("Erreur envoi email:", emailError);
+      }
+    }
+
+    res.status(201).json(notification);
+  } catch (err) {
+    console.error("Erreur création notification:", err);
+    res.status(500).json({ message: "Erreur création notification" });
+  }
+});
+
 router.post('/generer-infos', notificationController.genererNotificationInfo);
 
 router.post('/', notificationController.creerNotification);

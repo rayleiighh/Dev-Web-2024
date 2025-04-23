@@ -24,7 +24,7 @@ const Preferences = ({ user, setUser }) => {
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
+        const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPreferences(res.data.preferences || {});
@@ -55,7 +55,7 @@ const Preferences = ({ user, setUser }) => {
     if (loading) return; // sécurité en plus
     setLoading(true);
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
+      await axios.put('http://localhost:5000/api/utilisateurs/me', {
         preferences,
       }, {
         headers: { Authorization: `Bearer ${token}` },
@@ -71,47 +71,51 @@ const Preferences = ({ user, setUser }) => {
   };
 
   return (
-    <div className="preferences-container">
-      <button
-        className="btn btn-outline-dark rounded-circle"
-        onClick={() => navigate(-1)}
-        aria-label="Retour"
-        style={{ marginBottom: '1rem' }}
-      >
-        <i className="bi bi-arrow-left"></i>
-      </button>
+    <div className="preferences-page">
+  {/* Flèche de retour fixée en haut à gauche */}
+  <button
+    className="btn btn-outline-dark rounded-circle fixed-bouton"
+    onClick={() => navigate(-1)}
+    style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 1000 }}
+  >
+    <i className="bi bi-arrow-left"></i>
+  </button>
 
-      <h2>Préférences utilisateur</h2>
-      {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>
-          Unité de consommation :
-          <select name="unite" value={preferences.unite} onChange={handleChange}>
-            <option value="kWh">kWh</option>
-            <option value="Wh">Wh</option>
-          </select>
-        </label>
-        <label>
-          Thème :
-          <select name="theme" value={preferences.theme} onChange={handleChange}>
-            <option value="clair">Clair</option>
-            <option value="sombre">Sombre</option>
-          </select>
-        </label>
-        <label>
-          Notifications par email :
-          <input
-            type="checkbox"
-            name="emailNotifications"
-            checked={preferences.emailNotifications}
-            onChange={handleChange}
-          />
-        </label>
-        <button type="submit" disabled={loading}>
-          {loading ? "Enregistrement..." : "Sauvegarder"}
-        </button>
-      </form>
-    </div>
+  {/* Conteneur principal des préférences */}
+  <div className="preferences-container">
+    <h2>Préférences utilisateur</h2>
+    {message && <p>{message}</p>}
+    <form onSubmit={handleSubmit}>
+      <label>
+        Unité de consommation :
+        <select name="unite" value={preferences.unite} onChange={handleChange}>
+          <option value="kWh">kWh</option>
+          <option value="Wh">Wh</option>
+        </select>
+      </label>
+      <label>
+        Thème :
+        <select name="theme" value={preferences.theme} onChange={handleChange}>
+          <option value="clair">Clair</option>
+          <option value="sombre">Sombre</option>
+        </select>
+      </label>
+      <label>
+        Notifications par email :
+        <input
+          type="checkbox"
+          name="emailNotifications"
+          checked={preferences.emailNotifications}
+          onChange={handleChange}
+        />
+      </label>
+      <button type="submit" disabled={loading}>
+        {loading ? "Enregistrement..." : "Sauvegarder"}
+      </button>
+    </form>
+  </div>
+</div>
+
   );
 };
 

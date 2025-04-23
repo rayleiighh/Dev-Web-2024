@@ -68,7 +68,7 @@ function Dashboard({ user, setUser  }) {
   useEffect(() => {
     if (!socketRef.current) {
       console.log("🔌 Tentative de connexion au WebSocket...");
-      socketRef.current = io(`${process.env.REACT_APP_API_URL}`, {
+      socketRef.current = io("http://localhost:5000", {
         transports: ['websocket']
       });
   
@@ -111,7 +111,7 @@ function Dashboard({ user, setUser  }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
+        const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUtilisateur(res.data);
@@ -161,7 +161,7 @@ function Dashboard({ user, setUser  }) {
           >
           {utilisateur?.photoProfil ? (
           <img
-            src={`${process.env.REACT_APP_API_URL}/${utilisateur.photoProfil}`}
+          src={`http://localhost:5000/${utilisateur.photoProfil}`}
           alt="Profil"
           className="rounded-circle"
           crossOrigin="anonymous"
@@ -188,18 +188,19 @@ function Dashboard({ user, setUser  }) {
         <div className="d-flex flex-column align-items-end gap-2">
           {/* Bouton Settings (⚙️) */}
           <IconButton
-            icon="icons8-option-100.png" // Remplacez par l'icône ⚙️
+            icon="icons8-settings-50.png"
             label=""
             onClick={() => navigate('/parametre')}
             className="rounded-circle"
           />
-          {/* Bouton Notification (🔔) */}
+
           <IconButton
-            icon="icons8-notification.png" // Remplacez par l'icône 🔔
+            icon="icons8-notification-48.png"
             label=""
             onClick={() => navigate('/notifications')}
             className="rounded-circle"
           />
+
         </div>
       </div>
 

@@ -10,7 +10,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/notifications`, {
+        const res = await axios.get("http://localhost:5000/api/notifications", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,7 +32,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
   const supprimerNotification = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/notifications/${id}`, {
+      await axios.delete(`http://localhost:5000/api/notifications/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

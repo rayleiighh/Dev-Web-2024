@@ -1,23 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../pages/Dashboard.css'; // 🔁 assure-toi que le chemin est correct depuis /components/
 
 function IconButton({ icon, label, onClick, className = '', variant = 'primary', size = 'md' }) {
   return (
     <button
-      className={`btn btn-${variant} btn-${size} rounded-pill d-flex align-items-center gap-2 ${className}`}
+      className={`icon-button btn btn-${variant} btn-${size} d-flex align-items-center ${className}`}
       onClick={onClick}
     >
-      <img src={`/icons/${icon}`} alt={label} width="20" height="20" />
-      <span>{label}</span>
+      <img
+        src={`/icons/${icon}`} // ex: icons8-notification.png
+        alt={label}
+        className="icon-img"
+        draggable="false"
+      />
+      {label && <span className="icon-label">{label}</span>}
     </button>
   );
 }
 
-// ✅ Vérification des props pour éviter les erreurs
 IconButton.propTypes = {
   icon: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   onClick: PropTypes.func,
   className: PropTypes.string,
   variant: PropTypes.oneOf(['primary', 'secondary', 'light', 'dark', 'danger', 'success']),

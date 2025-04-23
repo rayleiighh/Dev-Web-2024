@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Parametre.css';
 
 function Parametre({ user, setUser }) {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ function Parametre({ user, setUser }) {
     if (!confirmation) return;
 
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/utilisateurs/supprimer-compte`, {
+      await axios.delete('http://localhost:5000/api/utilisateurs/supprimer-compte', {
         headers: { Authorization: `Bearer ${token}` }
       });
       localStorage.removeItem('token');
@@ -30,48 +31,36 @@ function Parametre({ user, setUser }) {
   };
 
   return (
-    <div className="container-gestion">
-      <div className="d-flex align-items-center justify-content-between px-3 py-2">
-        <button
-          className="btn btn-outline-dark rounded-circle"
-          onClick={() => navigate(-1)} // Retour à la page précédente
-        >
-          <i className="bi bi-arrow-left"></i>
-        </button>
-        <h5 className="mb-0">Paramètres</h5>
-        <div></div>
-      </div>
+    <div className="parametre-container">
+  <div className="top-left">
+    <button
+      className="btn btn-outline-dark rounded-circle"
+      onClick={() => navigate(-1)}
+    >
+      <i className="bi bi-arrow-left"></i>
+    </button>
+  </div>
 
-      <div className="d-flex flex-column align-items-center gap-3 mt-4">
-      <button 
-          className="btn btn-secondary w-50" 
-          onClick={() => navigate('/profil')}
-        >
-         Modifier mon profil
-        </button>
+  <h2 className="parametre-title">Paramètres</h2>
 
-        <button
-          className="btn btn-primary w-50"
-          onClick={() => navigate('/preferences')}
-        >
-         Gérer mes préférences
-        </button>
-
-        <button
-          className="btn btn-outline-danger w-50"
-          onClick={handleLogout}
-        >
-         Se déconnecter
-        </button>
-
-        <button
-          className="btn btn-danger w-50"
-          onClick={handleDeleteAccount}
-        >
-          Supprimer mon compte
-        </button>
-      </div>
+  <div className="btn-group">
+    <button className="parametre-btn btn-modifier" onClick={() => navigate('/profil')}>
+      Modifier mon profil
+    </button>
+    <button className="parametre-btn btn-preferences" onClick={() => navigate('/preferences')}>
+      Gérer mes préférences
+    </button>
+    <button className="parametre-btn btn-deconnexion" onClick={handleLogout}>
+      Se déconnecter
+    </button>
+    <button className="parametre-btn btn-supprimer" onClick={handleDeleteAccount}>
+      Supprimer mon compte
+    </button>
+     </div>
     </div>
+
+
+
   );
 }
 

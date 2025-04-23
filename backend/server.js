@@ -12,6 +12,9 @@ const contactRoutes = require('./routes/contactRoutes');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
+const cron = require('node-cron');
+const generateInfoNotifications = require('./jobs/generateInfoNotifications');
+
 
 // 🔧 Initialiser Express + HTTP server
 const app = express();
@@ -25,6 +28,12 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connecté !"))
   .catch((err) => console.error("❌ Erreur MongoDB :", err));
+
+
+cron.schedule('0 18 * * *', () => {
+  console.log("⏰ Génération automatique des notifications informatives à 18h");
+  generateInfoNotifications();
+});
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
@@ -40,7 +49,7 @@ io.on("connection", (socket) => {
 
 // 🛡️ Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL || `${process.env.FRONTEND_URL}`,
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));
@@ -81,7 +90,7 @@ console.log("✅ Route /api/contact bien chargée !");
 
 // Autoriser l'accès CORS pour les fichiers dans /uploads
 app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', `${process.env.FRONTEND_URL}`); // ← frontend
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // ← frontend
   next();
 });
 

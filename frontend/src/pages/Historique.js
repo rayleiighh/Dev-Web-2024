@@ -23,16 +23,43 @@ function Historique() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const estDateValide = () => {
+    if (!dateDebut || !dateFin) return true;
+    const debut = new Date(dateDebut);
+    const fin = new Date(dateFin);
+    const now = new Date();
+  
+    if (debut > fin) {
+      alert("❌ La date de début doit être avant la date de fin.");
+      return false;
+    }
+    if (debut > now || fin > now) {
+      alert("❌ Les dates ne peuvent pas être dans le futur.");
+      return false;
+    }
+    return true;
+  };
+  
   const fetchConsommations = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      let url = `${process.env.REACT_APP_API_URL}/api/consommations`;
+      let url = "http://localhost:5000/api/consommations";
+      console.log("📅 URL avec dates UTC :", url);
+
+      let finFormatee = dateFin;
+      if (dateFin) {
+        finFormatee = `${dateFin}T23:59:59.999Z`;
+      }
+      let debutFormatee = dateDebut;
+      if (dateDebut) {
+        debutFormatee = `${dateDebut}T00:00:00.000Z`;
+      }
       const params = [];
 
-      if (dateDebut) params.push(`debut=${dateDebut}`);
-      if (dateFin) params.push(`fin=${dateFin}`);
+      if (dateDebut) params.push(`debut=${debutFormatee}`);
+      if (dateFin) params.push(`fin=${finFormatee}`);
       if (params.length) url += "?" + params.join("&");
 
       const response = await fetch(url, {
@@ -65,14 +92,16 @@ function Historique() {
   }, [dateDebut, dateFin]);
 
   useEffect(() => {
-    fetchConsommations();
+    if (estDateValide()) {
+      fetchConsommations();
+    }
   }, [fetchConsommations]);
-
+  const limitedData = historique.slice(0, 10);
   const chartData = {
-    labels: historique.map(entry => entry.timestamp),
+    labels: limitedData.map(entry => entry.timestampLisible),
     datasets: [{
       label: 'Courant (A)',
-      data: historique.map(entry => entry.value),
+      data: limitedData.map(entry => entry.value),
       fill: false,
       borderColor: 'rgb(75,192,192)',
       tension: 0.1
@@ -82,7 +111,7 @@ function Historique() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/consommations/export-csv`, {
+      const response = await fetch('http://localhost:5000/api/consommations/export-csv', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -106,7 +135,7 @@ function Historique() {
     }
   };
   
-  if (loading) return <p>⏳ Chargement en cours...</p>;
+  if (loading) return <div className="loading-center">⏳ Chargement en cours...</div>;
   if (error) return <p>❌ Erreur : {error}</p>;
 
   return (
@@ -163,9 +192,9 @@ function Historique() {
             </tr>
           </thead>
           <tbody>
-            {historique.length > 0 ? historique.map((entry, index) => (
+           {historique.length > 0 ? historique.slice(0, 10).map((entry, index) => (
               <tr key={index}>
-                <td>{entry.timestamp}</td>
+                <td>{entry.timestampLisible}</td>
                 <td>{entry.appareil?.nom || "Appareil inconnu"}</td>
                 <td>{(entry.value * 0.001).toFixed(4)}</td>
                 <td>{entry.value.toFixed(3)}</td>
