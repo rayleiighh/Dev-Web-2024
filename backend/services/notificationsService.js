@@ -49,12 +49,6 @@ const sendSMS = async (to, message) => {
 };
 console.log("📨 Tentative d'envoi email avec :", process.env.EMAIL_USER);
 
-(async () => {
-  try {
-    await sendEmail("saadzebiri65@gmail.com", "Test Email", "Ceci est un test d'envoi d'email.");
-  } catch (error) {
-    console.error("❌ Erreur test email :", error);
-  }
-})();
+
 
 module.exports = { sendEmail, sendSMS };
