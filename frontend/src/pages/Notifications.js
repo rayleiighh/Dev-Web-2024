@@ -51,6 +51,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
         <button
           className="btn btn-outline-dark rounded-circle"
           onClick={() => navigate(-1)}
+          aria-label="Retour"
         >
           <i className="bi bi-arrow-left"></i>
         </button>
