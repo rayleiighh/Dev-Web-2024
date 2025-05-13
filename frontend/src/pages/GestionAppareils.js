@@ -15,13 +15,16 @@ function GestionAppareils() {
   const [heureFin, setHeureFin] = useState("");
   const navigate = useNavigate();
 
+  const [selectedPrise, setSelectedPrise] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+
+
+
   const fetchAppareils = async () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch("http://localhost:5000/api/appareils", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: {Authorization: `Bearer ${token}`}
       });
 
       const data = await response.json();
@@ -170,6 +173,36 @@ function GestionAppareils() {
     }
   };
 
+  const handleToggleFavori = async () => {
+    if (!selectedPrise) return;
+    const token = localStorage.getItem("token");
+    const nouveauFavori = !selectedPrise.favori;
+
+    try {
+      await fetch(`http://localhost:5000/api/appareils/${selectedPrise._id}/favori`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ favori: nouveauFavori })
+      });
+
+      setPrises(prev =>
+        prev.map(p =>
+          p._id === selectedPrise._id ? { ...p, favori: nouveauFavori } : p
+        )
+      );
+
+      
+      setShowPopup(false);
+      
+     
+    } catch (error) {
+      console.error("❌ Erreur MAJ favori :", error);
+    }
+  };
+
   return (
     <div className="container-gestion">
       <div className="d-flex align-items-center justify-content-between px-3 py-2 position-relative">
@@ -249,7 +282,14 @@ function GestionAppareils() {
                 <button onClick={() => handleModifier(prise._id)} className="btn btn-link text-decoration-none p-0">
                   <i className="bi bi-pencil"></i> <small>modifier</small>
                 </button>
-                <button className="btn btn-light rounded-circle px-2">
+
+            		<button
+                  className="btn btn-light rounded-circle px-2"
+                  onClick={() => {
+                    setSelectedPrise(prise);
+                    setShowPopup(true);
+                  }}
+                >
                   <i className="bi bi-three-dots-vertical"></i>
                 </button>
               </div>
@@ -257,6 +297,32 @@ function GestionAppareils() {
           ))}
         </div>
       </div>
+
+      {showPopup && selectedPrise && (
+        <>
+          <div className="overlay" onClick={() => setShowPopup(false)}></div>
+
+          <div className="extra-options" onClick={(e) => e.stopPropagation()}>
+            <h5 className="mb-3">⚙️ Options de {selectedPrise.nom}</h5>
+            <p className="text-muted">Configurer les préférences pour cet appareil :</p>
+
+            <div className="prise-list">
+              <div className="prise-item-line">
+                <span>Favori</span>
+                <input
+                  type="checkbox"
+                  checked={selectedPrise.favori}
+                  onClick={handleToggleFavori}
+                />
+              </div>
+            </div>
+
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <button className="btn btn-secondary" onClick={() => setShowPopup(false)}>Fermer</button>
+            </div>
+          </div>
+        </>
+      )}
 
       {showModal && (
         <>
