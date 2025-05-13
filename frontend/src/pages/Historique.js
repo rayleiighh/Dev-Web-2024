@@ -23,6 +23,9 @@ function Historique() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const [chargementCSV, setChargementCSV] = useState(false); // ✅ AJOUT
+
+
   const estDateValide = () => {
     if (!dateDebut || !dateFin) return true;
     const debut = new Date(dateDebut);
@@ -110,6 +113,8 @@ function Historique() {
 
   const handleExport = async () => {
     try {
+      setChargementCSV(true); // ✅ début du chargement
+
       const token = localStorage.getItem("token");
       const response = await fetch('http://localhost:5000/api/consommations/export-csv', {
         method: 'GET',
@@ -117,9 +122,11 @@ function Historique() {
           Authorization: `Bearer ${token}`,
         }
       });
+
       if (!response.ok) {
         throw new Error(`Erreur lors de l'export CSV : ${response.status}`);
       }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -132,8 +139,11 @@ function Historique() {
     } catch (error) {
       console.error("Erreur lors de l'export CSV :", error);
       alert("Erreur lors de l'export CSV, voir la console pour plus de détails.");
+    } finally {
+      setChargementCSV(false); // ✅ fin du chargement
     }
   };
+
   
   if (loading) return <div className="loading-center">⏳ Chargement en cours...</div>;
   if (error) return <p>❌ Erreur : {error}</p>;
@@ -171,9 +181,17 @@ function Historique() {
           />
         </div>
         <div className="col-md-3">
-          <button className="btn btn-success w-100" onClick={handleExport}>
-            📁 Export CSV
+          <button className="btn btn-success w-100" onClick={handleExport} disabled={chargementCSV}>
+            {chargementCSV ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Export en cours...
+              </>
+            ) : (
+              "📁 Export CSV"
+            )}
           </button>
+
         </div>
       </div>
 
