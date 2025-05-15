@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Notifications.css';
-import { useNavigate } from 'react-router-dom'; // ← Ajout de l'import pour la navigation
+import { useNavigate } from 'react-router-dom';
 
 const NotificationsPage = ({ user, notifications, setNotifications }) => {
   const [error, setError] = useState(null);
   const theme = user?.preferences?.theme;
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -21,13 +23,11 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
         setError("Impossible de charger les notifications.");
       }
     };
-  
+
     if (notifications.length === 0) {
       fetchNotifications();
     }
-  }, []);
-  
-  const navigate = useNavigate(); // ← Pour revenir à la page précédente
+  }, []); // Pas de dépendance ici pour éviter une boucle infinie
 
   const supprimerNotification = async (id) => {
     try {
@@ -47,16 +47,15 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
   return (
     <div className={`container mt-4 ${theme === 'dark' ? 'notifications-dark' : ''}`}>
       {/* Flèche de retour + Titre */}
-      <div className="d-flex align-items-center justify-content-between px-3 py-2">
+      <div className="d-flex align-items-center mb-4">
         <button
-          className="btn btn-outline-dark rounded-circle"
+          className="btn btn-outline-dark rounded-circle fixed-button"
           onClick={() => navigate(-1)}
           aria-label="Retour"
         >
           <i className="bi bi-arrow-left"></i>
         </button>
-        <h5 className="mb-0">Notifications</h5>
-        <div></div>
+        <h5 className="ms-auto me-auto">Notifications</h5>
       </div>
 
       {/* Contenu des notifications */}
@@ -73,22 +72,22 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
                     notif.contenu.toLowerCase().includes("mode nuit") ? "bi-moon-fill" : "bi-exclamation-triangle-fill"
                   }`}></i>
                 </div>
-               <div className="notif-main">
+                <div className="notif-main">
                   <div className="notif-title-modern">
-                   {notif.contenu.toLowerCase().includes("mode nuit") ? "Mode nuit activé" : "Alerte de consommation"}
-                 </div>
-                 <div className="notif-detail-modern">{notif.contenu}</div>
-               </div>
+                    {notif.contenu.toLowerCase().includes("mode nuit") ? "Mode nuit activé" : "Alerte de consommation"}
+                  </div>
+                  <div className="notif-detail-modern">{notif.contenu}</div>
+                </div>
               </div>
 
-             <div className="notif-footer">
-               <span className="notif-date-modern">{new Date(notif.createdAt).toLocaleString()}</span>
-               <button
-                 className="btn btn-sm btn-primary"
-                 onClick={() => supprimerNotification(notif._id)}
-               >
+              <div className="notif-footer">
+                <span className="notif-date-modern">{new Date(notif.createdAt).toLocaleString()}</span>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => supprimerNotification(notif._id)}
+                >
                   Supprimer
-               </button>
+                </button>
               </div>
             </li>
           ))}

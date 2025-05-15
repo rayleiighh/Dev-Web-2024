@@ -86,7 +86,7 @@ const Profil = ({ user, setUser }) => {
   return (
     <div className="container mt-4">
       <div className="d-flex align-items-center mb-3">
-        <button onClick={() => navigate(-1)} className="btn btn-outline-dark rounded-circle me-2">
+        <button onClick={() => navigate(-1)} className="btn btn-outline-dark rounded-circle me-2 fixed-button">
           <i className="bi bi-arrow-left"></i>
         </button>
         <h2 className="mb-0">👤 Mon Profil</h2>

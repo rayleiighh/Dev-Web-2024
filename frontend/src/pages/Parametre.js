@@ -34,7 +34,7 @@ function Parametre({ user, setUser }) {
     <div className="parametre-container">
   <div className="top-left">
     <button
-      className="btn btn-outline-dark rounded-circle"
+      className="btn btn-outline-dark rounded-circle fixed-button"
       onClick={() => navigate(-1)}
     >
       <i className="bi bi-arrow-left"></i>

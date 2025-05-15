@@ -125,12 +125,7 @@ button[title="Désactiver"]:hover {
 }
 
 
-.fixed-button {
-  position: fixed; 
-  top: 20px;       
-  left: 20px;      
-  z-index: 1000;   
-}
+
 
 
 /* Fenêtre modale */
@@ -190,3 +185,9 @@ button[title="Désactiver"]:hover {
   padding: 4px 0;
 }
 
+.fixed-button {
+  position: fixed; 
+  top: 20px;       
+  left: 20px;      
+  z-index: 1000;   
+}
