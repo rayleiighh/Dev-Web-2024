@@ -204,7 +204,7 @@ function Historique() {
           <thead className="table-primary">
             <tr>
               <th>Horodatage</th>
-              <th>Appareil</th>
+              <th>Identifiant Multiprise</th>
               <th>Énergie (kWh)</th>
               <th>Courant (A)</th>
             </tr>
@@ -213,7 +213,7 @@ function Historique() {
            {historique.length > 0 ? historique.slice(0, 10).map((entry, index) => (
               <tr key={index}>
                 <td>{entry.timestampLisible}</td>
-                <td>{entry.appareil?.nom || "Appareil inconnu"}</td>
+                <td>{entry.multiprise?.identifiantUnique || "Multiprise inconnue"}</td>
                 <td>{(entry.value * 0.001).toFixed(4)}</td>
                 <td>{entry.value.toFixed(3)}</td>
               </tr>
