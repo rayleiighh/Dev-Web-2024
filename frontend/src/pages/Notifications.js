@@ -24,10 +24,10 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
       }
     };
 
-    if (!Array.isArray(notifications) || notifications.length === 0) {
+    if (notifications.length === 0) {
       fetchNotifications();
     }
-  }, []);
+  }, []); // Pas de dépendance ici pour éviter une boucle infinie
 
   const supprimerNotification = async (id) => {
     try {
@@ -46,23 +46,25 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
 
   return (
     <div className={`container mt-4 ${theme === 'dark' ? 'notifications-dark' : ''}`}>
-      <div className="d-flex align-items-center justify-content-between px-3 py-2">
+      {/* Flèche de retour + Titre */}
+      <div className="d-flex align-items-center mb-4">
         <button
-          className="btn btn-outline-dark rounded-circle"
+          className="btn btn-outline-dark rounded-circle fixed-button"
           onClick={() => navigate(-1)}
+          aria-label="Retour"
         >
           <i className="bi bi-arrow-left"></i>
         </button>
-        <h5 className="mb-0">Notifications</h5>
-        <div></div>
+        <h5 className="ms-auto me-auto">Notifications</h5>
       </div>
 
+      {/* Contenu des notifications */}
       {error && <p className="text-danger">{error}</p>}
-      {Array.isArray(notifications) && notifications.length === 0 ? (
+      {notifications.length === 0 ? (
         <p>Aucune notification.</p>
       ) : (
         <ul className="notif-list">
-          {Array.isArray(notifications) && notifications.map((notif) => (
+          {notifications.map((notif) => (
             <li key={notif._id} className="notif-card-modern">
               <div className="notif-header">
                 <div className="notif-icon-modern">
@@ -77,6 +79,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
                   <div className="notif-detail-modern">{notif.contenu}</div>
                 </div>
               </div>
+
               <div className="notif-footer">
                 <span className="notif-date-modern">{new Date(notif.createdAt).toLocaleString()}</span>
                 <button

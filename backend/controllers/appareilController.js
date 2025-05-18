@@ -172,3 +172,29 @@ exports.updateNomAppareil = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors du renommage." });
   }
 };
+
+
+async function ajouterFavoriSiManquant() {
+  const result = await Appareil.updateMany(
+    { favori: { $exists: false } },
+    { $set: { favori: false } }
+  );
+  console.log(`✅ Favoris ajoutés à ${result.modifiedCount} appareils`);
+}
+ajouterFavoriSiManquant();
+
+exports.toggleFavori = async (req, res) => {
+  try {
+    const { favori } = req.body;
+    const updated = await Appareil.findByIdAndUpdate(
+      req.params.id,
+      { favori },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    console.error("❌ Erreur backend :", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+

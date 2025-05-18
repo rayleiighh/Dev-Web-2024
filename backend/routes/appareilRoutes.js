@@ -6,7 +6,8 @@ const {
   initPrises,
   createAppareil,
   updateModeNuit,
-  updateNomAppareil
+  updateNomAppareil,
+  toggleFavori
 } = require('../controllers/appareilController');
 
 const { verifAuthUtilisateur } = require('../middleware/authUtilisateur');
@@ -20,6 +21,8 @@ router.post('/init', verifAuthDevice , initPrises);
 router.post('/', verifAuthDevice , createAppareil);
 router.patch('/:id/mode-nuit', autoriserAppareils , updateModeNuit);
 router.patch('/:id/nom', verifAuthUtilisateur, updateNomAppareil);
+router.patch('/:id/favori', verifAuthUtilisateur, toggleFavori);
+
 
 
 module.exports = router;

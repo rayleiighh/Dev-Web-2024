@@ -19,10 +19,14 @@ function Dashboard({ user, setUser  }) {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  const favoris = [
+  const [favoris, setFavoris] = useState([]);
+
+
+  /*   const favoris = [
     { nom: 'iPhone de Saad', couleur: 'primary' },
     { nom: 'PC Asus', couleur: 'danger' }
-  ];
+  ]; 
+  */
   
   const isMultipriseActive = () => {
     if (!derniereConso || !derniereConso.timestamp) return false;
@@ -109,19 +113,25 @@ function Dashboard({ user, setUser  }) {
   
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchFavoris = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/appareils`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setUtilisateur(res.data);
+        const data = res.data;
+
+        // On filtre uniquement les appareils favoris
+        const favorisFiltres = data.filter((appareil) => appareil.favori === true);
+
+        setFavoris(favorisFiltres);
       } catch (err) {
-        console.error("Erreur utilisateur:", err);
-        setError("Impossible de récupérer l'utilisateur.");
+        console.error("❌ Erreur récupération favoris :", err);
       }
     };
-    fetchUser();
+
+    fetchFavoris();
   }, [token]);
+
 
   useEffect(() => {
     if (!utilisateur?.preferences?.theme) return;
@@ -256,12 +266,21 @@ function Dashboard({ user, setUser  }) {
             onClick={() => window.location.href = "gestion-appareils"}
           />
         </div>
-        {favoris.map((item, index) => (
-          <div key={index} className="d-flex align-items-center mb-3">
-            <div className={`rounded-circle bg-${item.couleur} me-3`} style={{ width: 40, height: 40 }}></div>
-            <span>{item.nom}</span>
+
+        {favoris.length > 0 ? (
+          <div className="favoris-grid">
+            {favoris.map((item, index) => (
+              <div key={item._id || index} className="favori-item">
+                <div className="favori-icon bg-primary"></div>
+                <span className="favori-nom">{item.nom}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          <div className="text-muted fst-italic">Aucun appareil en favori pour l’instant.</div>
+        )}
+
+
       </div>
 
       {/* SECTION CONTACT */}

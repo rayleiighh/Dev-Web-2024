@@ -38,7 +38,9 @@ const appareilSchema = new mongoose.Schema({
       type: String,
       default: null
     }
-  }
+  },
+  favori: { type: Boolean, default: false }
+
 }, {
   timestamps: true
 });

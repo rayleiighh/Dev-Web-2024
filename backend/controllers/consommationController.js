@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
-const Multiprise = require("../models/multipriseModel");
+const Multiprise = require('../models/multipriseModel'); 
 const { sendEmail } = require('../services/notificationsService');
-const { Parser } = require('json2csv'); 
+const { Parser } = require('json2csv');
+
 
 
 exports.creerConsommation = async (req, res) => {
@@ -25,24 +26,22 @@ exports.creerConsommation = async (req, res) => {
     if (!multiprise.utilisateurs || !Array.isArray(multiprise.utilisateurs)) {
       return res.status(500).json({ message: "Aucun utilisateur lié à cette multiprise." });
     }
+
+
     console.log("🧪 req.userId =", req.userId);
     console.log("👥 multiprise.utilisateurs =", multiprise.utilisateurs);
     console.log("👥 as string =", multiprise.utilisateurs.map(u => u.toString()));
 
+    const userId = req.userId.toString(); // sécurise la comparaison
 
-    const userId = req.userId.toString(); // 🔥 sécurise la comparaison
-
-    const isAutorise =
-      Array.isArray(multiprise.utilisateurs) &&
-      multiprise.utilisateurs.map(u => u.toString()).includes(userId);
+    const isAutorise = multiprise.utilisateurs.map(u => u.toString()).includes(userId);
 
     if (!isAutorise) {
       return res.status(403).json({ message: "Non autorisé à enregistrer pour cette multiprise." });
     }
 
-    // ⚡ Enregistrer la consommation
     const nouvelleConso = new Consommation({
-      multiprise: new mongoose.Types.ObjectId(multiprise._id),
+      multiprise: multiprise._id,
       value,
       timestamp: new Date(),
     });
@@ -63,12 +62,10 @@ exports.creerConsommation = async (req, res) => {
       });
     }
 
-    // 🚨 Notification + e-mail si seuil dépassé
-    const SEUIL_ALERTE = 10; // 🔧 à adapter si tu veux un seuil dynamique par multiprise plus tard
+    // Notification + e-mail si seuil dépassé
+    const SEUIL_ALERTE = 10;
     if (value > SEUIL_ALERTE) {
       const contenuNotif = `Consommation élevée: ${value} A détectée sur "${multiprise.nom}"`;
-
-
       const utilisateursCibles = multiprise.utilisateurs || [];
 
       const notif = new Notification({
@@ -79,11 +76,10 @@ exports.creerConsommation = async (req, res) => {
       });
 
       await notif.save();
-
-      // 📬 Envoi email si activé
+      // Envoi email si activé
       const Utilisateur = require("../models/utilisateurModel");
       const utilisateur = await Utilisateur.findById(req.userId);
-
+      
       for (const userId of utilisateursCibles) {
         const utilisateur = await Utilisateur.findById(userId);
         if (utilisateur?.preferences?.emailNotifications && utilisateur.email) {
@@ -97,11 +93,14 @@ exports.creerConsommation = async (req, res) => {
     }
 
     res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
+
   } catch (err) {
     console.error("❌ Erreur création consommation:", err);
     res.status(500).json({ message: "Erreur serveur lors de la création de la consommation." });
   }
 };
+
+
 
 exports.creerBatchConsommation = async (req, res) => {
   try {
@@ -184,11 +183,12 @@ exports.getConsommations = async (req, res) => {
     }
 
     // 🧠 Préparer la requête
-    let requete = Consommation.find(filtre).sort({ timestamp: -1 });
+  let requete = Consommation.find(filtre).populate('multiprise').sort({ timestamp: -1 });
+
 
     // ✅ Si aucun filtre de dates, on limite à 20 résultats
     if (!debut && !fin) {
-      requete = requete.limit(20);
+      requete = requete.limit(20);  
     }
 
     const consommations = await requete;
