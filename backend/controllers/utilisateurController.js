@@ -8,7 +8,7 @@ const Consommation = require('../models/consommationModel');
 const Notification = require('../models/notificationModel');
 const Multiprise = require('../models/multipriseModel'); 
 const nodemailer = require('nodemailer');
-const multer = require('../middleware/upload'); 
+
 
 
 
@@ -47,7 +47,8 @@ async function login(req, res) {
         id: utilisateur._id,
         email: utilisateur.email,
         nom: utilisateur.nom,
-        prenom: utilisateur.prenom
+        prenom: utilisateur.prenom,
+        photoProfil: utilisateur.photoProfil || ''  // ✅ ici c'était juste un oubli de virgule avant, ou une mauvaise fermeture
       }
     });
   } catch (err) {
@@ -308,18 +309,20 @@ async function mettreAJourProfil(req, res) {
       nomChange = true;
     }
 
+    let ancienneEmail = utilisateur.email;
+
     if (email && email !== utilisateur.email) {
       utilisateur.email = email;
       emailChange = true;
     }
+
 
     if (ancienMotDePasse && nouveauMotDePasse) {
       const match = await bcrypt.compare(ancienMotDePasse, utilisateur.motDePasse);
       if (!match) {
         return res.status(400).json({ message: "Ancien mot de passe incorrect." });
       }
-      const salt = await bcrypt.genSalt(10);
-      utilisateur.motDePasse = await bcrypt.hash(nouveauMotDePasse, salt);
+      utilisateur.motDePasse = nouveauMotDePasse;
       motDePasseChange = true;
     }
 
@@ -374,7 +377,7 @@ async function mettreAJourProfil(req, res) {
     if (emailChange) {
       await transporter.sendMail({
         from: 'PowerTrack <powertrack5000@gmail.com>',
-        to: email, // on utilise le nouvel email ici
+        to: email, // nouveau mail
         subject: "Votre adresse email a été modifiée",
         html: `
           <div style="font-family: Arial, sans-serif;">
@@ -386,6 +389,24 @@ async function mettreAJourProfil(req, res) {
           </div>
         `
       });
+
+      await transporter.sendMail({
+      from: 'PowerTrack <powertrack5000@gmail.com>',
+      to: ancienneEmail, // ancien mail
+      subject: "Changement de votre adresse email",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Bonjour ${utilisateur.prenom},</h2>
+          <p>Nous vous informons que l'adresse email liée à votre compte PowerTrack a été changée.</p>
+          <p>Nouvelle adresse : <strong>${email}</strong></p>
+          <p>Si ce n’est pas vous, contactez-nous immédiatement.</p>
+          <hr />
+          <p style="font-size: 13px; color: #888;">– L’équipe PowerTrack</p>
+        </div>
+      `
+    });
+
+
     }
 
     res.status(200).json({ message: "Profil mis à jour avec succès." });
@@ -400,19 +421,7 @@ async function mettreAJourProfil(req, res) {
 
 
 // Mettre à jour le profil utilisateur
-async function updateMonProfil(req, res) {
-  try {
-    const updates = req.body;
-    if (updates.motDePasse) {
-      updates.motDePasse = await bcrypt.hash(updates.motDePasse, 10);
-    }
-    const utilisateurMisAJour = await Utilisateur.findByIdAndUpdate(req.userId, updates, { new: true, runValidators: true }).select('-motDePasse');
-    res.status(200).json({ message: "Profil mis à jour avec succès", utilisateur: utilisateurMisAJour });
-  } catch (err) {
-    console.error("Erreur mise à jour profil:", err);
-    res.status(500).json({ message: "Erreur serveur lors de la mise à jour du profil." });
-  }
-}
+
 
 const updateProfilePicture = async (req, res) => {
   try {
@@ -443,4 +452,4 @@ const updateProfilePicture = async (req, res) => {
 };
 
 
-module.exports = { register, login, getMonProfil, updateMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil, updateProfilePicture, verifierEmail };
+module.exports = { register, login, getMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil, updateProfilePicture, verifierEmail };

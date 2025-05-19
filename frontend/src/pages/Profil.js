@@ -14,12 +14,14 @@ const Profil = ({ user, setUser }) => {
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
   const [photo, setPhoto] = useState(null);
-  const [loading, setLoading] = useState(false); // 🌀
+  const [photoActuelle, setPhotoActuelle] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
       setNom(user.nom);
       setEmail(user.email);
+      setPhotoActuelle(user.photoProfil); // ✅ met à jour la photo locale
     }
   }, [user]);
 
@@ -30,27 +32,27 @@ const Profil = ({ user, setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
-  
+
     if (nouveauMotDePasse && nouveauMotDePasse !== confirmationMotDePasse) {
       setErreur("Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
-  
-    setLoading(true); // Démarre l'état de chargement
-  
+
+    setLoading(true);
+
     try {
-      // Mise à jour des infos utilisateur (nom, email, mdp)
-      await axios.put(
-        'http://localhost:5000/api/utilisateurs/me',
+      // 🔁 Mise à jour du profil
+      await axios.patch(
+        'http://localhost:5000/api/utilisateurs/profil',
         { nom, email, ancienMotDePasse, nouveauMotDePasse },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      // Envoi de la photo si sélectionnée
+
+      // 📷 Mise à jour de la photo
       if (photo) {
         const formData = new FormData();
         formData.append('photo', photo);
-  
+
         await axios.patch('http://localhost:5000/api/utilisateurs/profil/photo', formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,14 +60,14 @@ const Profil = ({ user, setUser }) => {
           },
         });
       }
-  
-      // Recharge les infos utilisateur à jour
+
+      // 🔄 Recharger infos utilisateur
       const res = await axios.get('http://localhost:5000/api/utilisateurs/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
-  
-      // Reset des champs et message de succès
+      setPhotoActuelle(res.data.photoProfil); // ✅ met à jour la photo affichée
+
       setMessage("Profil mis à jour avec succès");
       setErreur('');
       setAncienMotDePasse('');
@@ -77,11 +79,9 @@ const Profil = ({ user, setUser }) => {
       setErreur(error.response?.data?.message || "Erreur lors de la mise à jour du profil");
       setMessage('');
     } finally {
-      // On garde le spinner visible au moins 800ms pour l'expérience utilisateur
       setTimeout(() => setLoading(false), 800);
     }
   };
-  
 
   return (
     <div className="container mt-4">
@@ -104,6 +104,44 @@ const Profil = ({ user, setUser }) => {
           <label>Email</label>
           <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
+
+        <div className="form-group my-3">
+            <label>Photo actuelle</label><br />
+            <div
+              className="profile-picture-placeholder rounded-circle bg-light border"
+              style={{
+                width: 120,
+                height: 120,
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              {user?.photoProfil ? (
+                <img
+                  src={`http://localhost:5000/${user.photoProfil}`}
+                  alt="Profil"
+                  className="rounded-circle"
+                  crossOrigin="anonymous"
+                  style={{ width: 120, height: 120, objectFit: 'cover' }}
+                />
+              ) : (
+                <div
+                  className="rounded-circle bg-light"
+                  style={{ width: 120, height: 120 }}
+                ></div>
+              )}
+            </div>
+        </div>
+
+
+
+        <div className="form-group mt-3">
+          <label>Photo de profil</label>
+          <input type="file" className="form-control" onChange={handleFileChange} />
+        </div>
+
         <hr />
         <div className="form-group">
           <label>Ancien mot de passe</label>
@@ -117,17 +155,13 @@ const Profil = ({ user, setUser }) => {
           <label>Confirmez le nouveau mot de passe</label>
           <input type={showPassword ? "text" : "password"} className="form-control" value={confirmationMotDePasse} onChange={(e) => setConfirmationMotDePasse(e.target.value)} />
         </div>
+
         <div className="custom-toggle my-3">
           <label className="switch">
             <input type="checkbox" checked={showPassword} onChange={() => setShowPassword(!showPassword)} />
             <span className="slider round"></span>
           </label>
           <span className="ms-2">Afficher les mots de passe</span>
-        </div>
-
-        <div className="form-group mt-3">
-          <label>Photo de profil</label>
-          <input type="file" className="form-control" onChange={handleFileChange} />
         </div>
 
         <button type="submit" className="btn btn-primary mt-3" disabled={loading}>

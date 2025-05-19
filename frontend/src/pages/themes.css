@@ -1,101 +1,100 @@
 /* themes.css */
 body.light-theme {
-    --bg-color: #f0f4f8;
-    --text-color: #1a1a1a;
-    --card-bg: #ffffff;
-    --accent-color: #4a90e2;
-  }
-  
-  body.dark-theme {
-    --bg-color: #121212;
-    --text-color: #e0e0e0;
-    --card-bg: #1f1f1f;
-    --accent-color: #8ab4f8;
-  }
-  
-  body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: all 0.3s ease;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .preferences-container {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 2rem;
-    max-width: 600px;
-    margin: 2rem auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .preferences-container h2 {
-    margin-bottom: 1rem;
-  }
-  
-  .preferences-container form label {
-    display: block;
-    margin-bottom: 1rem;
-    font-weight: 500;
-  }
-  
-  .preferences-container select,
-  .preferences-container input[type="checkbox"] {
-    margin-left: 0.5rem;
-  }
-  
-  .preferences-container button {
-    padding: 0.6rem 1.2rem;
-    background-color: var(--accent-color);
-    border: none;
-    color: white;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .preferences-container button:hover {
-    opacity: 0.9;
-  }
-  
-  /* Flèche de retour */
-  .back-arrow {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    color: var(--accent-color);
-    font-weight: bold;
-  }
-  
-  .back-arrow:hover {
-    text-decoration: underline;
-  }
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--card-bg);
-    color: var(--text-color);
-    text-decoration: none;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    margin-bottom: 1rem;
-    transition: all 0.2s ease;
-  }
-  
-  .back-button:hover {
-    background-color: var(--accent-color);
-    color: white;
-  }
-  
-  .arrow-icon {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
+  --bg-color: #f0f4f8;
+  --text-color: #1a1a1a;
+  --card-bg: #ffffff;
+  --accent-color: #4a90e2;
+}
+
+body.dark-theme {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1f1f1f;
+  --accent-color: #8ab4f8;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.preferences-container {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.preferences-container h2 {
+  margin-bottom: 1rem;
+}
+
+.preferences-container form label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.preferences-container select,
+.preferences-container input[type="checkbox"] {
+  margin-left: 0.5rem;
+}
+
+.preferences-container button {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--accent-color);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.preferences-container button:hover {
+  opacity: 0.9;
+}
+
+/* Flèche de retour */
+.back-arrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.back-arrow:hover {
+  text-decoration: underline;
+}
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--text-color);
+  text-decoration: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.arrow-icon {
+  font-size: 18px;
+  font-weight: bold;
+}

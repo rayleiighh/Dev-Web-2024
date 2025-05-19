@@ -8,7 +8,11 @@ import './Dashboard.css';
 import IconButton from '../components/IconButton'; // ✅ Ajoute cette ligne
 
 function Dashboard({ user, setUser  }) {
-  const [utilisateur, setUtilisateur] = useState(null);
+  const [utilisateur, setUtilisateur] = useState(user);
+  useEffect(() => {
+  setUtilisateur(user);
+  }, [user]);
+
   const [derniereConso, setDerniereConso] = useState(null);
   // const [onglet, setOnglet] = useState("today");
   const [seuils, setSeuils] = useState({});
