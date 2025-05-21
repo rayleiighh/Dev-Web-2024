@@ -16,3 +16,7 @@ body {
   font-size: 1.4rem;
   font-weight: 500;
 }
+
+.btn-success {
+  width: 350px;
+}
