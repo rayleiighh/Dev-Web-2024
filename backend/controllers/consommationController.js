@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 const Consommation = require('../models/consommationModel');
 const Appareil = require('../models/appareilModel');
 const Notification = require('../models/notificationModel');
-const Multiprise = require('../models/multipriseModel'); 
+const Multiprise = require("../models/multipriseModel");
 const { sendEmail } = require('../services/notificationsService');
-const { Parser } = require('json2csv');
-
+const { Parser } = require('json2csv'); 
 
 
 exports.creerConsommation = async (req, res) => {
@@ -26,22 +25,24 @@ exports.creerConsommation = async (req, res) => {
     if (!multiprise.utilisateurs || !Array.isArray(multiprise.utilisateurs)) {
       return res.status(500).json({ message: "Aucun utilisateur lié à cette multiprise." });
     }
-
-
     console.log("🧪 req.userId =", req.userId);
     console.log("👥 multiprise.utilisateurs =", multiprise.utilisateurs);
     console.log("👥 as string =", multiprise.utilisateurs.map(u => u.toString()));
 
-    const userId = req.userId.toString(); // sécurise la comparaison
 
-    const isAutorise = multiprise.utilisateurs.map(u => u.toString()).includes(userId);
+    const userId = req.userId.toString(); // 🔥 sécurise la comparaison
+
+    const isAutorise =
+      Array.isArray(multiprise.utilisateurs) &&
+      multiprise.utilisateurs.map(u => u.toString()).includes(userId);
 
     if (!isAutorise) {
       return res.status(403).json({ message: "Non autorisé à enregistrer pour cette multiprise." });
     }
 
+    // ⚡ Enregistrer la consommation
     const nouvelleConso = new Consommation({
-      multiprise: multiprise._id,
+      multiprise: new mongoose.Types.ObjectId(multiprise._id),
       value,
       timestamp: new Date(),
     });
@@ -62,10 +63,12 @@ exports.creerConsommation = async (req, res) => {
       });
     }
 
-    // Notification + e-mail si seuil dépassé
-    const SEUIL_ALERTE = 10;
+    // 🚨 Notification + e-mail si seuil dépassé
+    const SEUIL_ALERTE = 10; // 🔧 à adapter si tu veux un seuil dynamique par multiprise plus tard
     if (value > SEUIL_ALERTE) {
       const contenuNotif = `Consommation élevée: ${value} A détectée sur "${multiprise.nom}"`;
+
+
       const utilisateursCibles = multiprise.utilisateurs || [];
 
       const notif = new Notification({
@@ -76,10 +79,11 @@ exports.creerConsommation = async (req, res) => {
       });
 
       await notif.save();
-      // Envoi email si activé
+
+      // 📬 Envoi email si activé
       const Utilisateur = require("../models/utilisateurModel");
       const utilisateur = await Utilisateur.findById(req.userId);
-      
+
       for (const userId of utilisateursCibles) {
         const utilisateur = await Utilisateur.findById(userId);
         if (utilisateur?.preferences?.emailNotifications && utilisateur.email) {
@@ -93,14 +97,11 @@ exports.creerConsommation = async (req, res) => {
     }
 
     res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
-
   } catch (err) {
     console.error("❌ Erreur création consommation:", err);
     res.status(500).json({ message: "Erreur serveur lors de la création de la consommation." });
   }
 };
-
-
 
 exports.creerBatchConsommation = async (req, res) => {
   try {
@@ -183,12 +184,11 @@ exports.getConsommations = async (req, res) => {
     }
 
     // 🧠 Préparer la requête
-  let requete = Consommation.find(filtre).populate('multiprise').sort({ timestamp: -1 });
-
+    let requete = Consommation.find(filtre).sort({ timestamp: -1 });
 
     // ✅ Si aucun filtre de dates, on limite à 20 résultats
     if (!debut && !fin) {
-      requete = requete.limit(20);  
+      requete = requete.limit(20);
     }
 
     const consommations = await requete;
@@ -308,16 +308,45 @@ exports.calculerMoyenneConsommation = async (req, res) => {
   }
 };
 
-
 exports.exporterConsommationsEnCSV = async (req, res) => {
   try {
-    const consommations = await Consommation.find({}).lean();
+    const { debut, fin } = req.query;
 
-    const fields = ['timestamp', 'value', 'multiprise']; // Tu choisis ici les colonnes
+    if (!debut) {
+      return res.status(400).json({ message: "La date de début est requise pour exporter les données." });
+    }
+
+    const dateDebut = new Date(debut);
+    const dateFin = fin ? new Date(fin) : new Date();
+
+    if (isNaN(dateDebut.getTime()) || isNaN(dateFin.getTime())) {
+      return res.status(400).json({ message: "Dates invalides." });
+    }
+
+    const consommations = await Consommation.find({
+      timestamp: { $gte: dateDebut, $lte: dateFin }
+    }).populate('multiprise').lean();
+
+    const dataFormatee = consommations.map(c => {
+      const dateLisible = new Date(c.timestamp).toLocaleString('fr-FR', {
+        timeZone: 'UTC',
+        dateStyle: 'short',
+        timeStyle: 'medium'
+      });
+
+      return {
+        "Horodatage": dateLisible,
+        "Identifiant Multiprise": c.multiprise?.identifiantUnique || "Multiprise Inconnue",
+        "Énergie (kWh)": (c.value * 0.001).toFixed(4),
+        "Courant (A)": c.value.toFixed(3)
+      };
+    });
+
+    const fields = ["Horodatage", "Identifiant Multiprise", "Énergie (kWh)", "Courant (A)"];
     const opts = { fields };
 
     const parser = new Parser(opts);
-    const csv = parser.parse(consommations);
+    const csv = parser.parse(dataFormatee);
 
     res.header('Content-Type', 'text/csv');
     res.attachment('consommations.csv');
@@ -327,3 +356,5 @@ exports.exporterConsommationsEnCSV = async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur lors de l’export CSV.' });
   }
 };
+
+

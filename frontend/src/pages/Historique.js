@@ -24,6 +24,7 @@ function Historique() {
   const navigate = useNavigate();
 
   const [chargementCSV, setChargementCSV] = useState(false); // ✅ AJOUT
+  const [erreurExport, setErreurExport] = useState(null);
 
 
   const estDateValide = () => {
@@ -111,38 +112,50 @@ function Historique() {
     }]
   };
 
-  const handleExport = async () => {
-    try {
-      setChargementCSV(true); // ✅ début du chargement
+const handleExport = async () => {
+  if (!dateDebut) {
+    setErreurExport("❌ Veuillez choisir une date de début.");
+    return;
+  }
 
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/consommations/export-csv`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+  try {
+    setErreurExport(null); // reset erreur
+    setChargementCSV(true);
 
-      if (!response.ok) {
-        throw new Error(`Erreur lors de l'export CSV : ${response.status}`);
+    const token = localStorage.getItem("token");
+
+    const query = new URLSearchParams();
+    query.append("debut", `${dateDebut}T00:00:00.000Z`);
+    query.append("fin", dateFin ? `${dateFin}T23:59:59.999Z` : new Date().toISOString());
+
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/consommations/export-csv?${query.toString()}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
       }
+    });
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.setAttribute('download', 'consommations.csv');
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Erreur lors de l'export CSV :", error);
-      alert("Erreur lors de l'export CSV, voir la console pour plus de détails.");
-    } finally {
-      setChargementCSV(false); // ✅ fin du chargement
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status);
     }
-  };
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', 'consommations.csv');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Erreur export CSV :", error);
+    alert("Erreur lors de l'export CSV, voir console.");
+  } finally {
+    setChargementCSV(false);
+  }
+};
+
 
   
   if (loading) return <div className="loading-center">⏳ Chargement en cours...</div>;
@@ -180,8 +193,12 @@ function Historique() {
             onChange={(e) => setDateFin(e.target.value)}
           />
         </div>
-        <div className="col-md-3">
-          <button className="btn btn-success w-100" onClick={handleExport} disabled={chargementCSV}>
+        <div className="col-md-6 d-flex justify-content-between align-items-center">
+          <button
+            className="btn btn-success bouton-export"
+            onClick={handleExport}
+            disabled={chargementCSV}
+          >
             {chargementCSV ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -192,6 +209,9 @@ function Historique() {
             )}
           </button>
 
+          {erreurExport && (
+            <span className="text-danger small">{erreurExport}</span>
+          )}
         </div>
       </div>
 
