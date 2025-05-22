@@ -132,7 +132,7 @@ const App = () => {
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/verifier-email" element={<VerifierEmail />} />
-        <Route path="/contact" element={<Contact user={user} />} />
+        <Route path="/contact" element={user ? <Contact user={user} /> : <Navigate to="/" />} />
         <Route path="/contact-login" element={<ContactLogin />} />
       </Routes>
     </Router>
