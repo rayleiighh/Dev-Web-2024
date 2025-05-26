@@ -71,8 +71,7 @@ exports.initPrises = async (req, res) => {
     const prises = [
       { nom: "Prise 1", gpioIndex: 0, multiprise: multipriseId },
       { nom: "Prise 2", gpioIndex: 1, multiprise: multipriseId },
-      { nom: "Prise 3", gpioIndex: 2, multiprise: multipriseId },
-      { nom: "Prise 4", gpioIndex: 3, multiprise: multipriseId }
+      { nom: "Prise 3", gpioIndex: 2, multiprise: multipriseId }
     ];
 
     await Appareil.insertMany(prises);

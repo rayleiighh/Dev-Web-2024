@@ -172,8 +172,7 @@ async function register(req, res) {
       const prisesParDefaut = [
         { nom: "Prise 1", gpioIndex: 0, multiprise: multiprise._id },
         { nom: "Prise 2", gpioIndex: 1, multiprise: multiprise._id },
-        { nom: "Prise 3", gpioIndex: 2, multiprise: multiprise._id },
-        { nom: "Prise 4", gpioIndex: 3, multiprise: multiprise._id }
+        { nom: "Prise 3", gpioIndex: 2, multiprise: multiprise._id }
       ];
       await Appareil.insertMany(prisesParDefaut);
       console.log(`✅ Prises créées pour multiprise ${deviceId}`);
