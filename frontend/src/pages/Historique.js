@@ -100,9 +100,9 @@ function Historique() {
       fetchConsommations();
     }
   }, [fetchConsommations]);
-  const limitedData = historique.slice(0, 10);
+  const limitedData = historique.slice(0, 30);
   const chartData = {
-    labels: limitedData.map(entry => entry.timestampLisible),
+    labels: limitedData.map((entry, idx) => idx % 3 === 0 ? entry.timestampLisible : ""),
     datasets: [{
       label: 'Courant (A)',
       data: limitedData.map(entry => entry.value),
