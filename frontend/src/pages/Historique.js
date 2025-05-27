@@ -22,6 +22,7 @@ function Historique() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [dateError, setDateError] = useState('');
 
   const [chargementCSV, setChargementCSV] = useState(false); // ✅ AJOUT
   const [erreurExport, setErreurExport] = useState(null);
@@ -34,13 +35,14 @@ function Historique() {
     const now = new Date();
   
     if (debut > fin) {
-      alert("❌ La date de début doit être avant la date de fin.");
+      setDateError("❌ La date de début doit être avant la date de fin.");
       return false;
     }
     if (debut > now || fin > now) {
-      alert("❌ Les dates ne peuvent pas être dans le futur.");
+      setDateError("❌ Les dates ne peuvent pas être dans le futur.");
       return false;
     }
+    setDateError('');
     return true;
   };
   
@@ -173,6 +175,11 @@ const handleExport = async () => {
 
       
       </div>
+      {dateError && (
+        <div className="alert alert-danger" role="alert">
+          {dateError}
+        </div>
+      )}
 
       
 
