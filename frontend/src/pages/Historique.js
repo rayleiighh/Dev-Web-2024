@@ -16,16 +16,27 @@ import { useNavigate } from 'react-router-dom';
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend);
 
 function Historique() {
+  const today = new Date().toISOString().split('T')[0];
   const [historique, setHistorique] = useState([]);
-  const [dateDebut, setDateDebut] = useState('');
-  const [dateFin, setDateFin] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [dateDebut, setDateDebut] = useState(today);
+  const [dateFin, setDateFin] = useState(today);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [dateError, setDateError] = useState('');
-
-  const [chargementCSV, setChargementCSV] = useState(false); // ✅ AJOUT
+  const [loading, setLoading] = useState(true);
+  const [chargementCSV, setChargementCSV] = useState(false);
   const [erreurExport, setErreurExport] = useState(null);
+
+  const reinitialiserFiltres = () => {
+    setDateDebut(today);
+    setDateFin(today);
+  };
+
+  const appliquerFiltres = () => {
+    if (estDateValide()) {
+      fetchConsommations();
+    }
+  };
 
 
   const estDateValide = () => {
@@ -101,7 +112,7 @@ function Historique() {
     if (estDateValide()) {
       fetchConsommations();
     }
-  }, [fetchConsommations]);
+  }, []); // Suppression de la dépendance fetchConsommations pour éviter les appels automatiques
   const limitedData = historique.slice(0, 30);
   const chartData = {
     labels: limitedData.map((entry, idx) => idx % 3 === 0 ? entry.timestampLisible : ""),
@@ -160,56 +171,60 @@ const handleExport = async () => {
 
 
   
-  if (loading) return <div className="loading-center">⏳ Chargement en cours...</div>;
+  
   if (error) return <p>❌ Erreur : {error}</p>;
 
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>📊 Historique des consommations</h4>
-
+  
         <button className="btn btn-outline-dark rounded-circle fixed-button" 
           onClick={() => navigate(-1)}>
           <i className="bi bi-arrow-left"></i> 
         </button>
-
-      
       </div>
+  
       {dateError && (
         <div className="alert alert-danger" role="alert">
           {dateError}
         </div>
       )}
-
-      
-
-      <div className="row g-3 mb-3">
-        <div className="col-md-3">
+  
+      <div className="filter-container d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2">
           <input
             type="date"
             className="form-control"
             value={dateDebut}
             onChange={(e) => setDateDebut(e.target.value)}
           />
-        </div>
-        <div className="col-md-3">
           <input
             type="date"
             className="form-control"
             value={dateFin}
             onChange={(e) => setDateFin(e.target.value)}
           />
+          <button className="btn btn-primary btn-sm" onClick={appliquerFiltres}>
+            Appliquer
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={reinitialiserFiltres}>
+            Réinitialiser
+          </button>
         </div>
-        <div className="col-md-6 d-flex justify-content-between align-items-center">
-          <button
-            className="btn btn-success bouton-export"
-            onClick={handleExport}
-            disabled={chargementCSV}
-          >
+  
+        <div className="summary-wrapper">
+          <div className="summary-box text-end">
+            <p className="mb-0"><strong>Période choisie avec filtre :</strong></p>
+            <p className="mb-0 text-muted">{dateDebut} ➜ {dateFin}</p>
+            <p className="mb-0 text-muted">MAJ : {new Date().toLocaleString()}</p>
+          </div>
+
+          <button className="btn btn-success bouton-export btn-sm" onClick={handleExport} disabled={chargementCSV}>
             {chargementCSV ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Export en cours...
+                  Export...
               </>
             ) : (
               "📁 Export CSV"
@@ -217,15 +232,16 @@ const handleExport = async () => {
           </button>
 
           {erreurExport && (
-            <span className="text-danger small">{erreurExport}</span>
+            <span className="text-danger small mt-1">{erreurExport}</span>
           )}
         </div>
-      </div>
 
+      </div>
+  
       <div className="bg-white p-3 rounded shadow-sm mb-4">
         <Line data={chartData} />
       </div>
-
+  
       <div className="table-responsive">
         <table className="table table-striped table-bordered text-center">
           <thead className="table-primary">
@@ -237,7 +253,7 @@ const handleExport = async () => {
             </tr>
           </thead>
           <tbody>
-           {historique.length > 0 ? historique.slice(0, 10).map((entry, index) => (
+            {historique.length > 0 ? historique.slice(0, 10).map((entry, index) => (
               <tr key={index}>
                 <td>{entry.timestampLisible}</td>
                 <td>{entry.multiprise?.identifiantUnique || "Multiprise inconnue"}</td>
@@ -254,6 +270,6 @@ const handleExport = async () => {
       </div>
     </div>
   );
-}
+}  
 
 export default Historique;
