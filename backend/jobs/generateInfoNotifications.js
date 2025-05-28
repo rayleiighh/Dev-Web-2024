@@ -22,12 +22,12 @@ async function generateInfoNotifications() {
 
       if (!consommations.length) continue;
 
-      console.log("📊 Conso pour", multiprise.nom, ":", consommations.map(c => c.value));
+      console.log(" Conso pour", multiprise.nom, ":", consommations.map(c => c.value));
 
       const total = consommations.reduce((sum, c) => sum + Number(c.value), 0);
       const moyenne = total / consommations.length;
 
-      const contenu = `📊 Info Conso - ${multiprise.nom} : Votre consommation moyenne aujourd'hui est de ${moyenne.toFixed(2)} kWh.`;
+      const contenu = ` Info Conso - ${multiprise.nom} : Votre consommation moyenne aujourd'hui est de ${moyenne.toFixed(2)} kWh.`;
 
       const notification = await Notification.create({
         contenu,
@@ -51,11 +51,11 @@ async function generateInfoNotifications() {
         }
       }
 
-      console.log('✅ Notification envoyée pour', multiprise.nom);
+      console.log(' Notification envoyée pour', multiprise.nom);
     }
 
   } catch (error) {
-    console.error('❌ Erreur génération notifications infos :', error);
+    console.error(' Erreur génération notifications infos :', error);
   }
 }
 

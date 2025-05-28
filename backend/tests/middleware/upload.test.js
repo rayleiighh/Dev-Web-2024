@@ -1,6 +1,3 @@
-// tests/middleware/upload.test.js
-
-// 1️⃣ Mock multer at the top
 jest.mock('multer', () => {
     const storageEngine = {};                // dummy storage engine
     const diskStorage = jest.fn(() => storageEngine);
@@ -15,20 +12,20 @@ jest.mock('multer', () => {
     let multer, upload, storageConfig;
   
     beforeEach(() => {
-      // 🔄 Reset module cache so our mock is re‑applied fresh
+      //  Reset module cache so our mock is re‑applied fresh
       jest.resetModules();
   
-      // 2️⃣ Re‑require the mock after reset
+      //  Re‑require the mock after reset
       multer = require('multer');
   
-      // 🔄 Clear any leftover calls
+      //  Clear any leftover calls
       multer.diskStorage.mockClear();
       multer.mockClear();
   
-      // 3️⃣ Require your middleware, which will now call the mock
+      //  Require your middleware, which will now call the mock
       upload = require('../../middleware/upload');  // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
   
-      // 4️⃣ Capture the config passed into diskStorage()
+      // Capture the config passed into diskStorage()
       expect(multer.diskStorage).toHaveBeenCalledTimes(1);
       // storageConfig is the config passed into diskStorage
     [storageConfig] = multer.diskStorage.mock.calls[0];

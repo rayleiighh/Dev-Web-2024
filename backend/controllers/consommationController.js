@@ -15,7 +15,7 @@ exports.creerConsommation = async (req, res) => {
       return res.status(400).json({ message: "identifiantUnique et value sont requis." });
     }
 
-    // 🔍 Chercher la multiprise via son identifiant unique
+    //  Chercher la multiprise via son identifiant unique
     const multiprise = await Multiprise.findOne({ identifiantUnique });
 
     if (!multiprise) {
@@ -25,12 +25,12 @@ exports.creerConsommation = async (req, res) => {
     if (!multiprise.utilisateurs || !Array.isArray(multiprise.utilisateurs)) {
       return res.status(500).json({ message: "Aucun utilisateur lié à cette multiprise." });
     }
-    console.log("🧪 req.userId =", req.userId);
-    console.log("👥 multiprise.utilisateurs =", multiprise.utilisateurs);
-    console.log("👥 as string =", multiprise.utilisateurs.map(u => u.toString()));
+    console.log(" req.userId =", req.userId);
+    console.log(" multiprise.utilisateurs =", multiprise.utilisateurs);
+    console.log(" as string =", multiprise.utilisateurs.map(u => u.toString()));
 
 
-    const userId = req.userId.toString(); // 🔥 sécurise la comparaison
+    const userId = req.userId.toString(); // sécurise la comparaison
 
     const isAutorise =
       Array.isArray(multiprise.utilisateurs) &&
@@ -40,7 +40,7 @@ exports.creerConsommation = async (req, res) => {
       return res.status(403).json({ message: "Non autorisé à enregistrer pour cette multiprise." });
     }
 
-    // ⚡ Enregistrer la consommation
+    // Enregistrer la consommation
     const nouvelleConso = new Consommation({
       multiprise: new mongoose.Types.ObjectId(multiprise._id),
       value,
@@ -49,7 +49,7 @@ exports.creerConsommation = async (req, res) => {
 
     await nouvelleConso.save();
 
-    // 📡 Envoyer en WebSocket (si actif)
+    //  Envoyer en WebSocket (si actif)
     if (global.io) {
       global.io.to(req.userId).emit("nouvelleConsommation", {
         _id: nouvelleConso._id,
@@ -63,8 +63,8 @@ exports.creerConsommation = async (req, res) => {
       });
     }
 
-    // 🚨 Notification + e-mail si seuil dépassé
-    const SEUIL_ALERTE = 10; // 🔧 à adapter si tu veux un seuil dynamique par multiprise plus tard
+    //  Notification + e-mail si seuil dépassé
+    const SEUIL_ALERTE = 10; 
     if (value > SEUIL_ALERTE) {
       const contenuNotif = `Consommation élevée: ${value} A détectée sur "${multiprise.nom}"`;
 
@@ -80,7 +80,7 @@ exports.creerConsommation = async (req, res) => {
 
       await notif.save();
 
-      // 📬 Envoi email si activé
+      //  Envoi email si activé
       const Utilisateur = require("../models/utilisateurModel");
       const utilisateur = await Utilisateur.findById(req.userId);
 
@@ -98,7 +98,7 @@ exports.creerConsommation = async (req, res) => {
 
     res.status(201).json({ message: "Consommation enregistrée", consommation: nouvelleConso });
   } catch (err) {
-    console.error("❌ Erreur création consommation:", err);
+    console.error(" Erreur création consommation:", err);
     res.status(500).json({ message: "Erreur serveur lors de la création de la consommation." });
   }
 };
@@ -128,13 +128,13 @@ exports.creerBatchConsommation = async (req, res) => {
       const nouvelleConso = new Consommation({
         value: measurement.value,
         timestamp: measurement.timestamp ? new Date(measurement.timestamp * 1000) : new Date(),
-        multiprise: multiprise._id  // ✅ Ajout obligatoire
+        multiprise: multiprise._id  
       });
 
       await nouvelleConso.save();
       createdMeasurements.push(nouvelleConso);
 
-      // 🔌 Émission immédiate en WebSocket
+      //  Émission immédiate en WebSocket
       if (global.io) {
         global.io.emit('nouvelleConsommation', {
           _id: nouvelleConso._id,
@@ -146,7 +146,7 @@ exports.creerBatchConsommation = async (req, res) => {
 
     res.status(201).json({ message: "Mesures enregistrées", measurements: createdMeasurements });
   } catch (err) {
-    console.error("❌ Erreur lors de la création du batch de consommations:", err);
+    console.error(" Erreur lors de la création du batch de consommations:", err);
     res.status(500).json({ message: "Erreur serveur lors de la création des mesures." });
   }
 };
@@ -160,7 +160,7 @@ exports.getConsommationParId = async (req, res) => {
     }
     res.status(200).json(consommation);
   } catch (err) {
-    console.error("❌ Erreur récupération consommation par ID:", err);
+    console.error(" Erreur récupération consommation par ID:", err);
     res.status(500).json({ message: "Erreur serveur lors de la récupération de la consommation." });
   }
 };
@@ -183,10 +183,10 @@ exports.getConsommations = async (req, res) => {
       }
     }
 
-    // 🧠 Préparer la requête
+    // Préparer la requête
     let requete = Consommation.find(filtre).sort({ timestamp: -1 });
 
-    // ✅ Si aucun filtre de dates, on limite à 20 résultats
+    
     if (!debut && !fin) {
       requete = requete.limit(20);
     }
@@ -213,7 +213,7 @@ exports.getConsommations = async (req, res) => {
 
     res.status(200).json(dataFormatee);
   } catch (err) {
-    console.error("❌ Erreur récupération consommations:", err);
+    console.error(" Erreur récupération consommations:", err);
     res.status(500).json({ message: "Erreur serveur lors de la récupération." });
   }
 };
@@ -228,15 +228,15 @@ exports.getDerniereConsommation = async (req, res) => {
       return res.status(404).json({ message: "Aucune consommation trouvée." });
     }
 
-    const nowUTC = new Date(Date.now()); // UTC
+    const nowUTC = new Date(Date.now()); 
     const timestampUTC = new Date(consommation.timestamp);
 
     let diffInSeconds = (nowUTC.getTime() - timestampUTC.getTime()) / 1000;
-    console.log(`⏱ Différence avec dernière consommation : ${diffInSeconds.toFixed(1)} secondes`);
+    console.log(`Différence avec dernière consommation : ${diffInSeconds.toFixed(1)} secondes`);
 
     if (diffInSeconds < 0) {
-      console.warn("⚠️ Timestamp dans le futur détecté !");
-      diffInSeconds = Math.abs(diffInSeconds); // ⚡ On corrige en valeur absolue pour éviter le bug
+      console.warn(" Timestamp dans le futur détecté !");
+      diffInSeconds = Math.abs(diffInSeconds); 
     }
 
     if (diffInSeconds > 45) {
@@ -303,7 +303,7 @@ exports.calculerMoyenneConsommation = async (req, res) => {
       nombreEnregistrements: consommations.length
     });
   } catch (err) {
-    console.error("❌ Erreur calcul moyenne consommation :", err);
+    console.error(" Erreur calcul moyenne consommation :", err);
     res.status(500).json({ message: "Erreur serveur lors du calcul de la moyenne." });
   }
 };

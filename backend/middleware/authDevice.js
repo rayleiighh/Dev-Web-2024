@@ -20,7 +20,7 @@ async function verifAuthDevice(req, res, next) {
 
     req.deviceId = deviceId;
     req.multiprise = multiprise;
-    console.log("🔐 Auth OK multiprise :", deviceId);
+    console.log(" Auth OK multiprise :", deviceId);
     next();
   } catch (err) {
     return res.status(403).json({ message: "Token device invalide ou expiré" });

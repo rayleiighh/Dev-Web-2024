@@ -8,9 +8,9 @@ const { sendEmail } = require('../services/notificationsService');
 
 router.use(verifAuthUtilisateur);
 
-// 🔍 Récupérer toutes les notifications de l'utilisateur
+//  Récupérer toutes les notifications de l'utilisateur
 router.get('/', async (req, res) => {
-    console.log("🔍 Vérification utilisateur:", req.userId);
+    console.log("Vérification utilisateur:", req.userId);
     
     if (!req.userId) {
         return res.status(401).json({ message: "Utilisateur non authentifié." });
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
         .populate('multiprise')
         .sort({ createdAt: -1 });
 
-      console.log("🔍 Notifications trouvées:", notifications);
+      console.log("Notifications trouvées:", notifications);
       
       if (!notifications || notifications.length === 0) {
         return res.status(404).json({ message: "Aucune notification trouvée pour cet utilisateur." });
@@ -34,10 +34,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 📩 Marquer une notification comme envoyée
+// Marquer une notification comme envoyée
 router.put('/:id/envoyer', notificationController.envoyerNotification);
 
-// ❌ Supprimer une notification
+
 router.delete('/:id', notificationController.supprimerNotification);
 
 

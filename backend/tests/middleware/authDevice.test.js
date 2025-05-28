@@ -1,6 +1,3 @@
-// tests/middleware/authDevice.test.js
-
-// 1️⃣ Keep your mocks hoisted:
 jest.mock('dotenv', () => ({ config: jest.fn() }));
 jest.mock('jsonwebtoken', () => ({ verify: jest.fn() }));
 jest.mock('../../models/multipriseModel');
@@ -10,22 +7,22 @@ describe('verifAuthDevice middleware', () => {
   let req, res, next;
 
   beforeEach(() => {
-    // 2️⃣ Reset the module registry so SECRET_KEY is re‑read
+    //  Reset the module registry so SECRET_KEY is re‑read
     jest.resetModules();
 
-    // 3️⃣ Set the env var *before* requiring anything that reads it
+    //  Set the env var *before* requiring anything that reads it
     process.env.JWT_SECRET = 'testsecret';
 
-    // 4️⃣ Re‑import the mocks & the middleware
+    //  Re‑import the mocks & the middleware
     jwt = require('jsonwebtoken');
     Multiprise = require('../../models/multipriseModel');
-    verifAuthDevice = require('../../middleware/authDevice').verifAuthDevice; // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+    verifAuthDevice = require('../../middleware/authDevice').verifAuthDevice; 
 
-    // 5️⃣ Clear mock call history
+    //  Clear mock call history
     jwt.verify.mockClear();
     Multiprise.findOne.mockClear();
 
-    // 6️⃣ Fake req/res/next
+    // Fake req/res/next
     req = { headers: {} };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -93,7 +90,7 @@ describe('verifAuthDevice middleware', () => {
     expect(jwt.verify).toHaveBeenCalledWith('goodtoken', 'testsecret');
     expect(req.deviceId).toBe('device123');
     expect(req.multiprise).toBe(mockMultiprise);
-    expect(console.log).toHaveBeenCalledWith('🔐 Auth OK multiprise :', 'device123');
+    expect(console.log).toHaveBeenCalledWith(' Auth OK multiprise :', 'device123');
     expect(next).toHaveBeenCalled();
   });
 });

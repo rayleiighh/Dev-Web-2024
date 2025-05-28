@@ -1,6 +1,6 @@
 // tests/controllers/notificationController.test.js
 
-// 1️⃣ Mock all external modules before importing the controller
+//Mock all external modules before importing the controller
 jest.mock('../../models/notificationModel');
 jest.mock('../../models/utilisateurModel');
 jest.mock('../../services/notificationsService');
@@ -190,7 +190,7 @@ describe('notificationController', () => {
       await envoyerNotification(req, res);
 
       expect(sendEmail).toHaveBeenCalledTimes(2);
-      expect(console.log).toHaveBeenCalledWith('✅ Email envoyé à :', 'a@b');
+      expect(console.log).toHaveBeenCalledWith('Email envoyé à :', 'a@b');
       expect(mockNotif.envoyee).toBe(true);
       expect(mockNotif.save).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
@@ -204,7 +204,7 @@ describe('notificationController', () => {
 
       await envoyerNotification(req, res);
 
-      expect(console.error).toHaveBeenCalledWith("❌ Erreur lors de l'envoi des emails :", err);
+      expect(console.error).toHaveBeenCalledWith("Erreur lors de l'envoi des emails :", err);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ message: "Erreur lors de l'envoi des notifications." });
     });
@@ -255,7 +255,7 @@ describe('notificationController', () => {
 
       await supprimerNotification(req, res);
 
-      expect(console.error).toHaveBeenCalledWith('❌ Erreur suppression notification :', err);
+      expect(console.error).toHaveBeenCalledWith('Erreur suppression notification :', err);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ message: 'Erreur serveur.' });
     });

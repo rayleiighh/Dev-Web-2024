@@ -20,7 +20,7 @@ async function verifAuthUtilisateur(req, res, next) {
 
     req.utilisateur = utilisateur;
     req.userId = utilisateur._id;
-    console.log("🧑‍💻 Utilisateur authentifié :", utilisateur.email);
+    console.log("Utilisateur authentifié :", utilisateur.email);
     next();
   } catch (err) {
     return res.status(403).json({ message: 'Token invalide ou expiré' });

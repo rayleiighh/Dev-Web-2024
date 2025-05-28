@@ -57,7 +57,7 @@ exports.getNotifications = async (req, res) => {
 
     res.status(200).json(notifications);
   } catch (error) {
-    console.error("❌ Erreur récupération notifications :", error);
+    console.error(" Erreur récupération notifications :", error);
     res.status(500).json({ message: "Erreur serveur." });
   }
 };
@@ -124,7 +124,7 @@ exports.genererNotificationInfo = async (req, res) => {
     await generateInfoNotifications();
     res.status(200).json({ message: 'Notifications informatives générées avec succès.' });
   } catch (error) {
-    console.error("❌ Erreur génération manuelle :", error);
+    console.error(" Erreur génération manuelle :", error);
     res.status(500).json({ message: "Erreur lors de la génération." });
   }
 };

@@ -1,7 +1,7 @@
 const Appareil = require('../models/appareilModel');
 const Multiprise = require('../models/multipriseModel');
 
-// ✅ GET Appareils (Utilisateur ou Multiprise)
+//  GET Appareils (Utilisateur ou Multiprise)
 exports.getAppareils = async (req, res) => {
   try {
     let appareils = [];
@@ -20,12 +20,12 @@ exports.getAppareils = async (req, res) => {
 
     res.json(appareils);
   } catch (err) {
-    console.error("❌ Erreur getAppareils :", err.message);
+    console.error(" Erreur getAppareils :", err.message);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
-// ✅ PATCH - Changer état d’un appareil
+//   Changer état d’un appareil
 exports.updateAppareilEtat = async (req, res) => {
   try {
     const { id } = req.params;
@@ -50,7 +50,7 @@ exports.updateAppareilEtat = async (req, res) => {
       etat: appareil.etat
     });
 
-    console.log(`⚡ Prise ${appareil.nom} (GPIO ${appareil.gpioIndex}) changée → ${appareil.etat ? "ON" : "OFF"}`);
+    console.log(` Prise ${appareil.nom} (GPIO ${appareil.gpioIndex}) changée → ${appareil.etat ? "ON" : "OFF"}`);
     res.json(appareil);
   } catch (error) {
     console.error("❌ Erreur updateAppareilEtat :", error);
@@ -58,7 +58,7 @@ exports.updateAppareilEtat = async (req, res) => {
   }
 };
 
-// ✅ POST - Initialiser les 4 prises
+//   Initialiser les 4 prises
 exports.initPrises = async (req, res) => {
   try {
     const multiprises = await Multiprise.find({ utilisateurs: req.userId });
@@ -82,7 +82,7 @@ exports.initPrises = async (req, res) => {
   }
 };
 
-// ✅ POST - Créer un appareil
+//   Créer un appareil
 exports.createAppareil = async (req, res) => {
   try {
     const multiprises = await Multiprise.find({ utilisateurs: req.userId });
@@ -106,15 +106,15 @@ exports.createAppareil = async (req, res) => {
   }
 };
 
-// ✅ PATCH - Activer / désactiver le mode nuit
+//   Activer / désactiver le mode nuit
 exports.updateModeNuit = async (req, res) => {
   try {
     const { id } = req.params;
     const { actif, heureDebut, heureFin } = req.body;
 
-    console.log("🔧 Mise à jour mode nuit de l'appareil ID :", id);
-    console.log("📥 Payload reçu :", req.body);
-    console.log("👤 Utilisateur ID :", req.userId);
+    console.log(" Mise à jour mode nuit de l'appareil ID :", id);
+    console.log(" Payload reçu :", req.body);
+    console.log(" Utilisateur ID :", req.userId);
 
     const multiprises = await Multiprise.find({ utilisateurs: req.userId });
     const idsMultiprises = multiprises.map(m => m._id);
@@ -178,7 +178,7 @@ async function ajouterFavoriSiManquant() {
     { favori: { $exists: false } },
     { $set: { favori: false } }
   );
-  console.log(`✅ Favoris ajoutés à ${result.modifiedCount} appareils`);
+  console.log(` Favoris ajoutés à ${result.modifiedCount} appareils`);
 }
 ajouterFavoriSiManquant();
 

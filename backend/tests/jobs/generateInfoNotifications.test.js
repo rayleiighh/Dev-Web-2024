@@ -1,6 +1,6 @@
 // tests/jobs/generateInfoNotifications.test.js
 
-// 🔧 Mock every model and the email service
+// Mock every model and the email service
 jest.mock('../../models/notificationModel');
 jest.mock('../../models/multipriseModel');
 jest.mock('../../models/consommationModel');
@@ -63,7 +63,7 @@ describe('generateInfoNotifications job', () => {
 
     // A notification object must have been created once for multiprise M1
     expect(Notification.create).toHaveBeenCalledWith({
-      contenu: expect.stringContaining("📊 Info Conso - M1"),
+      contenu: expect.stringContaining("Info Conso - M1"),
       multiprise: m._id,
       utilisateurs: m.utilisateurs
     });
@@ -73,7 +73,7 @@ describe('generateInfoNotifications job', () => {
     expect(sendEmail).toHaveBeenCalledWith(
       'b@b.com',
       'Résumé consommation électrique',
-      expect.stringContaining("📊 Info Conso - M1")
+      expect.stringContaining("Info Conso - M1")
     );
   });
 

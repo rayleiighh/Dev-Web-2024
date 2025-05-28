@@ -6,7 +6,7 @@ const appareilSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  multiprise: { // ✅ L'appareil est maintenant rattaché à une multiprise
+  multiprise: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Multiprise',
     required: true

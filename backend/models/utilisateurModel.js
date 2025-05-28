@@ -1,9 +1,7 @@
-// models/utilisateurModel.js
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-// Schéma Utilisateur
+
 const utilisateurSchema = new mongoose.Schema({
   prenom: { type: String, required: true },
   nom: { type: String, required: true },
@@ -16,7 +14,7 @@ const utilisateurSchema = new mongoose.Schema({
     emailNotifications: { type: Boolean, default: true }
   },
   photoProfil: { type: String, default: '' },
-  verifie: { type: Boolean, default: false } // ✅ champ pour gérer la vérification
+  verifie: { type: Boolean, default: false } 
 }, { timestamps: true });
 
 
