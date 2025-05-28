@@ -1,5 +1,3 @@
-// tests/controllers/utilisateurController.test.js
-
 const {
   register,
   login,

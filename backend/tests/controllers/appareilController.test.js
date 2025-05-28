@@ -65,7 +65,7 @@ describe('updateAppareilEtat', () => {
       etat: true
     });
 
-    // No explicit status for success (JSON only)
+    
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith(mockAppareil);
   });

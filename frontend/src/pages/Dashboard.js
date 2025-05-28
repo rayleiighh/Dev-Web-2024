@@ -1,11 +1,9 @@
-// 📌 Dashboard.js - Page principale après connexion
-import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import io from 'socket.io-client';
 import './Dashboard.css';
-import IconButton from '../components/IconButton'; // ✅ Ajoute cette ligne
+import IconButton from '../components/IconButton'; 
 
 function Dashboard({ user, setUser  }) {
   const [utilisateur, setUtilisateur] = useState(user);
@@ -14,10 +12,9 @@ function Dashboard({ user, setUser  }) {
   }, [user]);
 
   const [derniereConso, setDerniereConso] = useState(null);
-  // const [onglet, setOnglet] = useState("today");
   const [seuils, setSeuils] = useState({});
   const [error, setError] = useState(null);
-  const [multipriseActive, setMultipriseActive] = useState(true); // 🆕 par défaut active
+  const [multipriseActive, setMultipriseActive] = useState(true); 
   const timeoutRef = useRef(null);
   const socketRef = useRef(null);
   const navigate = useNavigate();
@@ -25,18 +22,12 @@ function Dashboard({ user, setUser  }) {
 
   const [favoris, setFavoris] = useState([]);
 
-
-  /*   const favoris = [
-    { nom: 'iPhone de Saad', couleur: 'primary' },
-    { nom: 'PC Asus', couleur: 'danger' }
-  ]; 
-  */
   
   const isMultipriseActive = () => {
     if (!derniereConso || !derniereConso.timestamp) return false;
     const now = new Date();
     const dateConso = new Date(derniereConso.timestamp);
-    return (now - dateConso) / 1000 < 45; // max 30s de délai
+    return (now - dateConso) / 1000 < 45; 
   };
 
   useEffect(() => {
@@ -54,7 +45,7 @@ function Dashboard({ user, setUser  }) {
         const data = await response.json();
         console.log("🔍 Résultat API:", data);
   
-        if (!multipriseActive) { // 🔥 Ne mettre hors ligne que si déjà offline via WebSocket
+        if (!multipriseActive) { // Ne mettre hors ligne que si déjà offline via WebSocket
           if (data.active === false) {
             setMultipriseActive(false);
             setDerniereConso(null);
@@ -65,9 +56,9 @@ function Dashboard({ user, setUser  }) {
         }
   
       } catch (error) {
-        console.error("❌ Erreur récupération API :", error);
+        console.error(" Erreur récupération API :", error);
       }
-    }, 30000); // 🔄 Toutes les 30 secondes seulement
+    }, 30000); // Toutes les 30 secondes seulement
   
     return () => clearInterval(interval);
   }, [multipriseActive]);
@@ -81,11 +72,11 @@ function Dashboard({ user, setUser  }) {
       });
   
       socketRef.current.on('connect', () => {
-        console.log("🟢 Connecté au WebSocket !");
+        console.log(" Connecté au WebSocket !");
       });
   
       socketRef.current.on('nouvelleConsommation', (data) => {
-        console.log('⚡ Nouvelle consommation WebSocket :', data);
+        console.log(' Nouvelle consommation WebSocket :', data);
         setDerniereConso(data);
         setMultipriseActive(true);
   
@@ -95,7 +86,7 @@ function Dashboard({ user, setUser  }) {
           console.warn('⏳ Timeout WebSocket sans nouvelles données');
           setMultipriseActive(false);
           setDerniereConso(null);
-        }, 60000); // 🕐 60 secondes de marge si plus de nouvelles données WebSocket
+        }, 60000); // 60 secondes de marge si plus de nouvelles données WebSocket
       });
   
       socketRef.current.on('disconnect', () => {
@@ -198,9 +189,9 @@ function Dashboard({ user, setUser  }) {
           </div>
         </div>
 
-        {/* Partie droite : boutons ⚙️ (Settings) et 🔔 (Notification) alignés verticalement */}
+        {/* Partie droite : boutons  (Settings) et  (Notification) alignés verticalement */}
         <div className="d-flex flex-column align-items-end gap-2">
-          {/* Bouton Settings (⚙️) */}
+          {/* Bouton Settings  */}
           <IconButton
             icon="icons8-settings-50.png"
             label=""

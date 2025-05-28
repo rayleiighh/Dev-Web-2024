@@ -37,7 +37,7 @@
   transition: 0.3s ease-in-out;
 }
 
-/* === Titre === */
+/*  Titre  */
 .contact-title {
   text-align: center;
   font-size: 2rem;
@@ -50,7 +50,7 @@
   gap: 10px;
 }
 
-/* === Formulaire === */
+/*  Formulaire  */
 .contact-form {
   display: flex;
   flex-direction: column;
@@ -80,7 +80,7 @@
   resize: vertical;
 }
 
-/* === Bouton Envoyer === */
+/*  Bouton Envoyer  */
 .contact-form button {
   background-color: #3498db;
   color: white;
@@ -106,7 +106,7 @@
   cursor: not-allowed;
 }
 
-/* === Message de confirmation === */
+/*  Message de confirmation  */
 .confirmation-message {
   text-align: center;
   margin-top: 15px;
@@ -114,7 +114,7 @@
   font-weight: 500;
 }
 
-/* === Animation de chargement === */
+/*  Animation de chargement  */
 .loader {
   border: 3px solid #f3f3f3;
   border-top: 3px solid white;
@@ -131,7 +131,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* === Responsive === */
+/*  Responsive  */
 @media (max-width: 768px) {
   .contact-container {
     margin: 60px 20px 20px;

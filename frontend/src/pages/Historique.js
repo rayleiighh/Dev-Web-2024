@@ -46,11 +46,11 @@ function Historique() {
     const now = new Date();
   
     if (debut > fin) {
-      setDateError("❌ La date de début doit être avant la date de fin.");
+      setDateError(" La date de début doit être avant la date de fin.");
       return false;
     }
     if (debut > now || fin > now) {
-      setDateError("❌ Les dates ne peuvent pas être dans le futur.");
+      setDateError(" Les dates ne peuvent pas être dans le futur.");
       return false;
     }
     setDateError('');
@@ -63,7 +63,7 @@ function Historique() {
       setError(null);
 
       let url = "http://localhost:5000/api/consommations";
-      console.log("📅 URL avec dates UTC :", url);
+      console.log(" URL avec dates UTC :", url);
 
       let finFormatee = dateFin;
       if (dateFin) {
@@ -90,7 +90,7 @@ function Historique() {
       }
 
       const data = await response.json();
-      console.log("📡 Données de l'API :", data);
+      console.log(" Données de l'API :", data);
 
       if (Array.isArray(data)) {
         setHistorique(data);
@@ -100,7 +100,7 @@ function Historique() {
         throw new Error("La réponse de l'API n'est pas un tableau");
       }
     } catch (error) {
-      console.error("❌ Erreur de chargement :", error);
+      console.error(" Erreur de chargement :", error);
       setError(error.message);
       setHistorique([]);
     } finally {
@@ -112,7 +112,7 @@ function Historique() {
     if (estDateValide()) {
       fetchConsommations();
     }
-  }, []); // Suppression de la dépendance fetchConsommations pour éviter les appels automatiques
+  }, []); 
   const limitedData = historique.slice(0, 30);
   const chartData = {
     labels: limitedData.map((entry, idx) => idx % 3 === 0 ? entry.timestampLisible : ""),
@@ -127,7 +127,7 @@ function Historique() {
 
 const handleExport = async () => {
   if (!dateDebut) {
-    setErreurExport("❌ Veuillez choisir une date de début.");
+    setErreurExport(" Veuillez choisir une date de début.");
     return;
   }
 

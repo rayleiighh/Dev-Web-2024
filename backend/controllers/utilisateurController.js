@@ -1,5 +1,3 @@
-// controllers/utilisateurController.js
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Utilisateur = require('../models/utilisateurModel');
@@ -48,7 +46,7 @@ async function login(req, res) {
         email: utilisateur.email,
         nom: utilisateur.nom,
         prenom: utilisateur.prenom,
-        photoProfil: utilisateur.photoProfil || ''  // ✅ ici c'était juste un oubli de virgule avant, ou une mauvaise fermeture
+        photoProfil: utilisateur.photoProfil || ''  
       }
     });
   } catch (err) {
@@ -144,13 +142,12 @@ async function register(req, res) {
       return res.status(400).json({ message: "Un compte avec cet email existe déjà." });
     }
 
-    // 🔎 Vérifie que la multiprise existe
     const multiprise = await Multiprise.findOne({ identifiantUnique: deviceId });
     if (!multiprise) {
-      return res.status(404).json({ message: "❌ Aucune multiprise trouvée avec cet identifiant. Veuillez configurer l'appareil au préalable." });
+      return res.status(404).json({ message: " Aucune multiprise trouvée avec cet identifiant. Veuillez configurer l'appareil au préalable." });
     }
 
-    // ✅ Crée un nouvel utilisateur non vérifié
+    //  Crée un nouvel utilisateur non vérifié
     const nouvelUtilisateur = new Utilisateur({
       prenom,
       nom,
@@ -160,13 +157,13 @@ async function register(req, res) {
     });
     await nouvelUtilisateur.save();
 
-    // ➕ Ajoute l'utilisateur à la multiprise s'il n'est pas encore lié
+    //  Ajoute l'utilisateur à la multiprise s'il n'est pas encore lié
     if (!multiprise.utilisateurs.includes(nouvelUtilisateur._id)) {
       multiprise.utilisateurs.push(nouvelUtilisateur._id);
       await multiprise.save();
     }
 
-    // ✅ Créer les prises uniquement si la multiprise n'en possède pas encore
+    //  Créer les prises uniquement si la multiprise n'en possède pas encore
     const prisesExistantes = await Appareil.countDocuments({ multiprise: multiprise._id });
     if (prisesExistantes === 0) {
       const prisesParDefaut = [
@@ -175,12 +172,12 @@ async function register(req, res) {
         { nom: "Prise 3", gpioIndex: 2, multiprise: multiprise._id }
       ];
       await Appareil.insertMany(prisesParDefaut);
-      console.log(`✅ Prises créées pour multiprise ${deviceId}`);
+      console.log(`Prises créées pour multiprise ${deviceId}`);
     } else {
-      console.log(`ℹ️ Les prises existent déjà pour multiprise ${deviceId}`);
+      console.log(`Les prises existent déjà pour multiprise ${deviceId}`);
     }
 
-    // 🔐 Création du token de vérification
+    //  Création du token de vérification
     const verificationToken = jwt.sign(
       { id: nouvelUtilisateur._id },
       process.env.JWT_SECRET,
@@ -189,7 +186,6 @@ async function register(req, res) {
 
     const urlDeVerification = `http://localhost:3000/verifier-email?token=${verificationToken}`;
 
-    // ✉️ Envoi de l’e-mail
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -221,7 +217,7 @@ async function register(req, res) {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("✅ Email de vérification envoyé !");
+    console.log("Email de vérification envoyé !");
 
     return res.status(200).json({
       message: "Un email de vérification a été envoyé. Veuillez confirmer pour activer votre compte."
@@ -236,8 +232,6 @@ async function register(req, res) {
 
 
 
-
-// Supprimer le compte utilisateur et toutes ses données associées
 async function supprimerMonCompte(req, res) {
   try {
     const appareils = await Appareil.find({ utilisateur: req.userId });
@@ -255,7 +249,6 @@ async function supprimerMonCompte(req, res) {
   }
 }
 
-// Mettre à jour les préférences utilisateur
 async function updatePreferences(req, res) {
   try {
     const { unite, theme, emailNotifications } = req.body;
@@ -277,7 +270,7 @@ async function updatePreferences(req, res) {
   }
 }
 
-// Récupérer le profil utilisateur
+
 async function getMonProfil(req, res) {
   try {
     const utilisateur = await Utilisateur.findById(req.userId).select('-motDePasse').populate('appareils');
@@ -432,7 +425,7 @@ const updateProfilePicture = async (req, res) => {
     }
 
     if (req.file) {
-      // ✅ Chemin relatif pour que le frontend puisse accéder via http://localhost:5000/uploads/profiles/...
+      //  Chemin relatif pour que le frontend puisse accéder via http://localhost:5000/uploads/profiles/...
       const relativePath = `uploads/profiles/${req.file.filename}`;
       utilisateur.photoProfil = relativePath;
       

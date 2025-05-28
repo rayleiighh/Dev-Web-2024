@@ -29,14 +29,14 @@ router.post("/link", async (req, res) => {
       });
 
       await multiprise.save();
-      console.log("🆕 Multiprise créée automatiquement :", deviceId);
+      console.log("Multiprise créée automatiquement :", deviceId);
 
       return res.status(200).json({ deviceSecret: secret });
     }
 
     return res.status(200).json({ deviceSecret: multiprise.secret });
   } catch (err) {
-    console.error("❌ Erreur dans /link :", err.message);
+    console.error("Erreur dans /link :", err.message);
     return res.status(500).json({ message: "Erreur serveur" });
   }
 });

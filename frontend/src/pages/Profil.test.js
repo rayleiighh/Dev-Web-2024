@@ -1,10 +1,8 @@
-// Profil.test.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Profil from './Profil';
 import { MemoryRouter } from 'react-router-dom';
 
-// 🔧 Corrige le problème de Jest avec ESM (axios)
 jest.mock('axios', () => ({
   __esModule: true,
   default: {

@@ -1,5 +1,3 @@
-// src/pages/ContactLogin.test.js
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ContactLogin from './ContactLogin';

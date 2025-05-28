@@ -49,8 +49,8 @@ body {
 
 .btn-group .btn {
   border-radius: 6px;
-  padding: 4px 10px; /* Plus petit padding */
-  font-size: 0.875rem; /* Taille de texte réduite */
+  padding: 4px 10px; 
+  font-size: 0.875rem; 
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -96,13 +96,13 @@ body {
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   line-height: 1.4;
-  align-self: center; /* <-- AJOUTER CECI */
+  align-self: center; 
 }
 
 .summary-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* centre verticalement */
+  justify-content: center; 
   align-items: flex-end;
   gap: 0.5rem;
   height: 100%;

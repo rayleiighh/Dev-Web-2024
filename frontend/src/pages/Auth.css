@@ -1,4 +1,4 @@
-/* 🌟 Style général */
+/*  Style général */
 body {
   font-family: 'Arial', sans-serif;
   background: linear-gradient(135deg, #eef2f3, #dfe9f3);
@@ -7,7 +7,7 @@ body {
   padding: 0;
 }
 
-/* 🌟 Conteneur principal */
+/*  Conteneur principal */
 .auth-container {
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@ body {
   margin-top: 70px;
 }
 
-/* 🌟 Titre */
+/*  Titre */
 h2 {
   font-size: 26px;
   font-weight: bold;
@@ -32,7 +32,7 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* 🌟 Champs de saisie */
+/*  Champs de saisie */
 input {
   width: 100%;
   padding: 14px;
@@ -52,7 +52,7 @@ input:focus {
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* 🌟 Boutons */
+/*  Boutons */
 button {
   width: 100%;
   padding: 14px;
@@ -74,14 +74,14 @@ button:hover {
   transform: scale(1.02);
 }
 
-/* 🌟 Messages d'erreur */
+/*  Messages d'erreur */
 .error {
   color: red;
   font-size: 14px;
   margin-bottom: 10px;
 }
 
-/* 🌟 Liens */
+/*  Liens */
 a {
   color: #007bff;
   text-decoration: none;
@@ -92,7 +92,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* 🌟 Flèche de retour */
+/*  Flèche de retour */
 .back-arrow {
   font-size: 28px;
   cursor: pointer;
