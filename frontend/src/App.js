@@ -134,6 +134,9 @@ const App = () => {
         <Route path="/verifier-email" element={<VerifierEmail />} />
         <Route path="/contact" element={<Contact user={user} />} />
         <Route path="/contact-login" element={<ContactLogin />} />
+
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+ 
       </Routes>
     </Router>
   );
