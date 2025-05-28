@@ -1,5 +1,3 @@
-// controllers/notificationController.js
-
 const Notification = require('../models/notificationModel');
 const Utilisateur = require('../models/utilisateurModel');
 const { sendEmail, sendSMS } = require('../services/notificationsService');

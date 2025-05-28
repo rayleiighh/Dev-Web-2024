@@ -1,7 +1,7 @@
 const Appareil = require('../models/appareilModel');
 const Multiprise = require('../models/multipriseModel');
 
-//  GET Appareils (Utilisateur ou Multiprise)
+//  GET Appareils (Utilisateur or Multiprise)
 exports.getAppareils = async (req, res) => {
   try {
     let appareils = [];
@@ -25,7 +25,7 @@ exports.getAppareils = async (req, res) => {
   }
 };
 
-//   Changer état d’un appareil
+//   Change device state
 exports.updateAppareilEtat = async (req, res) => {
   try {
     const { id } = req.params;
@@ -53,12 +53,12 @@ exports.updateAppareilEtat = async (req, res) => {
     console.log(` Prise ${appareil.nom} (GPIO ${appareil.gpioIndex}) changée → ${appareil.etat ? "ON" : "OFF"}`);
     res.json(appareil);
   } catch (error) {
-    console.error("❌ Erreur updateAppareilEtat :", error);
+    console.error(" Erreur updateAppareilEtat :", error);
     res.status(500).json({ message: "Erreur lors de la mise à jour de l'état de l'appareil." });
   }
 };
 
-//   Initialiser les 4 prises
+//   Initialize the 3 outlets
 exports.initPrises = async (req, res) => {
   try {
     const multiprises = await Multiprise.find({ utilisateurs: req.userId });
@@ -75,14 +75,14 @@ exports.initPrises = async (req, res) => {
     ];
 
     await Appareil.insertMany(prises);
-    res.status(201).json({ message: "✅ 4 prises créées avec succès." });
+    res.status(201).json({ message: " 3 prises créées avec succès." });
   } catch (error) {
     console.error("❌ Erreur initPrises :", error);
     res.status(500).json({ message: "Erreur serveur lors de la création des prises." });
   }
 };
 
-//   Créer un appareil
+//  Create a device
 exports.createAppareil = async (req, res) => {
   try {
     const multiprises = await Multiprise.find({ utilisateurs: req.userId });
@@ -91,22 +91,22 @@ exports.createAppareil = async (req, res) => {
     const multipriseId = multiprises[0]._id;
 
     const total = await Appareil.countDocuments({ multiprise: multipriseId });
-    if (total >= 4) {
-      return res.status(403).json({ message: "❌ Limite atteinte : vous ne pouvez avoir que 4 appareils." });
+    if (total >= 3) {
+      return res.status(403).json({ message: " Limite atteinte : vous ne pouvez avoir que 3 appareils." });
     }
 
     const { nom, gpioIndex } = req.body;
     const nouvelAppareil = new Appareil({ nom, gpioIndex, multiprise: multipriseId });
     await nouvelAppareil.save();
 
-    res.status(201).json({ message: "✅ Appareil ajouté avec succès", appareil: nouvelAppareil });
+    res.status(201).json({ message: " Appareil ajouté avec succès", appareil: nouvelAppareil });
   } catch (error) {
-    console.error("❌ Erreur createAppareil :", error);
+    console.error(" Erreur createAppareil :", error);
     res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
-//   Activer / désactiver le mode nuit
+//  Enable / disable night mode
 exports.updateModeNuit = async (req, res) => {
   try {
     const { id } = req.params;
@@ -192,7 +192,7 @@ exports.toggleFavori = async (req, res) => {
     );
     res.json(updated);
   } catch (err) {
-    console.error("❌ Erreur backend :", err);
+    console.error(" Backend error :", err);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };

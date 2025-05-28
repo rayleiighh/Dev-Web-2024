@@ -15,7 +15,7 @@ exports.creerConsommation = async (req, res) => {
       return res.status(400).json({ message: "identifiantUnique et value sont requis." });
     }
 
-    //  Chercher la multiprise via son identifiant unique
+    // Find the power strip using its unique identifier
     const multiprise = await Multiprise.findOne({ identifiantUnique });
 
     if (!multiprise) {
@@ -30,7 +30,7 @@ exports.creerConsommation = async (req, res) => {
     console.log(" as string =", multiprise.utilisateurs.map(u => u.toString()));
 
 
-    const userId = req.userId.toString(); // sécurise la comparaison
+    const userId = req.userId.toString(); // Secure the comparison
 
     const isAutorise =
       Array.isArray(multiprise.utilisateurs) &&
@@ -40,7 +40,7 @@ exports.creerConsommation = async (req, res) => {
       return res.status(403).json({ message: "Non autorisé à enregistrer pour cette multiprise." });
     }
 
-    // Enregistrer la consommation
+    // Save the consumption
     const nouvelleConso = new Consommation({
       multiprise: new mongoose.Types.ObjectId(multiprise._id),
       value,
@@ -49,7 +49,7 @@ exports.creerConsommation = async (req, res) => {
 
     await nouvelleConso.save();
 
-    //  Envoyer en WebSocket (si actif)
+    // Send via WebSocket (if active)
     if (global.io) {
       global.io.to(req.userId).emit("nouvelleConsommation", {
         _id: nouvelleConso._id,
@@ -63,7 +63,7 @@ exports.creerConsommation = async (req, res) => {
       });
     }
 
-    //  Notification + e-mail si seuil dépassé
+    // Notification + email if threshold (= seuil) exceeded 
     const SEUIL_ALERTE = 10; 
     if (value > SEUIL_ALERTE) {
       const contenuNotif = `Consommation élevée: ${value} A détectée sur "${multiprise.nom}"`;
@@ -80,7 +80,7 @@ exports.creerConsommation = async (req, res) => {
 
       await notif.save();
 
-      //  Envoi email si activé
+      //  Send email if enabled
       const Utilisateur = require("../models/utilisateurModel");
       const utilisateur = await Utilisateur.findById(req.userId);
 
@@ -134,7 +134,7 @@ exports.creerBatchConsommation = async (req, res) => {
       await nouvelleConso.save();
       createdMeasurements.push(nouvelleConso);
 
-      //  Émission immédiate en WebSocket
+      //  Immediate WebSocket emission
       if (global.io) {
         global.io.emit('nouvelleConsommation', {
           _id: nouvelleConso._id,
