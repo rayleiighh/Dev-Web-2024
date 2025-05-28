@@ -55,13 +55,13 @@ function GestionAppareils() {
     fetchAppareils();
 
     socket.on("etat_prise_changee", (data) => {
-      console.log("📡 Changement reçu :", data);
+      console.log(" Changement reçu :", data);
       setPrises(prev =>
         prev.map(p =>
           p._id === data.id ? { ...p, etat: data.etat } : p
         )
       );
-      console.log(`⚡ Prise ${data.gpioIndex} mise à jour : ${data.etat ? "ON" : "OFF"}`);
+      console.log(` Prise ${data.gpioIndex} mise à jour : ${data.etat ? "ON" : "OFF"}`);
     });
 
     return () => {
@@ -73,7 +73,7 @@ function GestionAppareils() {
     const prise = prises.find(p => p._id === id);
     const nouveauEtat = !prise.etat;
 
-    console.log(`🟢 Changement d'état de ${prise.nom} → ${nouveauEtat ? 'ON' : 'OFF'}`);
+    console.log(` Changement d'état de ${prise.nom} → ${nouveauEtat ? 'ON' : 'OFF'}`);
 
     setPrises(prev =>
       prev.map(p =>
@@ -93,10 +93,10 @@ function GestionAppareils() {
       });
 
       if (!res.ok) {
-        console.error("❌ Erreur HTTP :", res.status);
+        console.error(" Erreur HTTP :", res.status);
       }
     } catch (error) {
-      console.error("❌ Erreur MAJ backend :", error);
+      console.error(" Erreur MAJ backend :", error);
     }
   };
 
@@ -123,10 +123,10 @@ function GestionAppareils() {
         });
 
         if (!res.ok) {
-          console.error(`❌ Erreur sur la prise ${prise.nom} (${res.status})`);
+          console.error(` Erreur sur la prise ${prise.nom} (${res.status})`);
         }
       } catch (error) {
-        console.error(`❌ Erreur requête prise ${prise.nom} :`, error);
+        console.error(` Erreur requête prise ${prise.nom} :`, error);
       }
     }
 
@@ -168,7 +168,7 @@ function GestionAppareils() {
         )
       );
     } catch (error) {
-      console.error("❌ Erreur MAJ nom :", error);
+      console.error(" Erreur MAJ nom :", error);
       alert("Erreur lors de la mise à jour du nom.");
     }
   };
@@ -199,7 +199,7 @@ function GestionAppareils() {
       
      
     } catch (error) {
-      console.error("❌ Erreur MAJ favori :", error);
+      console.error(" Erreur MAJ favori :", error);
     }
   };
 

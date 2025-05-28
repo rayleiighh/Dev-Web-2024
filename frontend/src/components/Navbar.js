@@ -9,7 +9,7 @@ const Navbar = ({ user, setUser, notifications, setNotifications }) => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    setNotifications([]); // 🔥 Réinitialisation des notifications après déconnexion
+    setNotifications([]); // Réinitialisation des notifications après déconnexion
     navigate('/');
   };
 

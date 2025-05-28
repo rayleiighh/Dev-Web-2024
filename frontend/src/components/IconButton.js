@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../pages/Dashboard.css'; // 🔁 assure-toi que le chemin est correct depuis /components/
+import '../pages/Dashboard.css'; 
 
 function IconButton({ icon, label, onClick, className = '', variant = 'primary', size = 'md' }) {
   return (
@@ -10,7 +10,7 @@ function IconButton({ icon, label, onClick, className = '', variant = 'primary',
       onClick={onClick}
     >
       <img
-        src={`/icons/${icon}`} // ex: icons8-notification.png
+        src={`/icons/${icon}`} 
         alt={label}
         className="icon-img"
         draggable="false"

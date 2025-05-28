@@ -1,4 +1,3 @@
-// ✅ Preferences.js (mise à jour : thème clair/sombre en FR pour backend)
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './themes.css';
@@ -52,7 +51,7 @@ const Preferences = ({ user, setUser }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return; // sécurité en plus
+    if (loading) return; 
     setLoading(true);
     try {
       await axios.put('http://localhost:5000/api/utilisateurs/me', {

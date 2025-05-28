@@ -1,5 +1,3 @@
-// VerifierEmail.test.js
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import VerifierEmail from './VerifierEmail';
 import { MemoryRouter } from 'react-router-dom';

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './UserAvatar.css'; // Assure-toi qu’il existe
+import './UserAvatar.css'; 
 
 function UserAvatar({ avatarUrl, editable = false, onEdit }) {
   const defaultAvatar = '/images/avatar-default.svg';
