@@ -208,7 +208,7 @@ const handleExport = async () => {
           <button className="btn btn-primary btn-sm" onClick={appliquerFiltres}>
             Appliquer
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={reinitialiserFiltres}>
+          <button className="btn btn-sm" onClick={reinitialiserFiltres}>
             Réinitialiser
           </button>
         </div>
@@ -220,16 +220,23 @@ const handleExport = async () => {
             <p className="mb-0 text-muted">MAJ : {new Date().toLocaleString()}</p>
           </div>
 
-          <button className="btn btn-success bouton-export btn-sm" onClick={handleExport} disabled={chargementCSV}>
+          <button
+            className={`btn btn-sm bouton-export ${!dateDebut ? 'btn-secondary' : 'btn-success'}`}
+            onClick={handleExport}
+            disabled={!dateDebut || chargementCSV}
+            title={!dateDebut ? "Veuillez choisir une date de début" : ""}
+          >
             {chargementCSV ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Export...
+                Export...
               </>
             ) : (
               "📁 Export CSV"
             )}
           </button>
+
+
 
           {erreurExport && (
             <span className="text-danger small mt-1">{erreurExport}</span>

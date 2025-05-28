@@ -84,6 +84,11 @@ body {
   font-size: 0.875rem;
   white-space: nowrap;
 }
+
+.btn-secondary{
+  width: 350px;
+}
+
 .summary-box {
   font-size: 0.85rem;
   background-color: #f8f9fa;
