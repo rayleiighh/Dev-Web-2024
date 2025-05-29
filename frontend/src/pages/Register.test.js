@@ -1,5 +1,3 @@
-// Register.test.js
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Register from './Register';
 import { MemoryRouter } from 'react-router-dom';

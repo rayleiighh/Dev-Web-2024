@@ -1,4 +1,4 @@
-/* 🌙 Fond clair */
+/*  Fond clair */
 .container-gestion {
   background-color: #f4f6f9;
   min-height: 100vh;
@@ -6,7 +6,7 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* 🎛️ Section multiprise */
+/*  Section multiprise */
 .multiprise-container {
   display: flex;
   justify-content: center;
@@ -21,7 +21,7 @@
   max-width: 600px;
 }
 
-/* 🟢 Visuel de la prise (cercle) */
+/*  Visuel de la prise (cercle) */
 .prise-visuelle {
   width: 70px;
   height: 70px;
@@ -43,7 +43,7 @@
   border-color: #adb5bd;
 }
 
-/* 📛 Nom de la prise */
+/*  Nom de la prise */
 .prise-nom {
   text-align: center;
   font-weight: 600;
@@ -51,13 +51,13 @@
   color: #343a40;
 }
 
-/* ⚙️ Actions sous le nom */
+/*  Actions sous le nom */
 .prise-actions {
   justify-content: center;
   font-size: 0.85rem;
 }
 
-/* 🖊️ Icône modifier */
+/*  Icône modifier */
 .prise-actions button i {
   margin-right: 4px;
 }
@@ -71,7 +71,7 @@
   position: relative;
 }
 
-/* 🎨 Mode nuit bouton */
+/*  Mode nuit bouton */
 button[title="Mode nuit"],
 button[title="Désactiver"] {
   transition: all 0.3s ease-in-out;
@@ -81,7 +81,7 @@ button[title="Désactiver"]:hover {
   transform: rotate(20deg);
 }
 
-/* 🖋️ Champ modif nom */
+/*  Champ modif nom */
 .prise-nom input {
   width: 80%;
   margin: 0 auto;
@@ -90,7 +90,7 @@ button[title="Désactiver"]:hover {
   text-align: center;
 }
 
-/* 📱 Responsive */
+/*  Responsive */
 @media (max-width: 768px) {
   .multiprise {
     grid-template-columns: 1fr 1fr;

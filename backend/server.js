@@ -26,12 +26,12 @@ app.use(express.static('public'));
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connecté !"))
+  .then(() => console.log(" MongoDB connecté !"))
   .catch((err) => console.error("❌ Erreur MongoDB :", err));
 
 
 cron.schedule('0 18 * * *', () => {
-  console.log("⏰ Génération automatique des notifications informatives à 18h");
+  console.log(" Génération automatique des notifications informatives à 18h");
   generateInfoNotifications();
 });
 
@@ -40,14 +40,14 @@ const io = new Server(server, { cors: { origin: "*" } });
 global.io = io;
 
 io.on("connection", (socket) => {
-  console.log("🟢 Nouveau client connecté :", socket.id);
+  console.log(" Nouveau client connecté :", socket.id);
 
   socket.on('disconnect', () => {
-    console.log("🔴 Client déconnecté :", socket.id);
+    console.log(" Client déconnecté :", socket.id);
   });
 });
 
-// 🛡️ Middlewares
+//  Middlewares
 app.use(cors({
   origin: process.env.FRONTEND_URL || `${process.env.FRONTEND_URL}`,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -63,22 +63,22 @@ app.use(rateLimit({
   message: 'Trop de requêtes, réessayez plus tard.'
 }));
 
-// 🧠 Injecter l'instance Socket.IO dans l'app
+//  Injecter l'instance Socket.IO dans l'app
 app.set('io', io);
 
 // 🔌 WebSocket : écouter les connexions
 io.on('connection', (socket) => {
-  console.log("🟢 Nouveau client connecté :", socket.id);
+  console.log(" Nouveau client connecté :", socket.id);
 
   socket.on('disconnect', () => {
-    console.log("🔴 Client déconnecté :", socket.id);
+    console.log(" Client déconnecté :", socket.id);
   });
 });
 
-// 📦 Connexion à MongoDB
+//  Connexion à MongoDB
 connectDB();
 
-// 📦 Routes API
+//  Routes API
 app.use("/api/multiprises", require("./routes/multiprisesRoutes"));
 app.use("/api/device-auth", require("./routes/deviceAuthRoutes"));
 app.use('/api/utilisateurs', require('./routes/utilisateurRoutes'));
@@ -86,7 +86,7 @@ app.use('/api/appareils', require('./routes/appareilRoutes'));
 app.use("/api/consommations", require("./routes/consommationRoutes"));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/contact', contactRoutes);
-console.log("✅ Route /api/contact bien chargée !");
+console.log(" Route /api/contact bien chargée !");
 
 // Autoriser l'accès CORS pour les fichiers dans /uploads
 app.use('/uploads', (req, res, next) => {
@@ -103,8 +103,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Erreur serveur interne' });
 });
 
-// 🚀 Démarrage du serveur
+//  Démarrage du serveur
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Serveur + WebSocket actif sur http://localhost:${PORT}`);
+  console.log(` Serveur + WebSocket actif sur http://localhost:${PORT}`);
 });

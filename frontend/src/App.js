@@ -18,7 +18,7 @@ import { io } from 'socket.io-client';
 const App = () => {
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // 👈 nouveau state
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -34,9 +34,9 @@ const App = () => {
           setUser(null);
           setNotifications([]);
         })
-        .finally(() => setIsLoading(false)); // 👈 stop loading quoi qu’il arrive
+        .finally(() => setIsLoading(false)); 
     } else {
-      setIsLoading(false); // 👈 si pas de token, on arrête aussi le chargement
+      setIsLoading(false); // si pas de token, on arrête aussi le chargement
     }
   }, []);
 
@@ -47,7 +47,7 @@ const App = () => {
     const socket = io(`${process.env.REACT_APP_API_URL}`, { auth: { token } });
 
     socket.on('connect', () => {
-      console.log("✅ Connecté au WebSocket");
+      console.log(" Connecté au WebSocket");
     });
 
     socket.on('nouvelle-notification', (notif) => {
@@ -63,7 +63,7 @@ const App = () => {
 
     return () => {
       socket.disconnect();
-      console.log("❌ Déconnecté du WebSocket");
+      console.log(" Déconnecté du WebSocket");
     };
   }, [user]);
 
@@ -132,8 +132,11 @@ const App = () => {
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/verifier-email" element={<VerifierEmail />} />
-        <Route path="/contact" element={user ? <Contact user={user} /> : <Navigate to="/" />} />
+        <Route path="/contact" element={<Contact user={user} />} />
         <Route path="/contact-login" element={<ContactLogin />} />
+
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+ 
       </Routes>
     </Router>
   );

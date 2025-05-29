@@ -1,5 +1,3 @@
-// src/pages/Historique.test.js
-import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import Historique from './Historique';
 import { BrowserRouter } from 'react-router-dom';

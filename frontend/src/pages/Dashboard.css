@@ -1,6 +1,4 @@
-/* ========================
-   🌐 Base & Typographie
-========================= */
+/* Base & Typographie */
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f5f8fc;
@@ -10,9 +8,7 @@ body {
   padding: 2rem;
 }
 
-/* ========================
-   🧑‍💻 Utilisateur / Header
-========================= */
+/*  Utilisateur / Header */
 .user-header {
   display: flex;
   justify-content: space-between;
@@ -31,9 +27,7 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* ========================
-   📝 Titres
-========================= */
+/* Titres */
 .app-title {
   font-size: 24px;
   font-weight: bold;
@@ -52,9 +46,7 @@ body {
   margin-bottom: 1rem;
 }
 
-/* ========================
-   📦 Cartes & Encarts
-========================= */
+/* Cartes & Encarts */
 .card-box {
   border-radius: 10px;
   background-color: #fff;
@@ -63,9 +55,7 @@ body {
   margin-bottom: 2rem;
 }
 
-/* ========================
-   🔘 Boutons & Badges
-========================= */
+/*  Boutons & Badges */
 .energy-tabs button {
   margin-right: 0.5rem;
 }
@@ -111,7 +101,7 @@ button img {
   width: 20px;
   height: 20px;
   margin-right: 8px;
-  filter: brightness(0) invert(1); /* rend l’icône blanche */
+  filter: brightness(0) invert(1); /* make the icone white */
 }
 
 .icon-label {

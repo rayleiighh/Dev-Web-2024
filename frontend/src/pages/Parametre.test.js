@@ -1,4 +1,4 @@
-// 👇 Mock d'axios
+//  Mock d'axios
 jest.mock('axios', () => ({
     __esModule: true,
     default: {
@@ -6,10 +6,10 @@ jest.mock('axios', () => ({
     },
   }));
   
-  // 👇 Import axios pour pouvoir utiliser axios.delete dans les tests
+  //  Import axios pour pouvoir utiliser axios.delete dans les tests
   import axios from 'axios';
   
-  // 👇 Le reste de tes imports
+  //  Le reste de tes imports
   import React from 'react';
   import { render, screen, fireEvent, waitFor } from '@testing-library/react';
   import Parametre from './Parametre';

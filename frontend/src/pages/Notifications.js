@@ -27,7 +27,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
     if (notifications.length === 0) {
       fetchNotifications();
     }
-  }, []); // Pas de dépendance ici pour éviter une boucle infinie
+  }, []); 
 
   const supprimerNotification = async (id) => {
     try {
@@ -39,7 +39,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
       });
       setNotifications((prev) => prev.filter((n) => n._id !== id));
     } catch (err) {
-      console.error("❌ Erreur lors de la suppression:", err);
+      console.error(" Erreur lors de la suppression:", err);
       setError("Erreur lors de la suppression de la notification.");
     }
   };

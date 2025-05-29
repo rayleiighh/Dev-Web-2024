@@ -11,22 +11,22 @@ const { verifierEmail } = require('../controllers/utilisateurController');
 
 
 if (!register) {
-    console.error("❌ ERREUR: La fonction register n'est pas définie dans utilisateurController.js");
+    console.error("ERREUR: La fonction register n'est pas définie dans utilisateurController.js");
 }
 if (!getMonProfil) {
-    console.error("❌ ERREUR: La fonction getMonProfil n'est pas définie dans utilisateurController.js");
+    console.error("ERREUR: La fonction getMonProfil n'est pas définie dans utilisateurController.js");
 }
 if (!updateMonProfil) {
     console.error("❌ ERREUR: La fonction updateMonProfil n'est pas définie dans utilisateurController.js");
 }
 if (!supprimerMonCompte) {
-    console.error("❌ ERREUR: La fonction supprimerMonCompte n'est pas définie dans utilisateurController.js");
+    console.error("ERREUR: La fonction supprimerMonCompte n'est pas définie dans utilisateurController.js");
 }
 if (!updatePreferences) {
-    console.error("❌ ERREUR: La fonction updatePreferences n'est pas définie dans utilisateurController.js");
+    console.error("ERREUR: La fonction updatePreferences n'est pas définie dans utilisateurController.js");
 }
 
-// Routes publiques
+
 router.post('/register', [
     body('prenom').notEmpty().withMessage('Le prénom est requis'),
     body('nom').notEmpty().withMessage('Le nom est requis'),
@@ -36,7 +36,7 @@ router.post('/register', [
 
 router.get('/verifier-email', verifierEmail);
 router.post('/login', login);
-// Routes protégées
+
 router.get('/me', verifAuthUtilisateur, getMonProfil);  
 
 router.delete('/supprimer-compte', verifAuthUtilisateur, supprimerMonCompte);
@@ -45,7 +45,7 @@ router.patch('/profil/photo', verifAuthUtilisateur, upload.single('photo'), upda
 
 
 
-// Mise à jour des préférences utilisateur
+
 router.patch('/preferences', verifAuthUtilisateur, updatePreferences);
 
 module.exports = router;

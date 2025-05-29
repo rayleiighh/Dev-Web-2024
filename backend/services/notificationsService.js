@@ -6,7 +6,7 @@ require('dotenv').config();
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,  // 🔥 À mettre dans .env
+    user: process.env.EMAIL_USER,  // À mettre dans .env
     pass: process.env.EMAIL_PASS
   },
 });
@@ -24,9 +24,9 @@ const sendEmail = async (to, subject, message) => {
         subject,
         text: message
       });
-      console.log(`✅ Email envoyé avec succès : ${info.response}`);
+      console.log(`Email envoyé avec succès : ${info.response}`);
     } catch (error) {
-      console.error("❌ Erreur d'envoi d'email:", error.message);
+      console.error("Erreur d'envoi d'email:", error.message);
     }
 };
   
@@ -44,10 +44,10 @@ const sendSMS = async (to, message) => {
     });
     console.log(`📲 SMS envoyé à ${to}`);
   } catch (error) {
-    console.error("❌ Erreur d'envoi de SMS:", error);
+    console.error("Erreur d'envoi de SMS:", error);
   }
 };
-console.log("📨 Tentative d'envoi email avec :", process.env.EMAIL_USER);
+console.log("Tentative d'envoi email avec :", process.env.EMAIL_USER);
 
 
 

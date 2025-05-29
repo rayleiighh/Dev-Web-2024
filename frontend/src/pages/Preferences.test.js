@@ -1,4 +1,3 @@
-// Preferences.test.js
 
 jest.mock("axios", () => ({
   get: jest.fn(),

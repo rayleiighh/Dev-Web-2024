@@ -54,7 +54,7 @@ const Contact = ({ user }) => {
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault(); // empêche le saut de ligne
-                handleSubmit(e); // soumet le formulaire
+                handleSubmit(e); 
               }
             }}
           />

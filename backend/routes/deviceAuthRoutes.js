@@ -27,7 +27,7 @@ router.post('/login', async (req, res) => {
 
     return res.status(200).json({ token });
   } catch (err) {
-    console.error("❌ Erreur device login :", err.message);
+    console.error("Erreur device login :", err.message);
     return res.status(500).json({ message: "Erreur serveur" });
   }
 });

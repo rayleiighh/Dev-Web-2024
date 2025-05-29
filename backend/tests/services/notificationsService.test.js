@@ -1,38 +1,38 @@
 // tests/services/notificationsService.test.js
 
-// 1️⃣ Mock environment loader
+// Mock environment loader
 jest.mock('dotenv', () => ({ config: jest.fn() }));
 
-// 2️⃣ Mock Nodemailer and Twilio modules
+// Mock Nodemailer and Twilio modules
 jest.mock('nodemailer', () => ({ createTransport: jest.fn() }));
 jest.mock('twilio', () => jest.fn());
 
 const nodemailer = require('nodemailer');
 const twilio = require('twilio');
 
-// 3️⃣ Set required environment variables before loading the service
+// Set required environment variables before loading the service
 process.env.EMAIL_USER = 'user@test.com';
 process.env.EMAIL_PASS = 'pass';
 process.env.TWILIO_SID = 'sid';
 process.env.TWILIO_AUTH_TOKEN = 'token';
 process.env.TWILIO_PHONE_NUMBER = '+123456789';
 
-// 4️⃣ Configure the mocked transporter and client
+// Configure the mocked transporter and client
 const sendMailMock = jest.fn();
 nodemailer.createTransport.mockReturnValue({ sendMail: sendMailMock });
 
 const messagesCreateMock = jest.fn();
 twilio.mockReturnValue({ messages: { create: messagesCreateMock } });
 
-// 5️⃣ Spy on console methods
+// Spy on console methods
 console.log = jest.fn();
 console.error = jest.fn();
 
-// 6️⃣ Import the service (this will run the module‑level setup code)
+// Import the service (this will run the module‑level setup code)
 const { sendEmail, sendSMS } = require('../../services/notificationsService');  
 // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
 
-// 7️⃣ Clear any calls triggered by the module‑level IIFE
+// Clear any calls triggered by the module‑level IIFE
 sendMailMock.mockClear();
 messagesCreateMock.mockClear();
 console.log.mockClear();
@@ -133,7 +133,7 @@ describe('notificationsService', () => {
 
       // Assert
       expect(console.error).toHaveBeenCalledWith(
-        "❌ Erreur d'envoi de SMS:",
+        " Erreur d'envoi de SMS:",
         error
       );
     });

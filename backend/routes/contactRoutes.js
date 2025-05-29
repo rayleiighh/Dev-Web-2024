@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
       
       
 
-    res.status(200).json({ message: "📨 Message envoyé avec succès !" });
+    res.status(200).json({ message: "Message envoyé avec succès !" });
 
   } catch (err) {
     console.error("Erreur d’envoi :", err);

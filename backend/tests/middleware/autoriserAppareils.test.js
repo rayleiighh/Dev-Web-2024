@@ -1,6 +1,6 @@
 // tests/middleware/autoriserAppareils.test.js
 
-// 1️⃣ Hoist these mocks so Jest replaces the real modules
+//  Hoist these mocks so Jest replaces the real modules
 jest.mock('jsonwebtoken', () => ({ verify: jest.fn() }));
 
 describe('autoriserAppareils middleware', () => {
@@ -8,20 +8,20 @@ describe('autoriserAppareils middleware', () => {
   let req, res, next;
 
   beforeEach(() => {
-    // 2️⃣ Clear require cache so SECRET_KEY is re‑read inside the middleware
+    // Clear require cache so SECRET_KEY is re‑read inside the middleware
     jest.resetModules();
 
-    // 3️⃣ Set the env var before requiring the middleware
+    // Set the env var before requiring the middleware
     process.env.JWT_SECRET = 'testsecret';
 
-    // 4️⃣ Now require the mocked jwt and your middleware
+    // Now require the mocked jwt and your middleware
     jwt = require('jsonwebtoken');
-    autoriserAppareils = require('../../middleware/autoriserAppareils'); // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+    autoriserAppareils = require('../../middleware/autoriserAppareils'); 
 
-    // 5️⃣ Reset call history on the mock
+    // Reset call history on the mock
     jwt.verify.mockClear();
 
-    // 6️⃣ Fake Express req, res, next
+    // Fake Express req, res, next
     req = { headers: {}, originalUrl: '/test' };
     res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     next = jest.fn();

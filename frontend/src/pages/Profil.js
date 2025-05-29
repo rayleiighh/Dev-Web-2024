@@ -21,7 +21,7 @@ const Profil = ({ user, setUser }) => {
     if (user) {
       setNom(user.nom);
       setEmail(user.email);
-      setPhotoActuelle(user.photoProfil); // ✅ met à jour la photo locale
+      setPhotoActuelle(user.photoProfil); 
     }
   }, [user]);
 
@@ -41,14 +41,14 @@ const Profil = ({ user, setUser }) => {
     setLoading(true);
 
     try {
-      // 🔁 Mise à jour du profil
+      //  Mise à jour du profil
       await axios.patch(
         `${process.env.REACT_APP_API_URL}/api/utilisateurs/profil`,
         { nom, email, ancienMotDePasse, nouveauMotDePasse },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 📷 Mise à jour de la photo
+      //  Mise à jour de la photo
       if (photo) {
         const formData = new FormData();
         formData.append('photo', photo);
@@ -66,7 +66,7 @@ const Profil = ({ user, setUser }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
-      setPhotoActuelle(res.data.photoProfil); // ✅ met à jour la photo affichée
+      setPhotoActuelle(res.data.photoProfil); 
 
       setMessage("Profil mis à jour avec succès");
       setErreur('');

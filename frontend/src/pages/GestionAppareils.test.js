@@ -1,5 +1,3 @@
-// src/pages/GestionAppareils.test.js
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import GestionAppareils from './GestionAppareils';
 import { BrowserRouter } from 'react-router-dom';
@@ -78,11 +76,11 @@ describe('GestionAppareils Component - Unit Tests', () => {
     const button = await screen.findByTitle('Configurer le mode nuit');
     fireEvent.click(button);
     // Le titre du modal apparaît
-    expect(screen.getByText('🌙 Configuration du Mode Nuit')).toBeInTheDocument();
+    expect(screen.getByText(' Configuration du Mode Nuit')).toBeInTheDocument();
     // Clique sur Annuler ferme le modal
     fireEvent.click(screen.getByText('Annuler'));
     await waitFor(() => {
-      expect(screen.queryByText('🌙 Configuration du Mode Nuit')).not.toBeInTheDocument();
+      expect(screen.queryByText(' Configuration du Mode Nuit')).not.toBeInTheDocument();
     });
   });
 });

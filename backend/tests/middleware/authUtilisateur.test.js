@@ -18,7 +18,7 @@ describe('verifAuthUtilisateur middleware', () => {
     // 3) re‑require jwt, the model, and your middleware
     jwt = require('jsonwebtoken');
     Utilisateur = require('../../models/utilisateurModel');
-    verifAuthUtilisateur = require('../../middleware/authUtilisateur').verifAuthUtilisateur; // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+    verifAuthUtilisateur = require('../../middleware/authUtilisateur').verifAuthUtilisateur; 
 
     // 4) reset mock histories
     jwt.verify.mockClear();

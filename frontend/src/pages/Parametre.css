@@ -1,4 +1,4 @@
-/* 🌐 Contexte général */
+/*  Contexte général */
 .parametre-container {
     min-height: 100vh;
     background: linear-gradient(135deg, #eef5fc, #fefefe);
@@ -9,8 +9,8 @@
     font-family: 'Poppins', sans-serif;
   }
   
-  /* 🧭 Haut de page avec titre + flèche */
-  /* 🧭 En-tête : flèche à gauche et titre centré */
+  /*  Haut de page avec titre + flèche */
+  /*  En-tête : flèche à gauche et titre centré */
 .header-wrapper {
     position: relative;
     width: 100%;
@@ -54,7 +54,7 @@
   
   
   
-  /* 🧩 Zone des boutons */
+  /*  Zone des boutons */
   .btn-group {
     display: flex;
     flex-direction: column;
@@ -68,7 +68,7 @@
     animation: fadeIn 0.4s ease-in-out;
   }
   
-  /* 🖱️ Style générique des boutons */
+  /*  Style générique des boutons */
   .parametre-btn {
     border: none;
     border-radius: 12px;
@@ -79,7 +79,7 @@
     cursor: pointer;
   }
   
-  /* 🎨 Bouton "Modifier mon profil" */
+  /*  Bouton "Modifier mon profil" */
   .btn-modifier {
     background-color: #607d8b;
     color: #fff;
@@ -89,7 +89,7 @@
     background-color: #546e7a;
   }
   
-  /* 🎨 Bouton "Gérer mes préférences" */
+  /*  Bouton "Gérer mes préférences" */
   .btn-preferences {
     background-color: #1e88e5;
     color: #fff;
@@ -99,7 +99,7 @@
     background-color: #1976d2;
   }
   
-  /* 🎨 Bouton "Se déconnecter" */
+  /*  Bouton "Se déconnecter" */
   .btn-deconnexion {
     background-color: #ffffff;
     color: #e53935;
@@ -111,7 +111,7 @@
     color: #fff;
   }
   
-  /* 🛑 Bouton "Supprimer mon compte" */
+  /*  Bouton "Supprimer mon compte" */
   .btn-supprimer {
     background-color: #d32f2f;
     color: #fff;
