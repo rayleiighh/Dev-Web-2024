@@ -213,9 +213,6 @@ function GestionAppareils() {
 
         <h5 className="mb-0">Gestion des appareils</h5>
         <div className="d-flex flex-column align-items-center gap-2">
-          <button className="btn btn-light rounded-circle text-primary border border-primary">
-            <i className="bi bi-power"></i>
-          </button>
           {!modeNuit ? (
             <button
               className="btn btn-light rounded-circle text-dark"
