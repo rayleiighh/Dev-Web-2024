@@ -81,8 +81,12 @@ async function verifierEmail(req, res) {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     });
+
 
     const mailOptions = {
       from: 'PowerTrack <powertrack5000@gmail.com>',
@@ -193,8 +197,12 @@ async function register(req, res) {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
       }
-    });
+});
+
 
     const mailOptions = {
       from: 'PowerTrack - Suivi Énergie <powertrack5000@gmail.com>',
@@ -328,8 +336,12 @@ async function mettreAJourProfil(req, res) {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
       }
-    });
+});
+
 
     // Envoi des mails selon les cas :
     if (motDePasseChange) {
@@ -443,5 +455,75 @@ const updateProfilePicture = async (req, res) => {
   }
 };
 
+async function demandeResetMotDePasse(req, res) {
+  try {
+    const { email } = req.body;
 
-module.exports = { register, login, getMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil, updateProfilePicture, verifierEmail };
+    const utilisateur = await Utilisateur.findOne({ email });
+    if (!utilisateur) {
+      return res.status(404).json({ message: "Aucun compte trouvé avec cet email." });
+    }
+
+    const token = jwt.sign({ id: utilisateur._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-mot-de-passe?token=${token}`;
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    await transporter.sendMail({
+      from: 'PowerTrack <powertrack5000@gmail.com>',
+      to: utilisateur.email,
+      subject: "Réinitialisation de votre mot de passe",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Bonjour ${utilisateur.prenom},</h2>
+          <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
+          <p>Cliquez sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
+          <a href="${resetUrl}" style="color: white; background-color: #3498db; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Réinitialiser mon mot de passe</a>
+          <p>Ce lien expirera dans 15 minutes.</p>
+        </div>
+      `
+    });
+
+    res.status(200).json({ message: "Un lien de réinitialisation a été envoyé à votre email." });
+  } catch (err) {
+    console.error("Erreur reset mdp :", err);
+    res.status(500).json({ message: "Erreur lors de la demande de réinitialisation." });
+  }
+}
+
+async function reinitialiserMotDePasse(req, res) {
+  try {
+    const { token } = req.params;
+    const { nouveauMotDePasse } = req.body;
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const utilisateur = await Utilisateur.findById(decoded.id);
+
+    if (!utilisateur) {
+      return res.status(404).json({ message: "Utilisateur introuvable." });
+    }
+
+    utilisateur.motDePasse = nouveauMotDePasse; // sera hashé par le middleware mongoose
+    await utilisateur.save();
+
+    res.status(200).json({ message: "Mot de passe réinitialisé avec succès." });
+  } catch (err) {
+    console.error("Erreur lors de la réinitialisation du mot de passe :", err);
+    res.status(400).json({ message: "Lien invalide ou expiré." });
+  }
+}
+
+
+
+module.exports = { register, login, demandeResetMotDePasse, reinitialiserMotDePasse, getMonProfil, supprimerMonCompte, updatePreferences, mettreAJourProfil, updateProfilePicture, verifierEmail };
