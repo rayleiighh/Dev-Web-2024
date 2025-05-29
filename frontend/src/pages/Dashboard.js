@@ -234,7 +234,7 @@ function Dashboard({ user, setUser  }) {
             {multipriseActive && derniereConso ? (
               <tr>
                 <td>{new Date(derniereConso.timestamp).toLocaleTimeString('fr-FR', { timeZone: 'UTC' })}</td>
-                <td>{(derniereConso.value * 0.001).toFixed(4)}</td>
+                <td>{((derniereConso.value * 230 * 1) / 1000).toFixed(4)}</td>
                 <td>{derniereConso.value.toFixed(3)}</td>
               </tr>
             ) : (
