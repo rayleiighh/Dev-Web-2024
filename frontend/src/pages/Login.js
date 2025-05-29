@@ -54,6 +54,9 @@ const Login = ({ setUser }) => {
       <p>
         Pas encore de compte ? <a href="/register">Inscrivez-vous</a>
       </p>
+      <p>
+      <a href="/oubli-motdepasse" className="forgot-link" style={{ color: '#3498db', fontSize: '14px' }}>Mot de passe oublié ?</a>
+      </p>
       <button
         className="help-button"
         onClick={() => window.location.href = '/contact-login'}>

@@ -14,6 +14,9 @@ import VerifierEmail from './pages/VerifierEmail';
 import Contact from './pages/Contact';
 import ContactLogin from './pages/ContactLogin';
 import { io } from 'socket.io-client';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -134,7 +137,8 @@ const App = () => {
         <Route path="/verifier-email" element={<VerifierEmail />} />
         <Route path="/contact" element={<Contact user={user} />} />
         <Route path="/contact-login" element={<ContactLogin />} />
-
+        <Route path="/oubli-motdepasse" element={<ForgotPassword user={user} />} />
+        <Route path="/reset-mot-de-passe" element={<ResetPassword user={user} />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
  
       </Routes>

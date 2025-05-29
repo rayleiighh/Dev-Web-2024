@@ -7,7 +7,8 @@ const upload = require('../middleware/upload');  // Importer le middleware
 const { updateProfilePicture } = require('../controllers/utilisateurController');
 const { mettreAJourProfil } = require('../controllers/utilisateurController');
 const { verifierEmail } = require('../controllers/utilisateurController');
-
+const { demandeResetMotDePasse } = require('../controllers/utilisateurController');
+const { reinitialiserMotDePasse } = require('../controllers/utilisateurController');
 
 
 if (!register) {
@@ -36,6 +37,8 @@ router.post('/register', [
 
 router.get('/verifier-email', verifierEmail);
 router.post('/login', login);
+router.post('/oubli-motdepasse', demandeResetMotDePasse);
+router.post('/reset-mot-de-passe/:token', reinitialiserMotDePasse);
 
 router.get('/me', verifAuthUtilisateur, getMonProfil);  
 

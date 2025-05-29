@@ -190,8 +190,7 @@ function Dashboard({ user, setUser  }) {
         </div>
 
         {/* Partie droite : boutons  (Settings) et  (Notification) alignés verticalement */}
-        <div className="d-flex flex-column align-items-end gap-2">
-          {/* Bouton Settings  */}
+        <div className="d-flex flex-column align-items-center gap-2">
           <IconButton
             icon="icons8-settings-50.png"
             label=""
