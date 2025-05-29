@@ -26,15 +26,22 @@ function Historique() {
   const [loading, setLoading] = useState(true);
   const [chargementCSV, setChargementCSV] = useState(false);
   const [erreurExport, setErreurExport] = useState(null);
+  const [loadingFiltre, setLoadingFiltre] = useState(false);
 
   const reinitialiserFiltres = () => {
+    setLoadingFiltre(true);
     setDateDebut(today);
     setDateFin(today);
+    setTimeout(() => {
+      setLoadingFiltre(false);
+    }, 500);
   };
 
-  const appliquerFiltres = () => {
+  const appliquerFiltres = async () => {
     if (estDateValide()) {
-      fetchConsommations();
+      setLoadingFiltre(true);
+      await fetchConsommations();
+      setLoadingFiltre(false);
     }
   };
 
@@ -205,11 +212,25 @@ const handleExport = async () => {
             value={dateFin}
             onChange={(e) => setDateFin(e.target.value)}
           />
-          <button className="btn btn-primary btn-sm" onClick={appliquerFiltres}>
-            Appliquer
+          <button className="btn btn-primary btn-sm" onClick={appliquerFiltres} disabled={loadingFiltre}>
+            {loadingFiltre? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Appliquer...
+              </>
+            ) : (
+              "Appliquer"
+            )}
           </button>
-          <button className="btn btn-sm" onClick={reinitialiserFiltres}>
-            Réinitialiser
+          <button className="btn btn-sm" onClick={reinitialiserFiltres} disabled={loadingFiltre}>
+            {loadingFiltre ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Réinitialiser...
+                </>
+            ) : (    
+            "Réinitialiser"
+           )}
           </button>
         </div>
   
