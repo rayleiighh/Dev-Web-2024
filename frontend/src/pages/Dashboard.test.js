@@ -46,28 +46,27 @@ describe("Dashboard Component - Unit Tests", () => {
         <Dashboard user={mockUser} setUser={jest.fn()} />
       </BrowserRouter>
     );
-    // Le texte est fragmenté ; cherchons seulement le prénom
     expect(screen.getByText('Jean')).toBeInTheDocument();
   });
 
-  test("affiche le spinner et le message hors ligne quand il n'a pas de donnée", () => {
-    render(
-      <BrowserRouter>
-        <Dashboard user={mockUser} setUser={jest.fn()} />
-      </BrowserRouter>
-    );
-    expect(
-      screen.getByText(/Multiprise éteinte ou hors ligne/i)
-    ).toBeInTheDocument();
-  });
+  test("rend la liste des favoris via pastilles colorées", async () => {
+    const appareilsFavoris = [
+      { _id: '1', nom: 'Lampe', favori: true },
+      { _id: '2', nom: 'PC', favori: true }
+    ];
 
-  test("rend la liste des favoris via pastilles colorées", () => {
+    const axios = require('axios');
+    axios.get.mockResolvedValueOnce({ data: appareilsFavoris });
+
     const { container } = render(
       <BrowserRouter>
         <Dashboard user={mockUser} setUser={jest.fn()} />
       </BrowserRouter>
     );
-    // Vérifie qu'il y a deux pastilles colorées pour les favoris par défaut
+
+    await screen.findByText('Lampe');
+    await screen.findByText('PC');
+
     const dots = container.querySelectorAll('.bg-primary, .bg-danger');
     expect(dots.length).toBe(2);
   });

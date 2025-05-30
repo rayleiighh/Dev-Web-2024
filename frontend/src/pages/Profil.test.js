@@ -79,8 +79,8 @@ describe('Profil Component', () => {
     });
   });
 
-  it('appelle axios.put et setUser avec succès', async () => {
-    axios.put.mockResolvedValue({});
+  it('appelle axios.patch et setUser avec succès', async () => {
+    axios.patch.mockResolvedValue({});
     axios.get.mockResolvedValue({ data: mockUser });
 
     render(
@@ -92,7 +92,15 @@ describe('Profil Component', () => {
     fireEvent.click(screen.getByText(/Enregistrer/i));
 
     await waitFor(() => {
-      expect(axios.put).toHaveBeenCalled();
+      expect(axios.patch).toHaveBeenCalledWith(
+        'http://localhost:5000/api/utilisateurs/profil',
+        expect.any(Object),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: expect.stringContaining('Bearer')
+          })
+        })
+      );
       expect(axios.get).toHaveBeenCalled();
       expect(mockSetUser).toHaveBeenCalledWith(mockUser);
       expect(screen.getByText(/succès/i)).toBeInTheDocument();
