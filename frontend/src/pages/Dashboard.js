@@ -83,7 +83,7 @@ function Dashboard({ user, setUser  }) {
         // Reset du timer
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
-          console.warn(' Timeout WebSocket sans nouvelles données');
+          
           setMultipriseActive(false);
           setDerniereConso(null);
         }, 60000); // 60 secondes de marge si plus de nouvelles données WebSocket
@@ -120,7 +120,7 @@ function Dashboard({ user, setUser  }) {
 
         setFavoris(favorisFiltres);
       } catch (err) {
-        console.error(" Erreur récupération favoris :", err);
+        
       }
     };
 

@@ -50,7 +50,7 @@ const App = () => {
     const socket = io('http://localhost:5000', { auth: { token } });
 
     socket.on('connect', () => {
-      console.log(" Connecté au WebSocket");
+      
     });
 
     socket.on('nouvelle-notification', (notif) => {
@@ -66,7 +66,7 @@ const App = () => {
 
     return () => {
       socket.disconnect();
-      console.log(" Déconnecté du WebSocket");
+      
     };
   }, [user]);
 
@@ -82,7 +82,7 @@ const App = () => {
     })
       .then(res => setNotifications(res.data))
       .catch(err => {
-        console.error("Erreur lors de la récupération des notifications", err);
+        
         setNotifications([]);
       });
   }, [user]);

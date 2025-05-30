@@ -24,7 +24,7 @@ function Parametre({ user, setUser }) {
       setUser(null);
       navigate('/');
     } catch (error) {
-      console.error("Erreur lors de la suppression du compte :", error);
+      
       alert("Une erreur est survenue lors de la suppression du compte.");
     }
   };
