@@ -13,7 +13,7 @@ const ResetPassword = () => {
   const [afficher, setAfficher] = useState(false);
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
-  const [loading, setLoading] = useState(false); //  Nouvel état
+  const [loading, setLoading] = useState(false); // ✅ Nouvel état
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ const ResetPassword = () => {
       setErreur(err.response?.data?.message || "Erreur lors de la réinitialisation.");
       setMessage('');
     } finally {
-      setLoading(false); // Fin du chargement
+      setLoading(false); // ✅ Fin du chargement
     }
   };
 

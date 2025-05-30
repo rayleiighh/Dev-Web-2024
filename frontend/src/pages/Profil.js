@@ -75,7 +75,7 @@ const Profil = ({ user, setUser }) => {
       setConfirmationMotDePasse('');
       setPhoto(null);
     } catch (error) {
-      console.error(error);
+      
       setErreur(error.response?.data?.message || "Erreur lors de la mise à jour du profil");
       setMessage('');
     } finally {

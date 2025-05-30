@@ -28,7 +28,7 @@ const Preferences = ({ user, setUser }) => {
         });
         setPreferences(res.data.preferences || {});
       } catch (err) {
-        console.error("Erreur chargement préférences:", err);
+        
       }
     };
 
@@ -61,7 +61,7 @@ const Preferences = ({ user, setUser }) => {
       });
       setMessage('Préférences enregistrées avec succès.');
     } catch (err) {
-      console.error("Erreur sauvegarde:", err);
+      
       setMessage("Erreur lors de l'enregistrement des préférences.");
     } finally {
       // Délai pour bloquer les spams rapides
