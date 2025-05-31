@@ -7,12 +7,12 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
-  const [loading, setLoading] = useState(false); // ✅ État pour l'animation
+  const [loading, setLoading] = useState(false); //  État pour l'animation
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // ✅ Démarrer le chargement
+    setLoading(true); //  Démarrer le chargement
 
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/utilisateurs/oubli-motdepasse`, {
@@ -24,7 +24,7 @@ const ForgotPassword = () => {
       setErreur(err.response?.data?.message || "Erreur lors de l'envoi.");
       setMessage('');
     } finally {
-      setLoading(false); // ✅ Fin du chargement
+      setLoading(false); //  Fin du chargement
     }
   };
 
@@ -50,7 +50,7 @@ const ForgotPassword = () => {
           required
         />
 
-        {/* ✅ Bouton animé pendant l'envoi */}
+        {/*  Bouton animé pendant l'envoi */}
         <button type="submit" className="btn btn-primary mt-3" disabled={loading}>
           {loading ? (
             <>

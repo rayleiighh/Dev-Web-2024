@@ -15,7 +15,8 @@ import Contact from './pages/Contact';
 import ContactLogin from './pages/ContactLogin';
 import { io } from 'socket.io-client';
 import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+import ResetPasswordProtected from './components/ResetPasswordProtected';
+
 
 
 const App = () => {
@@ -50,7 +51,7 @@ const App = () => {
     const socket = io(`${process.env.REACT_APP_API_URL}`, { auth: { token } });
 
     socket.on('connect', () => {
-      console.log(" Connecté au WebSocket");
+      
     });
 
     socket.on('nouvelle-notification', (notif) => {
@@ -66,7 +67,7 @@ const App = () => {
 
     return () => {
       socket.disconnect();
-      console.log(" Déconnecté du WebSocket");
+      
     };
   }, [user]);
 
@@ -82,7 +83,7 @@ const App = () => {
     })
       .then(res => setNotifications(res.data))
       .catch(err => {
-        console.error("Erreur lors de la récupération des notifications", err);
+        
         setNotifications([]);
       });
   }, [user]);
@@ -130,15 +131,15 @@ const App = () => {
         <Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} notifications={notifications} /> : <Navigate to="/" />} />
         <Route path="/notifications" element={user ? <NotificationsPage user={user} notifications={notifications} setNotifications={setNotifications} /> : <Navigate to="/" />} />
         <Route path="/preferences" element={user ? <Preferences user={user} setUser={setUser} /> : <Navigate to="/" />} />
-        <Route path="/gestion-appareils" element={<GestionAppareils />} />
-        <Route path="/historique" element={<Historique />} />
+        <Route path="/gestion-appareils" element={user ? <GestionAppareils /> : <Navigate to="/login" replace />} />
+        <Route path="/historique" element={user ? <Historique /> : <Navigate to="/login" replace />} />
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
-        <Route path="/verifier-email" element={<VerifierEmail />} />
-        <Route path="/contact" element={<Contact user={user} />} />
+        <Route path="/verifier-email" element={user ? <VerifierEmail /> : <Navigate to="/login" replace />} />
+        <Route path="/contact" element={user ? <Contact user={user} /> : <Navigate to="/login" replace />}/>
         <Route path="/contact-login" element={<ContactLogin />} />
-        <Route path="/oubli-motdepasse" element={<ForgotPassword user={user} />} />
-        <Route path="/reset-mot-de-passe" element={<ResetPassword user={user} />} />
+        <Route path="/oubli-motdepasse" element={<ForgotPassword />} />
+        <Route path="/reset-mot-de-passe" element={<ResetPasswordProtected />}/>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
  
       </Routes>

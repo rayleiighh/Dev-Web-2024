@@ -27,7 +27,7 @@ const ContactLogin = () => {
       setEmail('');
       setMessage('');
     } catch (error) {
-      console.error('Erreur lors de l’envoi du message :', error);
+      
       setConfirmation("Une erreur s'est produite.");
     } finally {
       setLoading(false);

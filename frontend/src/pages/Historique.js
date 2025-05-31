@@ -70,7 +70,7 @@ function Historique() {
       setError(null);
 
       let url = `${process.env.REACT_APP_API_URL}/api/consommations`;
-      console.log("URL avec dates UTC :", url);
+      
 
       let finFormatee = dateFin;
       if (dateFin) {
@@ -97,7 +97,7 @@ function Historique() {
       }
 
       const data = await response.json();
-      console.log(" Données de l'API :", data);
+      
 
       if (Array.isArray(data)) {
         setHistorique(data);
@@ -107,7 +107,7 @@ function Historique() {
         throw new Error("La réponse de l'API n'est pas un tableau");
       }
     } catch (error) {
-      console.error(" Erreur de chargement :", error);
+      
       setError(error.message);
       setHistorique([]);
     } finally {
@@ -169,12 +169,20 @@ const handleExport = async () => {
     a.remove();
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    console.error("Erreur export CSV :", error);
+    
     alert("Erreur lors de l'export CSV, voir console.");
   } finally {
     setChargementCSV(false);
   }
 };
+if (loading) {
+  return (
+    <div className="text-center mt-5" data-testid="spinner">
+      <div className="spinner-border" role="status" />
+      <p>Chargement...</p>
+    </div>
+  );
+}
 
 
   

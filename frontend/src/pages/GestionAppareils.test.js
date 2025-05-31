@@ -72,15 +72,18 @@ describe('GestionAppareils Component - Unit Tests', () => {
         <GestionAppareils />
       </BrowserRouter>
     );
-    // Bouton config mode nuit (moon icon)
     const button = await screen.findByTitle('Configurer le mode nuit');
     fireEvent.click(button);
-    // Le titre du modal apparaît
-    expect(screen.getByText(' Configuration du Mode Nuit')).toBeInTheDocument();
-    // Clique sur Annuler ferme le modal
+
+    // Vérifie que le titre du modal est présent (plus souple avec includes)
+    expect(screen.getByText((text) => text.includes('Configuration du Mode Nuit'))).toBeInTheDocument();
+
+    // Clique sur "Annuler" pour fermer
     fireEvent.click(screen.getByText('Annuler'));
+
+    // Vérifie que le modal est bien fermé
     await waitFor(() => {
-      expect(screen.queryByText(' Configuration du Mode Nuit')).not.toBeInTheDocument();
+      expect(screen.queryByText((text) => text.includes('Configuration du Mode Nuit'))).not.toBeInTheDocument();
     });
   });
 });

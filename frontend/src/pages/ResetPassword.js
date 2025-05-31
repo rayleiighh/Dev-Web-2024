@@ -23,7 +23,7 @@ const ResetPassword = () => {
       return;
     }
 
-    setLoading(true); // ✅ Début du chargement
+    setLoading(true); //  Début du chargement
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/utilisateurs/reset-mot-de-passe/${token}`, {
         nouveauMotDePasse: motDePasse,

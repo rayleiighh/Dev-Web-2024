@@ -61,7 +61,7 @@ const Profil = ({ user, setUser }) => {
         });
       }
 
-      // Recharge les infos utilisateur à jour
+      // Recharge les infos utilisateur 
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/utilisateurs/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -75,7 +75,7 @@ const Profil = ({ user, setUser }) => {
       setConfirmationMotDePasse('');
       setPhoto(null);
     } catch (error) {
-      console.error(error);
+      
       setErreur(error.response?.data?.message || "Erreur lors de la mise à jour du profil");
       setMessage('');
     } finally {

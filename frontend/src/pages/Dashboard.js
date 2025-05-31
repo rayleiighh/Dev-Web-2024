@@ -43,9 +43,9 @@ function Dashboard({ user, setUser  }) {
         }
   
         const data = await response.json();
-        console.log("🔍 Résultat API:", data);
+        
   
-        if (!multipriseActive) { // Ne mettre hors ligne que si déjà offline via WebSocket
+        if (!multipriseActive) { 
           if (data.active === false) {
             setMultipriseActive(false);
             setDerniereConso(null);
@@ -56,7 +56,7 @@ function Dashboard({ user, setUser  }) {
         }
   
       } catch (error) {
-        console.error(" Erreur récupération API :", error);
+        
       }
     }, 30000); // Toutes les 30 secondes seulement
   
@@ -66,31 +66,31 @@ function Dashboard({ user, setUser  }) {
 
   useEffect(() => {
     if (!socketRef.current) {
-      console.log("🔌 Tentative de connexion au WebSocket...");
+      
       socketRef.current = io(`${process.env.REACT_APP_API_URL}`, {
         transports: ['websocket']
       });
   
       socketRef.current.on('connect', () => {
-        console.log(" Connecté au WebSocket !");
+        
       });
   
       socketRef.current.on('nouvelleConsommation', (data) => {
-        console.log(' Nouvelle consommation WebSocket :', data);
+        
         setDerniereConso(data);
         setMultipriseActive(true);
   
         // Reset du timer
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
-          console.warn('⏳ Timeout WebSocket sans nouvelles données');
+          
           setMultipriseActive(false);
           setDerniereConso(null);
         }, 60000); // 60 secondes de marge si plus de nouvelles données WebSocket
       });
   
       socketRef.current.on('disconnect', () => {
-        console.log("🔌 WebSocket déconnecté");
+        
       });
     }
   
@@ -98,7 +98,7 @@ function Dashboard({ user, setUser  }) {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
-        console.log("🔌 Socket déconnectée proprement");
+        
       }
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -120,7 +120,7 @@ function Dashboard({ user, setUser  }) {
 
         setFavoris(favorisFiltres);
       } catch (err) {
-        console.error("❌ Erreur récupération favoris :", err);
+        
       }
     };
 

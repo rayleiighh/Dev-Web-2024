@@ -19,7 +19,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
         });
         setNotifications(res.data);
       } catch (err) {
-        console.error("❌ Erreur lors du chargement des notifications:", err);
+        
         setError("Impossible de charger les notifications.");
       }
     };
@@ -39,7 +39,7 @@ const NotificationsPage = ({ user, notifications, setNotifications }) => {
       });
       setNotifications((prev) => prev.filter((n) => n._id !== id));
     } catch (err) {
-      console.error(" Erreur lors de la suppression:", err);
+      
       setError("Erreur lors de la suppression de la notification.");
     }
   };

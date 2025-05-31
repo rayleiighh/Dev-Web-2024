@@ -30,7 +30,7 @@ mongoose
   .catch((err) => console.error("❌ Erreur MongoDB :", err));
 
 
-cron.schedule('05 13 * * *', () => {
+cron.schedule('30 12 * * *', () => {
   console.log(" Génération automatique des notifications informatives à 12h30");
   generateInfoNotifications();
 });
