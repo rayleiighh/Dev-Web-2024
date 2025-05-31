@@ -135,7 +135,7 @@ const App = () => {
         <Route path="/historique" element={user ? <Historique /> : <Navigate to="/login" replace />} />
         <Route path="/parametre" element={user ? <Parametre setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/profil" element={user ? <Profil user={user} setUser={setUser} /> : <Navigate to="/" />} />
-        <Route path="/verifier-email" element={user ? <VerifierEmail /> : <Navigate to="/login" replace />} />
+        <Route path="/verifier-email" element={<VerifierEmail />} />
         <Route path="/contact" element={user ? <Contact user={user} /> : <Navigate to="/login" replace />}/>
         <Route path="/contact-login" element={<ContactLogin />} />
         <Route path="/oubli-motdepasse" element={<ForgotPassword />} />
