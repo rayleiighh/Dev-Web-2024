@@ -175,14 +175,7 @@ const handleExport = async () => {
     setChargementCSV(false);
   }
 };
-if (loading) {
-  return (
-    <div className="text-center mt-5" data-testid="spinner">
-      <div className="spinner-border" role="status" />
-      <p>Chargement...</p>
-    </div>
-  );
-}
+
 
 
   
