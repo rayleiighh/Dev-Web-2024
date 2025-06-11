@@ -3,7 +3,7 @@
 Une application web MERN pour suivre en temps réel la consommation électrique de ses appareils connectés via des multiprises intelligentes.
 
 -  Projet réalisé dans le cadre du module de développement web 2024
--  [Vidéo de démo sur YouTube](https://youtu.be/3IYCpe-y8Ic)
+-  [Vidéo de présentation sur YouTube](https://youtu.be/3IYCpe-y8Ic)
 
 ---
 
@@ -97,7 +97,7 @@ npm start
 
 Toutes les routes sont préfixées par `/api`
 
-### ⚙ /api/multiprises
+### /api/multiprises
 ```http
 POST /api/multiprises
 {
@@ -106,7 +106,7 @@ POST /api/multiprises
 }
 ```
 
-### 🔌 /api/appareils
+###  /api/appareils
 ```http
 POST /api/appareils
 {
